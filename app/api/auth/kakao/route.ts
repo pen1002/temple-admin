@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
   kakaoAuthUrl.searchParams.set('client_id', process.env.KAKAO_REST_API_KEY || '')
   kakaoAuthUrl.searchParams.set('redirect_uri', process.env.KAKAO_REDIRECT_URI || '')
   kakaoAuthUrl.searchParams.set('response_type', 'code')
-  kakaoAuthUrl.searchParams.set('scope', 'phone_number')
+  kakaoAuthUrl.searchParams.set('scope', 'account_email')
 
   return NextResponse.redirect(kakaoAuthUrl.toString())
 }

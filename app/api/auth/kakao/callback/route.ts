@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { createSession } from '@/lib/auth'
-import { getAdminPhones, getTempleName } from '@/lib/kv'
+import { getTempleName } from '@/lib/kv'
 
 async function getKakaoToken(code: string): Promise<string> {
   const res = await fetch('https://kauth.kakao.com/oauth/token', {
@@ -19,14 +19,12 @@ async function getKakaoToken(code: string): Promise<string> {
   return data.access_token
 }
 
-async function getKakaoPhone(accessToken: string): Promise<string> {
+async function getKakaoEmail(accessToken: string): Promise<string> {
   const res = await fetch('https://kapi.kakao.com/v2/user/me', {
     headers: { Authorization: `Bearer ${accessToken}` },
   })
   const data = await res.json()
-  const phone: string = data.kakao_account?.phone_number || ''
-  // Normalize: +82 10-1234-5678 → 010-1234-5678
-  return phone.replace(/^\+82\s?/, '0').replace(/\s/g, '-')
+  return (data.kakao_account?.email as string) || ''
 }
 
 export async function GET(request: NextRequest) {
@@ -40,11 +38,19 @@ export async function GET(request: NextRequest) {
 
   try {
     const accessToken = await getKakaoToken(code)
-    const phone = await getKakaoPhone(accessToken)
-    const adminPhones = await getAdminPhones(slug)
+    const email = await getKakaoEmail(accessToken)
 
-    const normalizedInput = phone.replace(/\s/g, '-')
-    const isAdmin = adminPhones.some(p => p.replace(/\s/g, '-') === normalizedInput)
+    if (!email) {
+      return NextResponse.redirect(new URL('/login?error=no_email', request.url))
+    }
+
+    // ADMIN_EMAILS=admin@munsusa.com,master@temple.com
+    const adminEmails = (process.env.ADMIN_EMAILS || '')
+      .split(',')
+      .map(e => e.trim().toLowerCase())
+      .filter(Boolean)
+
+    const isAdmin = adminEmails.includes(email.toLowerCase())
 
     if (!isAdmin) {
       const response = NextResponse.redirect(new URL('/login?error=unauthorized', request.url))
@@ -53,7 +59,7 @@ export async function GET(request: NextRequest) {
     }
 
     const templeName = await getTempleName(slug)
-    const token = await createSession({ slug, phone, templeName })
+    const token = await createSession({ slug, email, templeName })
 
     const response = NextResponse.redirect(new URL(`/admin/${slug}`, request.url))
     response.cookies.set('temple_session', token, {

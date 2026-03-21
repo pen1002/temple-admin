@@ -11,9 +11,10 @@ function LoginForm() {
   const error = searchParams.get('error')
 
   const errorMessages: Record<string, string> = {
-    unauthorized: '등록되지 않은 번호입니다. 담당자에게 문의하세요.',
+    unauthorized: '등록되지 않은 이메일입니다. 담당자에게 문의하세요.',
     invalid_slug: '잘못된 사찰 코드입니다. 다시 확인해주세요.',
     kakao_error: '카카오 로그인 중 오류가 발생했습니다. 다시 시도해주세요.',
+    no_email: '카카오 계정에 이메일이 없습니다. 카카오 설정에서 이메일을 확인해주세요.',
   }
 
   const handleSubmit = (e: React.FormEvent) => {

@@ -7,7 +7,7 @@ const JWT_SECRET = new TextEncoder().encode(
 
 export interface SessionPayload {
   slug: string
-  phone: string
+  email: string
   templeName: string
 }
 
