@@ -3,10 +3,9 @@
 import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import AdminLayout from '@/components/AdminLayout'
-import { use } from 'react'
 
-export default function PhotoPage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = use(params)
+export default function PhotoPage({ params }: { params: { slug: string } }) {
+  const { slug } = params
   const [file, setFile] = useState<File | null>(null)
   const [preview, setPreview] = useState<string>('')
   const [location, setLocation] = useState('gallery')

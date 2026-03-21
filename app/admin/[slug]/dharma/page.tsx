@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import AdminLayout from '@/components/AdminLayout'
-import { use } from 'react'
 
 interface DharmaHistory {
   text: string
@@ -11,8 +10,8 @@ interface DharmaHistory {
   savedAt: string
 }
 
-export default function DharmaPage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = use(params)
+export default function DharmaPage({ params }: { params: { slug: string } }) {
+  const { slug } = params
   const [text, setText] = useState('')
   const [source, setSource] = useState('')
   const [history, setHistory] = useState<DharmaHistory[]>([])

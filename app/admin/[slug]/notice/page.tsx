@@ -3,10 +3,9 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import AdminLayout from '@/components/AdminLayout'
-import { use } from 'react'
 
-export default function NoticePage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = use(params)
+export default function NoticePage({ params }: { params: { slug: string } }) {
+  const { slug } = params
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
   const [loading, setLoading] = useState(false)

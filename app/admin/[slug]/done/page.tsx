@@ -1,6 +1,6 @@
 'use client'
 
-import { use, Suspense } from 'react'
+import { Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import DoneScreen from '@/components/DoneScreen'
 
@@ -35,8 +35,8 @@ function DoneContent({ slug }: { slug: string }) {
   )
 }
 
-export default function DonePage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = use(params)
+export default function DonePage({ params }: { params: { slug: string } }) {
+  const { slug } = params
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-temple-brown flex items-center justify-center">

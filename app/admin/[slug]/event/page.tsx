@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import AdminLayout from '@/components/AdminLayout'
-import { use } from 'react'
 
 interface EventItem {
   id: string
@@ -12,8 +11,8 @@ interface EventItem {
   memo?: string
 }
 
-export default function EventPage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = use(params)
+export default function EventPage({ params }: { params: { slug: string } }) {
+  const { slug } = params
   const [events, setEvents] = useState<EventItem[]>([])
   const [selectedId, setSelectedId] = useState('')
   const [date, setDate] = useState('')

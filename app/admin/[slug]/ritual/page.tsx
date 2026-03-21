@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import AdminLayout from '@/components/AdminLayout'
-import { use } from 'react'
 
 interface RitualTime {
   id: string
@@ -11,8 +10,8 @@ interface RitualTime {
   time: string
 }
 
-export default function RitualPage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = use(params)
+export default function RitualPage({ params }: { params: { slug: string } }) {
+  const { slug } = params
   const [rituals, setRituals] = useState<RitualTime[]>([])
   const [selectedId, setSelectedId] = useState('')
   const [time, setTime] = useState('')
