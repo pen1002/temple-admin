@@ -1,34 +1,59 @@
 'use client'
 
-import { useState } from 'react'
-import { useSearchParams } from 'next/navigation'
-import { Suspense } from 'react'
+import { useState, useRef, Suspense } from 'react'
+import { useSearchParams, useRouter } from 'next/navigation'
 
 function LoginForm() {
   const [slug, setSlug] = useState('')
+  const [pin, setPin] = useState('')
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const pinRef = useRef<HTMLInputElement>(null)
   const searchParams = useSearchParams()
-  const error = searchParams.get('error')
+  const router = useRouter()
 
-  const errorMessages: Record<string, string> = {
-    unauthorized: '등록되지 않은 이메일입니다. 담당자에게 문의하세요.',
-    invalid_slug: '잘못된 사찰 코드입니다. 다시 확인해주세요.',
-    kakao_error: '카카오 로그인 중 오류가 발생했습니다. 다시 시도해주세요.',
-    no_email: '카카오 계정에 이메일이 없습니다. 카카오 설정에서 이메일을 확인해주세요.',
+  // URL 파라미터로 넘어온 에러 (세션 만료 등)
+  const urlError = searchParams.get('error')
+  const urlErrorMessages: Record<string, string> = {
+    session_expired: '로그인이 만료되었습니다. 다시 로그인해주세요.',
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!slug.trim()) return
+    if (!slug.trim() || pin.length !== 4) return
+
     setLoading(true)
-    window.location.href = `/api/auth/kakao?slug=${encodeURIComponent(slug.trim())}`
+    setError('')
+
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ slug: slug.trim().toLowerCase(), pin }),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        setError(data.error || '로그인 중 오류가 발생했습니다.')
+        setPin('')
+        pinRef.current?.focus()
+        setLoading(false)
+        return
+      }
+
+      router.push(`/admin/${data.slug}`)
+    } catch {
+      setError('네트워크 오류가 발생했습니다. 다시 시도해주세요.')
+      setLoading(false)
+    }
   }
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-temple-brown">
+      <div className="flex items-center justify-center min-h-screen" style={{ background: '#2C1810' }}>
         <div className="text-center text-white">
-          <div className="text-5xl mb-4">🙏</div>
+          <div className="text-6xl mb-4">🙏</div>
           <p className="text-xl">잠시만 기다려주세요...</p>
         </div>
       </div>
@@ -38,7 +63,7 @@ function LoginForm() {
   return (
     <div className="min-h-screen flex flex-col" style={{ background: 'linear-gradient(180deg, #2C1810 0%, #4a2c1a 100%)' }}>
       {/* Header */}
-      <div className="flex flex-col items-center pt-16 pb-8 px-6">
+      <div className="flex flex-col items-center pt-14 pb-8 px-6">
         <div className="text-6xl mb-4">🏯</div>
         <h1 className="text-3xl font-bold text-temple-gold text-center leading-tight">
           사찰 관리자
@@ -49,14 +74,15 @@ function LoginForm() {
       </div>
 
       {/* Form Card */}
-      <div className="flex-1 bg-temple-cream rounded-t-3xl px-6 pt-8 pb-6">
-        {error && (
-          <div className="bg-red-50 border-2 border-red-300 rounded-xl p-4 mb-6 text-red-700 text-lg">
-            ⚠️ {errorMessages[error] || '오류가 발생했습니다. 다시 시도해주세요.'}
+      <div className="flex-1 bg-temple-cream rounded-t-3xl px-6 pt-8 pb-10">
+        {(error || urlError) && (
+          <div className="bg-red-50 border-2 border-red-300 rounded-xl p-4 mb-6 text-red-700 text-lg leading-snug">
+            ⚠️ {error || urlErrorMessages[urlError!] || '오류가 발생했습니다.'}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-5">
+          {/* 사찰 코드 */}
           <div>
             <label className="block text-temple-brown font-bold text-lg mb-2">
               사찰 코드
@@ -64,33 +90,97 @@ function LoginForm() {
             <input
               type="text"
               value={slug}
-              onChange={(e) => setSlug(e.target.value)}
-              placeholder="예: jogyesa, haeinsa"
+              onChange={e => setSlug(e.target.value)}
+              onBlur={() => setSlug(s => s.trim().toLowerCase())}
+              placeholder="예: munsusa"
               className="input-field"
               required
               autoCapitalize="none"
               autoCorrect="off"
+              autoComplete="off"
             />
-            <p className="text-gray-500 text-base mt-1">담당자에게 받은 코드를 입력하세요</p>
+            <p className="text-gray-500 text-base mt-1">실장님께 받은 사찰 코드를 입력하세요</p>
+          </div>
+
+          {/* PIN 입력 */}
+          <div>
+            <label className="block text-temple-brown font-bold text-lg mb-2">
+              비밀번호 (4자리)
+            </label>
+            <input
+              ref={pinRef}
+              type="password"
+              inputMode="numeric"
+              pattern="[0-9]{4}"
+              maxLength={4}
+              value={pin}
+              onChange={e => setPin(e.target.value.replace(/\D/g, '').slice(0, 4))}
+              placeholder="• • • •"
+              className="input-field text-center text-2xl tracking-[0.5em]"
+              required
+              autoComplete="current-password"
+            />
+            <p className="text-gray-500 text-base mt-1">숫자 4자리를 입력하세요</p>
+          </div>
+
+          {/* PIN 숫자 패드 */}
+          <div className="grid grid-cols-3 gap-3 pt-1">
+            {['1','2','3','4','5','6','7','8','9','','0','⌫'].map((key) => (
+              <button
+                key={key}
+                type="button"
+                disabled={!key}
+                onClick={() => {
+                  if (key === '⌫') {
+                    setPin(p => p.slice(0, -1))
+                  } else if (key && pin.length < 4) {
+                    setPin(p => p + key)
+                  }
+                }}
+                className={`
+                  rounded-2xl text-2xl font-bold min-h-[64px] transition-all active:scale-95
+                  ${!key ? 'invisible' : key === '⌫'
+                    ? 'bg-gray-200 text-gray-600 active:bg-gray-300'
+                    : 'bg-white border-2 border-gray-200 text-temple-brown active:bg-temple-gold active:border-temple-gold'}
+                `}
+              >
+                {key}
+              </button>
+            ))}
+          </div>
+
+          {/* PIN 인디케이터 */}
+          <div className="flex justify-center gap-4 py-1">
+            {[0, 1, 2, 3].map(i => (
+              <div
+                key={i}
+                className={`w-4 h-4 rounded-full border-2 transition-all ${
+                  pin.length > i
+                    ? 'bg-temple-gold border-temple-gold'
+                    : 'bg-transparent border-gray-400'
+                }`}
+              />
+            ))}
           </div>
 
           <button
             type="submit"
-            disabled={!slug.trim()}
-            className="w-full min-h-[64px] rounded-2xl font-bold text-xl flex items-center justify-center gap-3 disabled:opacity-50 transition-opacity active:opacity-80"
-            style={{ backgroundColor: '#FEE500', color: '#3C1E1E' }}
+            disabled={!slug.trim() || pin.length !== 4}
+            className="btn-primary text-xl py-5 disabled:opacity-40"
           >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2C6.48 2 2 5.92 2 10.67c0 2.97 1.77 5.58 4.44 7.18L5.5 21.5l4.27-2.27C10.46 19.4 11.22 19.5 12 19.5c5.52 0 10-3.92 10-8.83C22 5.92 17.52 2 12 2z"/>
-            </svg>
-            카카오로 로그인
+            🔓 로그인
           </button>
         </form>
 
         <div className="mt-8 text-center">
           <p className="text-gray-500 text-base">
-            로그인에 어려움이 있으시면<br />담당자에게 문의하세요
+            비밀번호를 모르시면<br />실장님께 문의하세요
           </p>
+          {process.env.NEXT_PUBLIC_ADMIN_PHONE && (
+            <p className="text-temple-brown font-bold text-lg mt-1">
+              {process.env.NEXT_PUBLIC_ADMIN_PHONE}
+            </p>
+          )}
         </div>
       </div>
     </div>
@@ -100,7 +190,7 @@ function LoginForm() {
 export default function LoginPage() {
   return (
     <Suspense fallback={
-      <div className="flex items-center justify-center min-h-screen bg-temple-brown">
+      <div className="flex items-center justify-center min-h-screen" style={{ background: '#2C1810' }}>
         <p className="text-white text-xl">잠시만 기다려주세요...</p>
       </div>
     }>
