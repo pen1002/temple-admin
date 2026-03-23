@@ -1,8 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { BLOCK_DEFS } from './ModulePicker'
-import BlockGrid from './BlockGrid'
+import BlockGrid, { getBlockName } from './BlockGrid'
 
 interface Result { ok?: boolean; code?: string; name?: string; blockCount?: number; error?: string }
 
@@ -42,16 +41,13 @@ export default function AddTempleForm() {
         tier: Number(form.tier),
       },
       blocks: selectedBlocks.map((id, i) => {
-        const def = BLOCK_DEFS.find(b => b.id === id)!
-        const baseConfig = { ...def.defaultConfig }
-        if (id === 'H-01') {
-          Object.assign(baseConfig, {
-            heroTitle: form.name,
-            badge: `☸ ${form.denomination}`,
-            ticker: [`☸ ${form.name}`, `✦ ${form.denomination}`],
-          })
-        }
-        return { blockType: id, label: def.name, order: i + 1, isVisible: true, config: baseConfig }
+        const config: Record<string, unknown> = id === 'H-01' ? {
+          heroTitle: form.name,
+          badge: `☸ ${form.denomination}`,
+          ticker: [`☸ ${form.name}`, `✦ ${form.denomination}`],
+          source: 'kv',
+        } : { source: 'kv' }
+        return { blockType: id, label: getBlockName(id), order: i + 1, isVisible: true, config }
       }),
     }
     try {
@@ -217,7 +213,7 @@ export default function AddTempleForm() {
                 {JSON.stringify(
                   selectedBlocks.map((id, i) => ({
                     blockType: id,
-                    label: BLOCK_DEFS.find(b => b.id === id)?.name ?? id,
+                    label: getBlockName(id),
                     order: i + 1,
                   })),
                   null, 2
