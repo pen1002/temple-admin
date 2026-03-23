@@ -28,7 +28,11 @@ export async function GET(
       dharmaHistory: dharma.history,
       gallery,
     }, {
-      headers: { 'Access-Control-Allow-Origin': '*' }
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET',
+        'Content-Type': 'application/json',
+      }
     })
   } catch {
     return NextResponse.json({ error: '데이터를 불러오는 중 오류가 발생했습니다.' }, { status: 500 })

@@ -5,19 +5,31 @@
 @layer base {
   html {
     font-size: 18px;
+    -webkit-text-size-adjust: 100%;
   }
   body {
     background-color: #FFF8E7;
     color: #2C1810;
+    /* iOS 안전 영역 대응 */
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  /* 터치 하이라이트 제거 (버튼 전용 스타일로 대체) */
+  button, a {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  /* 입력창 iOS 자동 확대 방지 (16px 이상이므로 불필요) */
+  input, select, textarea {
+    font-size: 18px;
   }
 }
 
 @layer components {
   .btn-primary {
-    @apply bg-temple-gold text-temple-brown font-bold py-4 px-6 rounded-xl text-lg w-full min-h-[48px] active:opacity-80 transition-opacity;
+    @apply bg-temple-gold text-temple-brown font-bold py-4 px-6 rounded-xl text-xl w-full min-h-[56px] active:opacity-80 transition-opacity flex items-center justify-center;
   }
   .btn-secondary {
-    @apply bg-white border-2 border-temple-gold text-temple-brown font-semibold py-3 px-6 rounded-xl text-base w-full min-h-[48px] active:opacity-80 transition-opacity;
+    @apply bg-white border-2 border-temple-gold text-temple-brown font-semibold py-3 px-6 rounded-xl text-lg w-full min-h-[56px] active:opacity-80 transition-opacity flex items-center justify-center;
   }
   .input-field {
     @apply w-full border-2 border-gray-300 rounded-xl p-4 text-lg focus:outline-none focus:border-temple-gold bg-white min-h-[56px];

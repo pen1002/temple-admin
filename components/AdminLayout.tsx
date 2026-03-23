@@ -19,7 +19,7 @@ export default function AdminLayout({ slug, templeName, title, children, showBac
           {showBack && (
             <Link
               href={`/admin/${slug}`}
-              className="text-temple-gold text-3xl w-10 h-10 flex items-center justify-center flex-shrink-0"
+              className="text-temple-gold text-3xl w-12 h-12 flex items-center justify-center flex-shrink-0"
             >
               ←
             </Link>

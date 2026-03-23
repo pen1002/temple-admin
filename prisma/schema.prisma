@@ -1,0 +1,55 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// 사찰 기본 정보 (munsusa-site와 동일 DB 공유)
+model Temple {
+  id             String   @id @default(cuid())
+  code           String   @unique
+  name           String
+  nameEn         String?
+  description    String?  @db.Text
+  logoUrl        String?
+  heroImageUrl   String?
+  address        String?
+  phone          String?
+  email          String?
+  primaryColor   String   @default("#8B2500")
+  secondaryColor String   @default("#C5A572")
+  fontFamily     String   @default("Pretendard")
+  customDomain   String?  @unique
+  subdomain      String?  @unique
+  denomination   String?
+  foundedYear    Int?
+  abbotName      String?
+  tier           Int      @default(1)
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  blockConfigs BlockConfig[]
+
+  @@index([code])
+}
+
+model BlockConfig {
+  id        String   @id @default(cuid())
+  templeId  String
+  temple    Temple   @relation(fields: [templeId], references: [id], onDelete: Cascade)
+  blockType String
+  label     String?
+  order     Int      @default(0)
+  isVisible Boolean  @default(true)
+  config    Json     @default("{}")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([templeId, order])
+  @@index([templeId, blockType])
+}

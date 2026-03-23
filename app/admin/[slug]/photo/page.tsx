@@ -13,13 +13,36 @@ export default function PhotoPage({ params }: { params: { slug: string } }) {
   const [uploading, setUploading] = useState(false)
   const [progress, setProgress] = useState(0)
   const [error, setError] = useState('')
-  const fileRef = useRef<HTMLInputElement>(null)
+  const cameraRef = useRef<HTMLInputElement>(null)
+  const galleryRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
+
+  const resizeImage = (f: File, maxPx = 1200, quality = 0.8): Promise<File> =>
+    new Promise((resolve) => {
+      const img = new Image()
+      const url = URL.createObjectURL(f)
+      img.onload = () => {
+        URL.revokeObjectURL(url)
+        let { width: w, height: h } = img
+        if (w > maxPx || h > maxPx) {
+          if (w > h) { h = Math.round(h * maxPx / w); w = maxPx }
+          else { w = Math.round(w * maxPx / h); h = maxPx }
+        }
+        const canvas = document.createElement('canvas')
+        canvas.width = w; canvas.height = h
+        canvas.getContext('2d')!.drawImage(img, 0, 0, w, h)
+        canvas.toBlob(
+          blob => resolve(new File([blob!], f.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' })),
+          'image/jpeg', quality
+        )
+      }
+      img.src = url
+    })
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0]
     if (!f) return
-    if (f.size > 10 * 1024 * 1024) { setError('사진 크기가 10MB를 초과합니다.'); return }
+    if (f.size > 30 * 1024 * 1024) { setError('사진 크기가 30MB를 초과합니다.'); return }
     setFile(f)
     setError('')
     const reader = new FileReader()
@@ -34,13 +57,15 @@ export default function PhotoPage({ params }: { params: { slug: string } }) {
     setProgress(10)
     setError('')
     try {
+      setProgress(20)
+      const resized = await resizeImage(file, 1200, 0.8)
       const formData = new FormData()
-      formData.append('file', file)
+      formData.append('file', resized)
       formData.append('slug', slug)
       formData.append('location', location)
       formData.append('caption', caption)
 
-      setProgress(30)
+      setProgress(40)
       const res = await fetch('/api/admin/photo', { method: 'POST', body: formData })
       setProgress(90)
       if (!res.ok) { const d = await res.json(); throw new Error(d.error || '업로드 실패') }
@@ -77,41 +102,55 @@ export default function PhotoPage({ params }: { params: { slug: string } }) {
       <form onSubmit={handleSubmit} className="space-y-5">
         {error && <div className="bg-red-50 border-2 border-red-300 rounded-xl p-4 text-red-700 text-lg">⚠️ {error}</div>}
 
-        {/* Photo selector */}
-        <div
-          onClick={() => fileRef.current?.click()}
-          className="border-3 border-dashed border-temple-gold rounded-2xl flex flex-col items-center justify-center cursor-pointer active:opacity-70 transition-opacity overflow-hidden"
-          style={{ minHeight: '200px', borderWidth: '3px', borderStyle: 'dashed' }}
-        >
-          {preview ? (
-            <img src={preview} alt="미리보기" className="w-full h-56 object-cover rounded-2xl" />
-          ) : (
-            <div className="text-center py-10 px-4">
-              <p className="text-6xl mb-3">📸</p>
-              <p className="text-xl font-bold text-temple-brown">사진 선택하기</p>
-              <p className="text-gray-500 text-base mt-1">탭하면 카메라 또는 갤러리에서<br/>선택할 수 있습니다</p>
-            </div>
-          )}
+        {/* 미리보기 */}
+        {preview ? (
+          <div className="rounded-2xl overflow-hidden border-2 border-temple-gold">
+            <img src={preview} alt="미리보기" className="w-full object-contain" style={{ maxHeight: '300px', background: '#f5f5f5' }} />
+          </div>
+        ) : (
+          <div className="border-3 rounded-2xl p-6 text-center" style={{ borderWidth: '2px', borderStyle: 'dashed', borderColor: '#D4AF37' }}>
+            <p className="text-5xl mb-2">📸</p>
+            <p className="text-lg font-bold text-temple-brown">아래 버튼으로 사진을 선택하세요</p>
+          </div>
+        )}
+
+        {/* 카메라 / 갤러리 버튼 */}
+        <div className="grid grid-cols-2 gap-3">
+          <button
+            type="button"
+            onClick={() => cameraRef.current?.click()}
+            className="flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-temple-gold bg-temple-gold text-temple-brown font-bold min-h-[72px] text-lg active:opacity-80 transition-opacity"
+          >
+            <span className="text-3xl">📷</span>
+            카메라 촬영
+          </button>
+          <button
+            type="button"
+            onClick={() => galleryRef.current?.click()}
+            className="flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-temple-gold bg-white text-temple-brown font-bold min-h-[72px] text-lg active:opacity-80 transition-opacity"
+          >
+            <span className="text-3xl">🖼️</span>
+            갤러리 선택
+          </button>
         </div>
 
+        {/* 숨겨진 input - 카메라 */}
         <input
-          ref={fileRef}
+          ref={cameraRef}
           type="file"
           accept="image/*"
           capture="environment"
           onChange={handleFileChange}
           className="hidden"
         />
-
-        {file && (
-          <button
-            type="button"
-            onClick={() => fileRef.current?.click()}
-            className="w-full text-center text-temple-gold text-lg underline"
-          >
-            다른 사진 선택하기
-          </button>
-        )}
+        {/* 숨겨진 input - 갤러리 */}
+        <input
+          ref={galleryRef}
+          type="file"
+          accept="image/*"
+          onChange={handleFileChange}
+          className="hidden"
+        />
 
         <div>
           <label className="block font-bold text-lg text-temple-brown mb-2">올릴 위치</label>
