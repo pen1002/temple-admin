@@ -2,64 +2,20 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { BLOCK_DEFS } from './ModulePicker'
-import MandalaMindmap from './MandalaMindmap'
 import BlockGrid from './BlockGrid'
-
-const EXAMPLE_JSON = `{
-  "temple": {
-    "code": "example",
-    "name": "예시사",
-    "nameEn": "Example Temple",
-    "description": "사찰 설명을 입력하세요.",
-    "address": "경기도 예시시 예시구",
-    "phone": "031-000-0000",
-    "denomination": "대한불교 조계종",
-    "abbotName": "예시 스님",
-    "primaryColor": "#8B5E3C",
-    "secondaryColor": "#D4A017",
-    "tier": 2
-  },
-  "blocks": [
-    {
-      "blockType": "H-01",
-      "label": "파티클 히어로",
-      "order": 1,
-      "isVisible": true,
-      "config": {
-        "badge": "☸ 사찰 배지",
-        "heroTitle": "예시사",
-        "heroHanja": "例 示 寺",
-        "heroDesc": "사찰 소개 문구",
-        "ticker": ["☸ 예시사", "✦ 대한불교조계종"],
-        "stats": [
-          { "value": "값", "label": "통계 설명" }
-        ]
-      }
-    },
-    { "blockType": "D-01", "label": "오늘의 법문", "order": 2, "isVisible": true, "config": { "source": "kv" } },
-    { "blockType": "I-01", "label": "공지사항", "order": 3, "isVisible": true, "config": { "source": "kv" } }
-  ]
-}`
 
 interface Result { ok?: boolean; code?: string; name?: string; blockCount?: number; error?: string }
 
 export default function AddTempleForm() {
   const router = useRouter()
-  const [mode, setMode] = useState<'form' | 'json'>('form')
-  const [step, setStep] = useState<'info' | 'modules'>('info')
   const [selectedBlocks, setSelectedBlocks] = useState<string[]>(['H-01', 'D-01', 'I-01', 'V-01'])
 
-  // 폼 모드 상태
   const [form, setForm] = useState({
     code: '', name: '', nameEn: '', description: '', address: '',
     phone: '', denomination: '대한불교 조계종', abbotName: '',
     primaryColor: '#8B5E3C', secondaryColor: '#D4A017',
     tier: '2', pin: '',
   })
-
-  // JSON 모드 상태
-  const [jsonText, setJsonText] = useState('')
-  const [jsonPin, setJsonPin] = useState('')
 
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<Result | null>(null)
@@ -69,6 +25,7 @@ export default function AddTempleForm() {
 
   const submitForm = async () => {
     if (!form.code || !form.name || !form.tier) { setError('코드, 이름, 등급은 필수입니다.'); return }
+    if (selectedBlocks.length === 0) { setError('블록을 최소 1개 이상 선택해주세요.'); return }
     setLoading(true); setError('')
     const body = {
       temple: {
@@ -97,20 +54,7 @@ export default function AddTempleForm() {
         return { blockType: id, label: def.name, order: i + 1, isVisible: true, config: baseConfig }
       }),
     }
-    await submit(body, form.pin)
-  }
-
-  const submitJson = async () => {
-    let parsed
-    try { parsed = JSON.parse(jsonText) }
-    catch { setError('JSON 형식이 올바르지 않습니다.'); return }
-    setLoading(true); setError('')
-    await submit(parsed, jsonPin)
-  }
-
-  const submit = async (body: object, pin: string) => {
     try {
-      // 1. 사찰 DB 등록
       const res = await fetch('/api/super/temples', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -119,20 +63,26 @@ export default function AddTempleForm() {
       const d = await res.json() as Result
       if (!res.ok) { setError(d.error || '등록 실패'); setLoading(false); return }
       setResult(d)
-
-      // 2. PIN 등록 (선택)
-      const code = (body as { temple?: { code?: string } }).temple?.code
-      if (pin && code) {
+      const code = form.code.trim().toLowerCase()
+      if (form.pin && code) {
         await fetch(`/api/super/temples/${code}/pin`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ pin }),
+          body: JSON.stringify({ pin: form.pin }),
         })
       }
     } catch { setError('네트워크 오류') }
     finally { setLoading(false) }
   }
 
+  const resetForm = () => {
+    setResult(null)
+    setSelectedBlocks(['H-01', 'D-01', 'I-01', 'V-01'])
+    setForm({ code:'', name:'', nameEn:'', description:'', address:'', phone:'', denomination:'대한불교 조계종', abbotName:'', primaryColor:'#8B5E3C', secondaryColor:'#D4A017', tier:'2', pin:'' })
+    setError('')
+  }
+
+  // ── 점안 완료 화면 ─────────────────────────────────────────────────────────
   if (result?.ok) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center px-6" style={{ background: 'linear-gradient(180deg, #1a0f08, #2C1810)' }}>
@@ -140,7 +90,9 @@ export default function AddTempleForm() {
           <div className="text-6xl mb-4">🎉</div>
           <h2 className="text-2xl font-bold text-temple-brown mb-2">점안 완료!</h2>
           <p className="text-gray-600 text-lg mb-1">{result.name}</p>
-          <p className="text-gray-500 text-base mb-4">블록 {result.blockCount}개 · 코드: <code className="bg-gray-100 px-1.5 rounded">{result.code}</code></p>
+          <p className="text-gray-500 text-base mb-4">
+            블록 {result.blockCount}개 · 코드: <code className="bg-gray-100 px-1.5 rounded">{result.code}</code>
+          </p>
           <div className="space-y-3">
             <a
               href={`https://munsusa-site-fmwyrdut3-bae-yeonams-projects.vercel.app/${result.code}`}
@@ -149,8 +101,7 @@ export default function AddTempleForm() {
             >
               🌐 사이트 확인하기
             </a>
-            <button onClick={() => { setResult(null); setStep('info'); setSelectedBlocks(['H-01','D-01','I-01','V-01']); setForm({ code:'',name:'',nameEn:'',description:'',address:'',phone:'',denomination:'대한불교 조계종',abbotName:'',primaryColor:'#8B5E3C',secondaryColor:'#D4A017',tier:'2',pin:'' }); setJsonText(''); setJsonPin('') }}
-              className="btn-secondary">
+            <button onClick={resetForm} className="btn-secondary">
               + 또 다른 사찰 등록
             </button>
             <button onClick={() => router.push('/super/dashboard')} className="text-gray-400 text-base underline w-full text-center">
@@ -162,6 +113,7 @@ export default function AddTempleForm() {
     )
   }
 
+  // ── 등록 폼 (단일 스크롤) ──────────────────────────────────────────────────
   return (
     <div className="min-h-screen flex flex-col" style={{ background: 'linear-gradient(180deg, #1a0f08 0%, #2C1810 20%, #FFF8E7 20%)' }}>
       {/* 헤더 */}
@@ -173,209 +125,116 @@ export default function AddTempleForm() {
         </div>
       </div>
 
-      <div className="flex-1 bg-temple-cream rounded-t-3xl px-5 pt-6 pb-10">
+      <div className="flex-1 bg-temple-cream rounded-t-3xl px-5 pt-6 pb-10 space-y-6">
         {error && (
-          <div className="bg-red-50 border-2 border-red-300 rounded-xl p-4 mb-5 text-red-700 text-base">⚠️ {error}</div>
+          <div className="bg-red-50 border-2 border-red-300 rounded-xl p-4 text-red-700 text-base">⚠️ {error}</div>
         )}
 
-        {/* 탭 */}
-        <div className="flex bg-gray-100 rounded-2xl p-1 mb-6">
-          {(['form', 'json'] as const).map(m => (
-            <button key={m} onClick={() => { setMode(m); setStep('info') }}
-              className={`flex-1 py-2.5 rounded-xl font-bold text-lg transition-all ${
-                mode === m ? 'bg-white text-temple-brown shadow-sm' : 'text-gray-400'
-              }`}>
-              {m === 'form' ? '📝 항목 입력' : '{ } JSON 입력'}
-            </button>
-          ))}
-        </div>
-
-        {/* 폼 모드 */}
-        {mode === 'form' && (
+        {/* ① 기본 정보 ──────────────────────────────────────────────────────── */}
+        <section>
+          <h2 className="text-temple-brown font-bold text-lg mb-4">① 사찰 기본 정보</h2>
           <div className="space-y-4">
-
-            {/* 스텝 인디케이터 */}
-            <div className="flex items-center gap-2 mb-2">
-              {(['info', 'modules'] as const).map((s, i) => (
-                <div key={s} className="flex items-center gap-2">
-                  {i > 0 && <div className="h-px w-6 bg-gray-300" />}
-                  <button onClick={() => setStep(s)}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-bold transition-all ${
-                      step === s ? 'bg-temple-brown text-white' : 'bg-gray-100 text-gray-400'
-                    }`}>
-                    <span>{i + 1}</span>
-                    <span>{s === 'info' ? '기본 정보' : '🧩 모듈 선택'}</span>
-                  </button>
-                </div>
-              ))}
-            </div>
-            {/* STEP 1: 기본 정보 */}
-            {step === 'info' && (<>
-              {[
-                { key: 'code', label: '사찰 코드 *', placeholder: 'haeinsa', hint: '영문 소문자만 (URL에 사용)' },
-                { key: 'name', label: '사찰명 *', placeholder: '해인사' },
-                { key: 'nameEn', label: '영문명', placeholder: 'Haeinsa Temple' },
-                { key: 'description', label: '사찰 소개', placeholder: '사찰 설명...', multiline: true },
-                { key: 'address', label: '주소', placeholder: '경상남도 합천군 가야면...' },
-                { key: 'phone', label: '전화번호', placeholder: '055-000-0000' },
-                { key: 'denomination', label: '종단', placeholder: '대한불교 조계종' },
-                { key: 'abbotName', label: '주지스님', placeholder: '현응 스님' },
-              ].map(({ key, label, placeholder, hint, multiline }) => (
-                <div key={key}>
-                  <label className="block text-temple-brown font-bold text-base mb-1">{label}</label>
-                  {multiline ? (
-                    <textarea value={form[key as keyof typeof form]} onChange={e => set(key, e.target.value)}
-                      placeholder={placeholder} rows={3}
-                      className="input-field resize-none" />
-                  ) : (
-                    <input type="text" value={form[key as keyof typeof form]} onChange={e => set(key, e.target.value)}
-                      placeholder={placeholder} className="input-field" />
-                  )}
-                  {hint && <p className="text-gray-400 text-sm mt-1">{hint}</p>}
-                </div>
-              ))}
-
-              {/* 등급 선택 */}
-              <div>
-                <label className="block text-temple-brown font-bold text-base mb-1">등급 *</label>
-                <div className="grid grid-cols-3 gap-2">
-                  {[['1','기본'],['2','표준'],['3','프리미엄']].map(([v,l]) => (
-                    <button key={v} type="button" onClick={() => set('tier', v)}
-                      className={`py-3 rounded-xl font-bold text-base border-2 transition-all ${
-                        form.tier === v ? 'bg-temple-gold border-temple-gold text-temple-brown' : 'bg-white border-gray-200 text-gray-500'
-                      }`}>
-                      Tier {v}<br /><span className="text-sm">{l}</span>
-                    </button>
-                  ))}
-                </div>
+            {[
+              { key: 'code',         label: '사찰 코드 *',  placeholder: 'haeinsa',          hint: '영문 소문자만 (URL에 사용)' },
+              { key: 'name',         label: '사찰명 *',     placeholder: '해인사' },
+              { key: 'nameEn',       label: '영문명',        placeholder: 'Haeinsa Temple' },
+              { key: 'description',  label: '사찰 소개',    placeholder: '사찰 설명...', multiline: true },
+              { key: 'address',      label: '주소',          placeholder: '경상남도 합천군 가야면...' },
+              { key: 'phone',        label: '전화번호',      placeholder: '055-000-0000' },
+              { key: 'denomination', label: '종단',          placeholder: '대한불교 조계종' },
+              { key: 'abbotName',    label: '주지스님',      placeholder: '현응 스님' },
+            ].map(({ key, label, placeholder, hint, multiline }) => (
+              <div key={key}>
+                <label className="block text-temple-brown font-bold text-base mb-1">{label}</label>
+                {multiline ? (
+                  <textarea value={form[key as keyof typeof form]} onChange={e => set(key, e.target.value)}
+                    placeholder={placeholder} rows={3} className="input-field resize-none" />
+                ) : (
+                  <input type="text" value={form[key as keyof typeof form]} onChange={e => set(key, e.target.value)}
+                    placeholder={placeholder} className="input-field" />
+                )}
+                {hint && <p className="text-gray-400 text-sm mt-1">{hint}</p>}
               </div>
+            ))}
 
-              {/* 컬러 */}
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-temple-brown font-bold text-base mb-1">메인 컬러</label>
-                  <div className="flex gap-2">
-                    <input type="color" value={form.primaryColor} onChange={e => set('primaryColor', e.target.value)}
-                      className="w-14 h-14 rounded-xl border-2 border-gray-200 cursor-pointer" />
-                    <input type="text" value={form.primaryColor} onChange={e => set('primaryColor', e.target.value)}
-                      className="input-field text-sm" />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-temple-brown font-bold text-base mb-1">보조 컬러</label>
-                  <div className="flex gap-2">
-                    <input type="color" value={form.secondaryColor} onChange={e => set('secondaryColor', e.target.value)}
-                      className="w-14 h-14 rounded-xl border-2 border-gray-200 cursor-pointer" />
-                    <input type="text" value={form.secondaryColor} onChange={e => set('secondaryColor', e.target.value)}
-                      className="input-field text-sm" />
-                  </div>
-                </div>
-              </div>
-
-              {/* PIN */}
-              <div>
-                <label className="block text-temple-brown font-bold text-base mb-1">관리자 PIN (선택)</label>
-                <input type="text" inputMode="numeric" maxLength={8} value={form.pin}
-                  onChange={e => set('pin', e.target.value.replace(/\D/g, '').slice(0, 8))}
-                  placeholder="4~8자리 숫자 (나중에 설정 가능)"
-                  className="input-field" />
-              </div>
-
-              <button onClick={() => setStep('modules')} disabled={!form.code || !form.name}
-                className="btn-primary text-xl py-5 disabled:opacity-40">
-                다음: 모듈 선택 →
-              </button>
-            </>)}
-
-            {/* STEP 2: 만다라 + 그리드 */}
-            {step === 'modules' && (<>
-              {/* 만다라 마인드맵 */}
-              <MandalaMindmap
-                templeName={form.name}
-                selected={selectedBlocks}
-                onChange={setSelectedBlocks}
-              />
-
-              {/* 구분선 */}
-              <div className="flex items-center gap-3 my-4">
-                <div className="flex-1 h-px bg-gray-200" />
-                <span className="text-gray-400 text-xs">블록 선택</span>
-                <div className="flex-1 h-px bg-gray-200" />
-              </div>
-
-              {/* 4×4 블록 그리드 */}
-              <BlockGrid selected={selectedBlocks} onChange={setSelectedBlocks} />
-
-              {/* JSON 미리보기 (읽기 전용) */}
-              {selectedBlocks.length > 0 && (
-                <div className="bg-gray-900 rounded-xl p-4 mt-4">
-                  <p className="text-gray-500 text-xs font-mono mb-2">
-                    {'// 생성될 블록 구성 미리보기 (읽기 전용)'}
-                  </p>
-                  <pre className="text-green-400 text-[11px] leading-relaxed overflow-x-auto max-h-36">
-                    {JSON.stringify(
-                      selectedBlocks.map((id, i) => ({
-                        blockType: id,
-                        label: BLOCK_DEFS.find(b => b.id === id)?.name ?? id,
-                        order: i + 1,
-                      })),
-                      null, 2
-                    )}
-                  </pre>
-                </div>
-              )}
-
-              <div className="flex gap-3 pt-4">
-                <button onClick={() => setStep('info')} className="btn-secondary flex-1">
-                  ← 이전
-                </button>
-                <button onClick={submitForm} disabled={loading}
-                  className="btn-primary flex-1 text-xl py-5 disabled:opacity-40">
-                  {loading ? '⚙️ 등록 중...' : '☸ 사찰 점안하기'}
-                </button>
-              </div>
-            </>)}
-          </div>
-        )}
-
-        {/* JSON 모드 */}
-        {mode === 'json' && (
-          <div className="space-y-4">
+            {/* 등급 */}
             <div>
-              <label className="block text-temple-brown font-bold text-base mb-1">JSON 데이터</label>
-              <textarea
-                value={jsonText}
-                onChange={e => setJsonText(e.target.value)}
-                placeholder={EXAMPLE_JSON}
-                rows={18}
-                className="input-field font-mono text-sm resize-none leading-relaxed"
-                style={{ fontSize: '13px' }}
-              />
-              <p className="text-gray-400 text-sm mt-1">
-                scripts/temples/ 폴더의 JSON 파일 내용을 붙여넣으세요
-              </p>
+              <label className="block text-temple-brown font-bold text-base mb-1">등급 *</label>
+              <div className="grid grid-cols-3 gap-2">
+                {[['1','기본'],['2','표준'],['3','프리미엄']].map(([v,l]) => (
+                  <button key={v} type="button" onClick={() => set('tier', v)}
+                    className={`py-3 rounded-xl font-bold text-base border-2 transition-all ${
+                      form.tier === v ? 'bg-temple-gold border-temple-gold text-temple-brown' : 'bg-white border-gray-200 text-gray-500'
+                    }`}>
+                    Tier {v}<br /><span className="text-sm">{l}</span>
+                  </button>
+                ))}
+              </div>
             </div>
 
+            {/* 컬러 */}
+            <div className="grid grid-cols-2 gap-3">
+              {[['primaryColor','메인 컬러'],['secondaryColor','보조 컬러']].map(([k,l]) => (
+                <div key={k}>
+                  <label className="block text-temple-brown font-bold text-base mb-1">{l}</label>
+                  <div className="flex gap-2">
+                    <input type="color" value={form[k as keyof typeof form]}
+                      onChange={e => set(k, e.target.value)}
+                      className="w-14 h-14 rounded-xl border-2 border-gray-200 cursor-pointer" />
+                    <input type="text" value={form[k as keyof typeof form]}
+                      onChange={e => set(k, e.target.value)}
+                      className="input-field text-sm" />
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* PIN */}
             <div>
               <label className="block text-temple-brown font-bold text-base mb-1">관리자 PIN (선택)</label>
-              <input type="text" inputMode="numeric" maxLength={8} value={jsonPin}
-                onChange={e => setJsonPin(e.target.value.replace(/\D/g, '').slice(0, 8))}
-                placeholder="4~8자리 숫자"
+              <input type="text" inputMode="numeric" maxLength={8} value={form.pin}
+                onChange={e => set('pin', e.target.value.replace(/\D/g, '').slice(0, 8))}
+                placeholder="4~8자리 숫자 (나중에 설정 가능)"
                 className="input-field" />
             </div>
-
-            <button onClick={submitJson} disabled={loading || !jsonText.trim()}
-              className="btn-primary text-xl py-5 disabled:opacity-40">
-              {loading ? '⚙️ 등록 중...' : '☸ JSON으로 점안하기'}
-            </button>
-
-            {/* 예시 버튼 */}
-            <button onClick={() => setJsonText(EXAMPLE_JSON)}
-              className="btn-secondary">
-              📋 예시 JSON 불러오기
-            </button>
           </div>
+        </section>
+
+        {/* ② 블록 그리드 ───────────────────────────────────────────────────── */}
+        <section>
+          <h2 className="text-temple-brown font-bold text-lg mb-1">② 블록 구성 선택</h2>
+          <p className="text-gray-400 text-sm mb-4">사찰 홈페이지에 표시할 섹션을 선택하세요</p>
+          <BlockGrid selected={selectedBlocks} onChange={setSelectedBlocks} />
+        </section>
+
+        {/* ③ JSON 미리보기 (읽기 전용) ────────────────────────────────────── */}
+        {selectedBlocks.length > 0 && (
+          <section>
+            <h2 className="text-temple-brown font-bold text-lg mb-3">③ 블록 구성 미리보기</h2>
+            <div className="bg-gray-900 rounded-2xl p-4">
+              <p className="text-gray-500 text-xs font-mono mb-2">{'// 생성될 블록 (읽기 전용)'}</p>
+              <pre className="text-green-400 text-[11px] leading-relaxed overflow-x-auto max-h-40">
+                {JSON.stringify(
+                  selectedBlocks.map((id, i) => ({
+                    blockType: id,
+                    label: BLOCK_DEFS.find(b => b.id === id)?.name ?? id,
+                    order: i + 1,
+                  })),
+                  null, 2
+                )}
+              </pre>
+            </div>
+          </section>
         )}
+
+        {/* ④ 점안 버튼 ─────────────────────────────────────────────────────── */}
+        <button
+          onClick={submitForm}
+          disabled={loading || !form.code || !form.name}
+          className="btn-primary text-xl py-5 disabled:opacity-40 w-full"
+        >
+          {loading ? '⚙️ 등록 중...' : '☸ 이 사찰 점안하기'}
+        </button>
       </div>
     </div>
   )
