@@ -1,21 +1,53 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSuperSession } from '@/lib/superAuth'
 import { db } from '@/lib/db'
+import { Prisma } from '@prisma/client'
 
-// ── 사찰 목록 조회 ──────────────────────────────────────────────────────────
-export async function GET() {
+// ── 사찰 목록 조회 (페이지네이션 + 검색 + 필터) ────────────────────────────
+export async function GET(req: NextRequest) {
   if (!await getSuperSession()) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const temples = await db.temple.findMany({
-    orderBy: { createdAt: 'asc' },
-    include: {
-      _count: { select: { blockConfigs: true } },
+  const { searchParams } = new URL(req.url)
+  const page  = Math.max(1, parseInt(searchParams.get('page')  ?? '1',  10))
+  const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') ?? '20', 10)))
+  const search      = searchParams.get('search')?.trim()      ?? ''
+  const tierParam   = searchParams.get('tier')?.trim()        ?? ''
+  const denomination = searchParams.get('denomination')?.trim() ?? ''
+
+  const where: Prisma.TempleWhereInput = {
+    ...(search && {
+      OR: [
+        { name:   { contains: search, mode: 'insensitive' } },
+        { code:   { contains: search, mode: 'insensitive' } },
+        { nameEn: { contains: search, mode: 'insensitive' } },
+      ],
+    }),
+    ...(tierParam && { tier: parseInt(tierParam, 10) }),
+    ...(denomination && { denomination: { contains: denomination, mode: 'insensitive' } }),
+  }
+
+  const [temples, totalCount] = await Promise.all([
+    db.temple.findMany({
+      where,
+      orderBy: { createdAt: 'asc' },
+      include: { _count: { select: { blockConfigs: true } } },
+      skip:  (page - 1) * limit,
+      take:  limit,
+    }),
+    db.temple.count({ where }),
+  ])
+
+  return NextResponse.json({
+    temples,
+    pagination: {
+      page,
+      limit,
+      totalCount,
+      totalPages: Math.ceil(totalCount / limit),
     },
   })
-
-  return NextResponse.json(temples)
 }
 
 // ── 사찰 등록 (upsert) ──────────────────────────────────────────────────────

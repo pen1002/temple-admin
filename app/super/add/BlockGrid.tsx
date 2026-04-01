@@ -3,7 +3,7 @@ import { useState } from 'react'
 
 // ── 타입 ──────────────────────────────────────────────────────────────────────
 interface BlockItem { code: string; name: string; desc: string }
-type CatKey = 'H' | 'T' | 'L' | 'P' | 'E' | 'B' | 'G' | 'C' | 'I'
+type CatKey = 'H' | 'T' | 'L' | 'P' | 'E' | 'B' | 'G' | 'C' | 'I' | 'X'
 
 // ── 카테고리 정의 ─────────────────────────────────────────────────────────────
 const CATEGORIES: { key: CatKey; icon: string; label: string; color: string }[] = [
@@ -16,18 +16,19 @@ const CATEGORIES: { key: CatKey; icon: string; label: string; color: string }[] 
   { key: 'G', icon: '📸',  label: '갤러리',       color: '#2C5F8A' },
   { key: 'C', icon: '💳',  label: '결제수단',     color: '#4A4A4A' },
   { key: 'I', icon: '📊',  label: '인포그래픽',   color: '#3D5A3E' },
+  { key: 'X', icon: '📚',  label: 'Q&A·자료관',  color: '#5B2D8E' },
 ]
 
 // ── 65개 부품 카탈로그 ────────────────────────────────────────────────────────
 export const BLOCK_CATALOG: Record<CatKey, BlockItem[]> = {
   H: [
-    { code: 'H-01', name: '파티클 문자형',       desc: '금빛 파티클이 사찰명 조합' },
-    { code: 'H-02', name: '정지 이미지형',        desc: '대표 사진 + 사찰명 오버레이' },
-    { code: 'H-03', name: '슬라이드형',           desc: '3~5장 자동 전환' },
-    { code: 'H-04', name: '비디오 배경형',        desc: '유튜브/MP4 배경 영상' },
-    { code: 'H-05', name: '연등 애니메이션형',    desc: '연등 흔들림 효과' },
-    { code: 'H-06', name: '서체 강조형',          desc: '한자+한글 타이포 중심' },
-    { code: 'H-07', name: 'Scroll Morph형',       desc: '스크롤 따라 변하는 히어로' },
+    { code: 'H-01', name: '파티클+연등형',        desc: '금빛 파티클 + 연등 동시 효과 (문수사 원형)' },
+    { code: 'H-02', name: '정지 이미지형',        desc: '대표 사진 + 사찰명 오버레이 + CTA 버튼' },
+    { code: 'H-03', name: '슬라이드형',           desc: '3~5장 자동전환·터치스와이프 지원' },
+    { code: 'H-04', name: '파티클 전용형',        desc: '금빛 파티클 사찰명 조립 (연등 제외)' },
+    { code: 'H-05', name: '연등 부유형',          desc: '연등 흔들림 부유 애니메이션 (파티클 제외)' },
+    { code: 'H-06', name: 'Lamp 광명형',          desc: '원뿔 빛줄기 + 금빛 광명 framer-motion' },
+    { code: 'H-07', name: '원형→그리드 변환형',   desc: '원이 스크롤 시 4×4 메뉴로 전환' },
     { code: 'H-08', name: '행사 전면 배치형',     desc: 'D-30 이내 행사 금색 강조' },
     { code: 'H-09', name: '계절 테마형',          desc: '봄·여름·가을·겨울 자동 전환' },
     { code: 'H-10', name: '3D 모델형',            desc: 'Sketchfab 불상 3D 인터랙션' },
@@ -95,6 +96,10 @@ export const BLOCK_CATALOG: Record<CatKey, BlockItem[]> = {
     { code: 'I-02', name: '교리 요약 도표',       desc: '불교 기초 인포그래픽' },
     { code: 'I-03', name: '동참자 통계 그래프',   desc: '기도·불사 통계 차트' },
     { code: 'I-04', name: '연간 일정 로드맵',     desc: '1년 행사 타임라인' },
+    { code: 'IG-01', name: '숫자 카운터 인포그래픽', desc: '통계 숫자 카운터 애니메이션' },
+  ],
+  X: [
+    { code: 'QA-01', name: 'Q&A 슬라이드 자료관', desc: 'FAQ·슬라이드·인포그래픽 탭 구성' },
   ],
 }
 

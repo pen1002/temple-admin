@@ -1,0 +1,136 @@
+import { notFound } from 'next/navigation'
+import type { Metadata } from 'next'
+import { db } from '@/lib/db'
+import { getNotices, getEventList, getRitualTimes, getDharma, getGallery } from '@/lib/kv'
+import BlockRenderer from './_blocks/BlockRenderer'
+import FooterBlock from './_blocks/FooterBlock'
+import type { TempleData, TemplateContent } from './_blocks/types'
+
+// ISR: 1시간마다 재생성
+export const revalidate = 3600
+// 정적 목록에 없는 slug도 요청 시 생성 허용
+export const dynamicParams = true
+
+// ── generateStaticParams: 활성 사찰 정적 생성 ──────────────────────────────
+// DB 미연결 환경(CI 빌드 등)에서는 빈 배열 반환 → ISR on-demand로 처리
+export async function generateStaticParams() {
+  try {
+    const temples = await db.temple.findMany({
+      where: { isActive: true },
+      select: { code: true },
+      orderBy: { createdAt: 'asc' },
+    })
+    return temples.map(t => ({ slug: t.code }))
+  } catch {
+    return []
+  }
+}
+
+// ── generateMetadata: SEO 최적화 ────────────────────────────────────────────
+export async function generateMetadata(
+  { params }: { params: Promise<{ slug: string }> }
+): Promise<Metadata> {
+  const { slug } = await params
+  const temple = await db.temple.findUnique({
+    where: { code: slug },
+    select: { name: true, nameEn: true, description: true, heroImageUrl: true, address: true, denomination: true },
+  })
+  if (!temple) return { title: '사찰을 찾을 수 없습니다' }
+
+  const desc = temple.description
+    ?? `${temple.denomination ?? '불교'} ${temple.name} 공식 홈페이지입니다.${temple.address ? ` ${temple.address}` : ''}`
+
+  return {
+    title: `${temple.name} | 1080 사찰 자동화 대작불사`,
+    description: desc,
+    openGraph: {
+      title: temple.name,
+      description: desc,
+      images: temple.heroImageUrl
+        ? [{ url: temple.heroImageUrl, alt: temple.name }]
+        : [],
+      locale: 'ko_KR',
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: temple.name,
+      description: desc,
+    },
+  }
+}
+
+// ── 메인 페이지 ──────────────────────────────────────────────────────────────
+export default async function TemplePage(
+  { params }: { params: Promise<{ slug: string }> }
+) {
+  const { slug } = await params
+
+  // DB: 사찰 기본 정보 + 노출 블록 목록 (order 정렬, visible만)
+  const temple = await db.temple.findUnique({
+    where: { code: slug, isActive: true },
+    include: {
+      blockConfigs: {
+        where: { isVisible: true },
+        orderBy: { order: 'asc' },
+      },
+    },
+  })
+  if (!temple) notFound()
+
+  // Redis: 동적 콘텐츠 (병렬 fetch)
+  const [notices, eventList, ritualTimes, dharma, gallery] = await Promise.all([
+    getNotices(slug),
+    getEventList(slug),
+    getRitualTimes(slug),
+    getDharma(slug),
+    getGallery(slug),
+  ])
+
+  const content: TemplateContent = { notices, eventList, ritualTimes, dharma, gallery }
+
+  // Prisma 모델 → TempleData (직렬화 안전)
+  const templeData: TempleData = {
+    id:           temple.id,
+    code:         temple.code,
+    name:         temple.name,
+    nameEn:       temple.nameEn,
+    description:  temple.description,
+    address:      temple.address,
+    phone:        temple.phone,
+    email:        temple.email,
+    heroImageUrl: temple.heroImageUrl,
+    logoUrl:      temple.logoUrl,
+    primaryColor: temple.primaryColor,
+    secondaryColor: temple.secondaryColor,
+    denomination: temple.denomination,
+    abbotName:    temple.abbotName,
+    foundedYear:  temple.foundedYear,
+    tier:         temple.tier,
+  }
+
+  // 블록이 없으면 기본 구성으로 폴백 (H-05, D-01, I-01, V-01)
+  const blocks = temple.blockConfigs.length > 0
+    ? temple.blockConfigs
+    : [
+        { id: 'default-hero',     blockType: 'H-05', order: 0, config: {}, isVisible: true },
+        { id: 'default-dharma',   blockType: 'D-01', order: 1, config: {}, isVisible: true },
+        { id: 'default-notice',   blockType: 'I-01', order: 2, config: {}, isVisible: true },
+        { id: 'default-location', blockType: 'V-01', order: 3, config: {}, isVisible: true },
+      ]
+
+  return (
+    <>
+      {blocks.map(block => (
+        <BlockRenderer
+          key={block.id}
+          blockType={block.blockType}
+          config={(block.config ?? {}) as Record<string, unknown>}
+          temple={templeData}
+          content={content}
+        />
+      ))}
+      <FooterBlock temple={templeData} />
+    </>
+  )
+}

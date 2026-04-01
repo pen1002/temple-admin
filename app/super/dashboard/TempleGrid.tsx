@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 
 interface TempleRow {
   id: string; code: string; name: string; nameEn: string
@@ -9,9 +10,75 @@ interface TempleRow {
   blockCount: number; createdAt: string
 }
 
+interface Pagination {
+  page: number
+  totalPages: number
+  totalCount: number
+}
+
 const SITE_BASE = 'https://munsusa-site-fmwyrdut3-bae-yeonams-projects.vercel.app'
 
-export default function TempleGrid({ temples }: { temples: TempleRow[] }) {
+function getPageNumbers(current: number, total: number): (number | '...')[] {
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1)
+  const pages: (number | '...')[] = [1]
+  if (current > 4) pages.push('...')
+  for (let i = Math.max(2, current - 2); i <= Math.min(total - 1, current + 2); i++) pages.push(i)
+  if (current < total - 3) pages.push('...')
+  pages.push(total)
+  return pages
+}
+
+function Paginator({ pagination }: { pagination: Pagination }) {
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const { page, totalPages, totalCount } = pagination
+
+  if (totalPages <= 1) return (
+    <p className="text-center text-gray-400 text-sm mt-6">총 {totalCount.toLocaleString()}개</p>
+  )
+
+  const go = (p: number) => {
+    const params = new URLSearchParams(searchParams.toString())
+    params.set('page', String(p))
+    router.push(`${pathname}?${params.toString()}`)
+  }
+
+  const pages = getPageNumbers(page, totalPages)
+
+  return (
+    <div className="mt-8 flex flex-col items-center gap-3">
+      <p className="text-gray-500 text-sm">총 {totalCount.toLocaleString()}개 · {page}/{totalPages} 페이지</p>
+      <div className="flex items-center gap-1 flex-wrap justify-center">
+        <button
+          onClick={() => go(page - 1)} disabled={page === 1}
+          className="w-9 h-9 rounded-lg bg-gray-100 text-gray-600 font-bold disabled:opacity-30 active:bg-gray-200 text-base"
+        >‹</button>
+
+        {pages.map((p, i) =>
+          p === '...'
+            ? <span key={`e${i}`} className="w-9 h-9 flex items-center justify-center text-gray-400">…</span>
+            : <button
+                key={p}
+                onClick={() => go(p as number)}
+                className={`w-9 h-9 rounded-lg font-semibold text-sm transition-colors ${
+                  p === page
+                    ? 'bg-temple-brown text-temple-gold'
+                    : 'bg-gray-100 text-gray-700 active:bg-gray-200'
+                }`}
+              >{p}</button>
+        )}
+
+        <button
+          onClick={() => go(page + 1)} disabled={page === totalPages}
+          className="w-9 h-9 rounded-lg bg-gray-100 text-gray-600 font-bold disabled:opacity-30 active:bg-gray-200 text-base"
+        >›</button>
+      </div>
+    </div>
+  )
+}
+
+export default function TempleGrid({ temples, pagination }: { temples: TempleRow[], pagination: Pagination }) {
   const [pinModal, setPinModal] = useState<string | null>(null) // code
   const [newPin, setNewPin] = useState('')
   const [pinLoading, setPinLoading] = useState(false)
@@ -35,18 +102,6 @@ export default function TempleGrid({ temples }: { temples: TempleRow[] }) {
       }
     } catch { setPinMsg('네트워크 오류') }
     finally { setPinLoading(false) }
-  }
-
-  if (temples.length === 0) {
-    return (
-      <div className="text-center py-16 text-gray-400">
-        <div className="text-5xl mb-4">🏯</div>
-        <p className="text-xl">등록된 사찰이 없습니다</p>
-        <a href="/super/add" className="inline-block mt-4 text-temple-gold underline text-lg">
-          첫 번째 사찰 등록하기 →
-        </a>
-      </div>
-    )
   }
 
   return (
@@ -113,6 +168,9 @@ export default function TempleGrid({ temples }: { temples: TempleRow[] }) {
           </div>
         ))}
       </div>
+
+      {/* 페이지네이션 */}
+      <Paginator pagination={pagination} />
 
       {/* + 새 사찰 등록 */}
       <div className="fixed bottom-6 right-5 z-50">
