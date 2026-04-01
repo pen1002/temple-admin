@@ -11,19 +11,12 @@ export const revalidate = 3600
 // 정적 목록에 없는 slug도 요청 시 생성 허용
 export const dynamicParams = true
 
-// ── generateStaticParams: 활성 사찰 정적 생성 ──────────────────────────────
-// DB 미연결 환경(CI 빌드 등)에서는 빈 배열 반환 → ISR on-demand로 처리
+// ── generateStaticParams: 전량 ISR on-demand ────────────────────────────────
+// 1080개 규모에서 빌드 시 정적 생성 → Supabase 세션 풀 초과.
+// 빈 배열 반환 + dynamicParams=true → 첫 요청 시 생성 후 revalidate=3600 캐시.
+// 이것이 1000+ 사찰 규모의 올바른 아키텍처.
 export async function generateStaticParams() {
-  try {
-    const temples = await db.temple.findMany({
-      where: { isActive: true },
-      select: { code: true },
-      orderBy: { createdAt: 'asc' },
-    })
-    return temples.map(t => ({ slug: t.code }))
-  } catch {
-    return []
-  }
+  return []
 }
 
 // ── generateMetadata: SEO 최적화 ────────────────────────────────────────────
