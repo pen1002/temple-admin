@@ -54,3 +54,24 @@ model BlockConfig {
   @@index([templeId, order])
   @@index([templeId, blockType])
 }
+
+// 블록 카탈로그 — 어드민에서 블록 종류·defaultProps·adminSchema 관리
+model BlockCatalog {
+  id           String   @id @default(cuid())
+  blockId      String   @unique  // e.g. "h06-chunguansa-main"
+  blockType    String             // e.g. "TempleH06Hero"
+  blockVersion String   @default("1.0.0")
+  blockLabel   String             // e.g. "H-06 황금 연등 히어로"
+  previewPath  String?            // e.g. "/block-preview/H-06"
+  status       String   @default("published")
+  siteId       String?
+  defaultProps Json     @default("{}")
+  adminSchema  Json     @default("{}")
+  seo          Json     @default("{}")
+  meta         Json     @default("{}")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([blockType])
+  @@index([siteId])
+}

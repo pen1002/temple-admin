@@ -1,6 +1,8 @@
 // 블록 미리보기 풀스크린 페이지 — 헤더/푸터 없이 블록만 렌더링
 // iframe에서 로드: /block-preview/H-01 등
 import { notFound } from 'next/navigation'
+import TempleH06Hero, { defaultProps as h06DefaultProps } from '@/components/blocks/TempleH06Hero'
+import HeroH05Lantern from '@/components/hero/HeroH05Lantern'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore — [slug] 디렉토리명에 대괄호 포함
 import HeroBlock, { CombinedHero, LanternHero, ParticleHero, ImageHero } from '@/app/[slug]/_blocks/HeroBlock'
@@ -192,8 +194,8 @@ export default async function BlockPreviewPage(
   if (code === 'H-02') return <div style={{ margin:0, padding:0, overflow:'hidden' }}><ImageHero temple={T} /></div>
   if (code === 'H-03') return <Placeholder code={code} name="슬라이드형" desc="3~5장 자동전환·터치스와이프" catColor="#1B3A6B" catBg="#f0f4ff" catIcon="🏯" />
   if (code === 'H-04') return <div style={{ margin:0, padding:0, overflow:'hidden' }}><ParticleHero temple={T} /></div>
-  if (code === 'H-05') return <div style={{ margin:0, padding:0, overflow:'hidden' }}><LanternHero temple={T} /></div>
-  if (code === 'H-06') return <Placeholder code={code} name="Lamp 광명형" desc="원뿔 빛줄기 + 금빛 광명 framer-motion" catColor="#1B3A6B" catBg="#f0f4ff" catIcon="🏯" />
+  if (code === 'H-05') return <div style={{ margin:0, padding:0, overflow:'hidden' }}><HeroH05Lantern temple={T} /></div>
+  if (code === 'H-06') return <div style={{ margin:0, padding:0, overflow:'hidden' }}><TempleH06Hero {...h06DefaultProps} blockId="h06-preview-chunguansa" denomination="대한불교조계종" templeName="천 관 사" subtitle="천년의 빛이 머무는 곳" description={"마음의 등불을 밝혀\n진리의 길을 걷습니다"} ctaLabel="홈페이지 바로가기" ctaHref="/about" theme="gold" mobileLanternScale={0.8} /></div>
   if (code === 'H-07') return <Placeholder code={code} name="원형→그리드 변환형" desc="원이 스크롤 시 4×4 메뉴로 전환" catColor="#1B3A6B" catBg="#f0f4ff" catIcon="🏯" />
   if (code === 'H-08') return <Placeholder code={code} name="행사 전면 배치형" desc="D-30 이내 행사 금색 강조" catColor="#1B3A6B" catBg="#f0f4ff" catIcon="🏯" />
   if (code === 'H-09') return <Placeholder code={code} name="계절 테마형" desc="봄·여름·가을·겨울 자동 전환" catColor="#1B3A6B" catBg="#f0f4ff" catIcon="🏯" />
