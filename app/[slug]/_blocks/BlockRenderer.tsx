@@ -28,7 +28,7 @@ interface Props {
  */
 export default function BlockRenderer({ blockType, config, temple, content }: Props) {
   if (blockType.startsWith('H-')) {
-    return <HeroBlock blockType={blockType} temple={temple} />
+    return <HeroBlock blockType={blockType} temple={temple} config={config} />
   }
 
   if (blockType === 'D-01') {

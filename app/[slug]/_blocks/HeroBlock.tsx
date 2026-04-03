@@ -1,10 +1,12 @@
 // H-05: 연등 부유형 (기본) | H-01: 파티클형 | H-02: 정지 이미지형
 import type { TempleData } from './types'
 import LanternLayer from '@/components/hero/LanternLayer'
+import HeroH04Particle from '@/components/hero/HeroH04Particle'
 
 interface Props {
   blockType: string
   temple: TempleData
+  config?: Record<string, unknown>
 }
 
 // ── H-05 — LanternLayer 단독 (공통 컴포넌트 사용) ─────────────────────────────
@@ -307,9 +309,9 @@ export function CombinedHero({ temple }: { temple: TempleData }) {
 // named exports
 export { LanternHero, ParticleHero, ImageHero }
 
-export default function HeroBlock({ blockType, temple }: Props) {
+export default function HeroBlock({ blockType, temple, config }: Props) {
   if (blockType === 'H-01') return <CombinedHero temple={temple} />
-  if (blockType === 'H-04') return <ParticleHero temple={temple} />
+  if (blockType === 'H-04') return <HeroH04Particle temple={temple} config={config} />
   if (blockType === 'H-02' || blockType === 'H-03') return <ImageHero temple={temple} />
   // H-05 기본값 (H-06 ~ H-10도 연등형으로 폴백)
   return <LanternHero temple={temple} />
