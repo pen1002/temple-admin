@@ -1,5 +1,4 @@
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { jwtVerify } from 'jose'
 
 const JWT_SECRET = new TextEncoder().encode(
@@ -7,15 +6,21 @@ const JWT_SECRET = new TextEncoder().encode(
 )
 
 export async function middleware(request: NextRequest) {
-  const hostname = request.headers.get('host') || ''
   const { pathname } = request.nextUrl
-  const slug = hostname.split('.')[0] // 'borimsa', 'www', 'admin', ...
+  const host = request.headers.get('host') || ''
 
   // ── 서브도메인 라우팅: {slug}.k-buddhism.kr → /{slug} ──────────────────────
-  if (hostname.endsWith('.k-buddhism.kr') && slug !== 'www' && slug !== 'admin') {
-    const url = request.nextUrl.clone()
-    url.pathname = `/${slug}${request.nextUrl.pathname}`
-    return NextResponse.rewrite(url)
+  // borimsa.k-buddhism.kr/ → 내부적으로 /borimsa 로 rewrite
+  const subdomainMatch = host.match(/^([^.]+)\.k-buddhism\.kr$/)
+  if (subdomainMatch) {
+    const subdomain = subdomainMatch[1]
+    // www나 API 경로는 제외
+    if (subdomain !== 'www' && !pathname.startsWith('/api') && !pathname.startsWith('/_next')) {
+      const url = request.nextUrl.clone()
+      // /  →  /borimsa   |   /about → /borimsa/about
+      url.pathname = `/${subdomain}${pathname === '/' ? '' : pathname}`
+      return NextResponse.rewrite(url)
+    }
   }
 
   // ── 개별 사찰 관리자 (/admin/*) ─────────────────────────────────────────────
@@ -59,6 +64,6 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  // _next 전체, api, favicon 제외 → 서브도메인 요청 포함
-  matcher: ['/((?!_next|api|favicon\\.ico).*)'],
+  // _next/static, _next/image, favicon 제외한 모든 경로에 미들웨어 적용
+  matcher: ['/((?!_next/static|_next/image|favicon\\.ico).*)'],
 }
