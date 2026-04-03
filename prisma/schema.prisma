@@ -29,6 +29,7 @@ model Temple {
   foundedYear    Int?
   abbotName      String?
   tier           Int      @default(1)
+  themeColor     String?  @default("golden-lotus")
   isActive       Boolean  @default(true)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt

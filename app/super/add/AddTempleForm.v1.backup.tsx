@@ -5,34 +5,9 @@ import BlockGrid, { getBlockName } from './BlockGrid'
 
 interface Result { ok?: boolean; code?: string; name?: string; blockCount?: number; error?: string }
 
-// ── 10대 컬러 테마 ───────────────────────────────────────────────────────────
-const TEMPLE_THEMES = [
-  { id: 'golden-lotus',     name: '황금 연등',  primary: '#F59E0B', secondary: '#FCD34D', bg: '#1a1200',
-    desc: '황금빛 연등이 밤하늘을 수놓는 따뜻하고 신성한 테마', temples: ['해인사', '통도사', '법주사'] },
-  { id: 'deep-ocean',       name: '해조 관음',  primary: '#0F766E', secondary: '#164E63', bg: '#0a1a1a',
-    desc: '관음보살의 자비가 깊은 바다처럼 흐르는 청록 테마', temples: ['낙산사', '보리암', '향일암'] },
-  { id: 'forest-healing',   name: '치유 산림',  primary: '#047857', secondary: '#065F46', bg: '#0a150a',
-    desc: '심산유곡 울창한 숲 속 사찰의 치유와 정진 테마', temples: ['월정사', '백양사', '선암사'] },
-  { id: 'compassion-pink',  name: '자비 연화',  primary: '#FB7185', secondary: '#EC4899', bg: '#1a0a10',
-    desc: '연꽃처럼 청정하고 따뜻한 자비심을 담은 테마', temples: ['관음사', '연화사', '자비사'] },
-  { id: 'midnight-void',    name: '적멸 심야',  primary: '#4338CA', secondary: '#4C1D95', bg: '#080812',
-    desc: '적멸의 고요함 속 깊은 선정을 표현한 심야 테마', temples: ['마곡사', '동학사', '갑사'] },
-  { id: 'zen-ash',          name: '선태 회백',  primary: '#94A3B8', secondary: '#6B7280', bg: '#111114',
-    desc: '선방의 재 빛 고요함과 무념무상의 경지를 담은 테마', temples: ['수덕사', '봉암사', '태고사'] },
-  { id: 'dawn-glow',        name: '여명 일출',  primary: '#F97316', secondary: '#EF4444', bg: '#150800',
-    desc: '새벽 예불의 타오르는 촛불과 일출의 광명을 담은 테마', temples: ['미황사', '대흥사', '두륜사'] },
-  { id: 'earth-terracotta', name: '황토 기와',  primary: '#92400E', secondary: '#78350F', bg: '#120800',
-    desc: '전통 황토와 기와의 온기를 담은 고찰의 정취 테마', temples: ['불국사', '송광사', '화엄사'] },
-  { id: 'clear-wisdom',     name: '청명 지혜',  primary: '#0EA5E9', secondary: '#3B82F6', bg: '#05101a',
-    desc: '맑고 투명한 지혜의 빛, 청명한 하늘을 담은 테마', temples: ['건봉사', '신흥사', '백담사'] },
-  { id: 'pearl-white',      name: '백옥 백련',  primary: '#E4E4E7', secondary: '#F1F5F9', bg: '#0a0a0a',
-    desc: '백련처럼 순수하고 청정한 백옥의 광명 테마', temples: ['극락사', '광명사', '정토사'] },
-]
-
 export default function AddTempleForm() {
   const router = useRouter()
   const [selectedBlocks, setSelectedBlocks] = useState<string[]>(['H-01', 'D-01', 'I-01', 'V-01'])
-  const [themeColor, setThemeColor] = useState('golden-lotus')
 
   const [form, setForm] = useState({
     code: '', name: '', nameEn: '', description: '', address: '',
@@ -46,8 +21,6 @@ export default function AddTempleForm() {
   const [error, setError] = useState('')
 
   const set = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }))
-
-  const activeTheme = TEMPLE_THEMES.find(t => t.id === themeColor) ?? TEMPLE_THEMES[0]
 
   const submitForm = async () => {
     if (!form.code || !form.name || !form.tier) { setError('코드, 이름, 등급은 필수입니다.'); return }
@@ -65,7 +38,6 @@ export default function AddTempleForm() {
         abbotName: form.abbotName || undefined,
         primaryColor: form.primaryColor,
         secondaryColor: form.secondaryColor,
-        themeColor,
         tier: Number(form.tier),
       },
       blocks: selectedBlocks.map((id, i) => {
@@ -102,7 +74,6 @@ export default function AddTempleForm() {
   const resetForm = () => {
     setResult(null)
     setSelectedBlocks(['H-01', 'D-01', 'I-01', 'V-01'])
-    setThemeColor('golden-lotus')
     setForm({ code:'', name:'', nameEn:'', description:'', address:'', phone:'', denomination:'대한불교 조계종', abbotName:'', primaryColor:'#8B5E3C', secondaryColor:'#D4A017', tier:'2', pin:'' })
     setError('')
   }
@@ -115,15 +86,12 @@ export default function AddTempleForm() {
           <div className="text-6xl mb-4">🎉</div>
           <h2 className="text-2xl font-bold text-temple-brown mb-2">점안 완료!</h2>
           <p className="text-gray-600 text-lg mb-1">{result.name}</p>
-          <p className="text-gray-500 text-base mb-1">
+          <p className="text-gray-500 text-base mb-4">
             블록 {result.blockCount}개 · 코드: <code className="bg-gray-100 px-1.5 rounded">{result.code}</code>
-          </p>
-          <p className="text-gray-400 text-sm mb-4">
-            테마: {activeTheme.name}
           </p>
           <div className="space-y-3">
             <a
-              href={`https://admin.k-buddhism.kr/${result.code}`}
+              href={`https://munsusa-site-fmwyrdut3-bae-yeonams-projects.vercel.app/${result.code}`}
               target="_blank" rel="noopener"
               className="btn-primary"
             >
@@ -235,84 +203,10 @@ export default function AddTempleForm() {
           <BlockGrid selected={selectedBlocks} onChange={setSelectedBlocks} />
         </section>
 
-        {/* ③ 컬러 테마 선택 ────────────────────────────────────────────────── */}
-        <section>
-          <h2 className="text-temple-brown font-bold text-lg mb-1">③ 사찰 컬러 테마</h2>
-          <p className="text-gray-400 text-sm mb-4">도량의 분위기에 맞는 테마를 선택하세요</p>
-
-          {/* 컬러 칩 그리드 — PC 5열, 모바일 가로 스와이프 */}
-          <div className="grid grid-cols-5 gap-3 sm:grid-cols-5 overflow-x-auto pb-1">
-            {TEMPLE_THEMES.map(theme => {
-              const isActive = themeColor === theme.id
-              return (
-                <button
-                  key={theme.id}
-                  type="button"
-                  onClick={() => setThemeColor(theme.id)}
-                  title={theme.name}
-                  className="flex flex-col items-center gap-1.5 group"
-                >
-                  {/* 원형 컬러 칩 */}
-                  <div
-                    className="w-12 h-12 rounded-full transition-all duration-200 flex items-center justify-center"
-                    style={{
-                      background: `linear-gradient(135deg, ${theme.primary}, ${theme.secondary})`,
-                      boxShadow: isActive
-                        ? `0 0 0 3px white, 0 0 0 5px ${theme.primary}`
-                        : '0 2px 6px rgba(0,0,0,0.15)',
-                      transform: isActive ? 'scale(1.15)' : 'scale(1)',
-                    }}
-                  >
-                    {isActive && <span className="text-white text-lg font-bold drop-shadow">✓</span>}
-                  </div>
-                  {/* 테마명 */}
-                  <span
-                    className="text-[10px] font-bold text-center leading-tight"
-                    style={{ color: isActive ? '#92400E' : '#9CA3AF' }}
-                  >
-                    {theme.name}
-                  </span>
-                </button>
-              )
-            })}
-          </div>
-
-          {/* 선택된 테마 상세 정보 */}
-          <div
-            className="mt-4 rounded-2xl p-4 transition-all duration-300"
-            style={{ background: activeTheme.bg, border: `1.5px solid ${activeTheme.primary}40` }}
-          >
-            <div className="flex items-center gap-3 mb-2">
-              {/* 미니 프리뷰 */}
-              <div
-                className="w-10 h-10 rounded-full flex-shrink-0"
-                style={{ background: `linear-gradient(135deg, ${activeTheme.primary}, ${activeTheme.secondary})` }}
-              />
-              <div>
-                <p className="font-bold text-base" style={{ color: activeTheme.primary }}>{activeTheme.name}</p>
-                <code className="text-[10px] font-mono" style={{ color: activeTheme.primary + '99' }}>{activeTheme.id}</code>
-              </div>
-            </div>
-            <p className="text-sm mb-3" style={{ color: activeTheme.primary + 'cc' }}>{activeTheme.desc}</p>
-            <div className="flex flex-wrap gap-1.5">
-              <span className="text-[10px] font-semibold" style={{ color: activeTheme.primary + '80' }}>추천 도량:</span>
-              {activeTheme.temples.map(t => (
-                <span
-                  key={t}
-                  className="text-[10px] px-2 py-0.5 rounded-full font-medium"
-                  style={{ background: activeTheme.primary + '20', color: activeTheme.primary }}
-                >
-                  {t}
-                </span>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ④ JSON 미리보기 (읽기 전용) ────────────────────────────────────── */}
+        {/* ③ JSON 미리보기 (읽기 전용) ────────────────────────────────────── */}
         {selectedBlocks.length > 0 && (
           <section>
-            <h2 className="text-temple-brown font-bold text-lg mb-3">④ 블록 구성 미리보기</h2>
+            <h2 className="text-temple-brown font-bold text-lg mb-3">③ 블록 구성 미리보기</h2>
             <div className="bg-gray-900 rounded-2xl p-4">
               <p className="text-gray-500 text-xs font-mono mb-2">{'// 생성될 블록 (읽기 전용)'}</p>
               <pre className="text-green-400 text-[11px] leading-relaxed overflow-x-auto max-h-40">
@@ -329,7 +223,7 @@ export default function AddTempleForm() {
           </section>
         )}
 
-        {/* ⑤ 점안 버튼 ─────────────────────────────────────────────────────── */}
+        {/* ④ 점안 버튼 ─────────────────────────────────────────────────────── */}
         <button
           onClick={submitForm}
           disabled={loading || !form.code || !form.name}

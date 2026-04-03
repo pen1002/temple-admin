@@ -79,6 +79,7 @@ export async function POST(req: NextRequest) {
         ...(t.foundedYear !== undefined && { foundedYear: Number(t.foundedYear) }),
         ...(t.primaryColor !== undefined && { primaryColor: t.primaryColor }),
         ...(t.secondaryColor !== undefined && { secondaryColor: t.secondaryColor }),
+        ...(t.themeColor !== undefined && { themeColor: t.themeColor }),
         ...(t.isActive !== undefined && { isActive: Boolean(t.isActive) }),
       },
       create: {
@@ -95,6 +96,7 @@ export async function POST(req: NextRequest) {
         foundedYear: t.foundedYear ? Number(t.foundedYear) : undefined,
         primaryColor: t.primaryColor ?? '#8B2500',
         secondaryColor: t.secondaryColor ?? '#C5A572',
+        themeColor: t.themeColor ?? 'golden-lotus',
         isActive: t.isActive ?? true,
       },
     })
