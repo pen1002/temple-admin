@@ -265,8 +265,72 @@ function ImageHero({ temple }: { temple: TempleData }) {
   )
 }
 
+// H-01 — 파티클+연등 합성형 (두 효과 동시)
+export function CombinedHero({ temple }: { temple: TempleData }) {
+  const primary = temple.primaryColor
+  const lanterns = [
+    { x: 8,  size: 38, dur: 6.2, delay: 0,    color: '#E8341C', opacity: 0.75 },
+    { x: 22, size: 28, dur: 7.8, delay: 1.5,  color: '#D4AF37', opacity: 0.60 },
+    { x: 38, size: 44, dur: 5.5, delay: 0.8,  color: '#C41E3A', opacity: 0.80 },
+    { x: 55, size: 32, dur: 8.1, delay: 2.3,  color: '#F0A830', opacity: 0.65 },
+    { x: 68, size: 50, dur: 6.8, delay: 0.3,  color: '#E8341C', opacity: 0.85 },
+    { x: 80, size: 30, dur: 7.2, delay: 1.8,  color: '#D4AF37', opacity: 0.55 },
+    { x: 90, size: 36, dur: 5.9, delay: 3.1,  color: '#C41E3A', opacity: 0.70 },
+  ]
+  return (
+    <>
+      <style>{`
+        @keyframes combined-sway {
+          0%,100%{transform:translateY(0) rotate(-3deg)} 50%{transform:translateY(-22px) rotate(3deg)}
+        }
+        @keyframes combined-particle {
+          0%,100%{transform:translateY(0) scale(1);opacity:var(--op)}
+          50%{transform:translateY(-18px) scale(1.3);opacity:calc(var(--op)*1.5)}
+        }
+        @keyframes combined-text-in {
+          from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)}
+        }
+      `}</style>
+      <section className="relative overflow-hidden" style={{ background: `linear-gradient(160deg,#0d0a06,${primary}22,#100808)`, minHeight: '88vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+        <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden>
+          {/* 연등 */}
+          {lanterns.map((l, i) => (
+            <div key={i} style={{ position: 'absolute', left: `${l.x}%`, bottom: `${12 + (i % 3) * 14}%`, animation: `combined-sway ${l.dur}s ease-in-out ${l.delay}s infinite`, color: l.color }}>
+              <svg width={l.size} height={Math.round(l.size * 1.5)} viewBox="0 0 40 60" opacity={l.opacity}>
+                <rect x="18" y="0" width="4" height="6" rx="2" fill="currentColor" opacity="0.8" />
+                <ellipse cx="20" cy="30" rx="15" ry="22" fill="currentColor" opacity="0.9" />
+                <ellipse cx="20" cy="28" rx="8" ry="14" fill="#FFEB80" opacity="0.35" />
+                <ellipse cx="20" cy="18" rx="15" ry="4" fill="none" stroke="currentColor" strokeWidth="1.5" opacity="0.6" />
+                <ellipse cx="20" cy="42" rx="15" ry="4" fill="none" stroke="currentColor" strokeWidth="1.5" opacity="0.6" />
+              </svg>
+            </div>
+          ))}
+          {/* 파티클 */}
+          {[...Array(25)].map((_, i) => (
+            <div key={`p${i}`} style={{ position: 'absolute', width: `${1 + (i % 3)}px`, height: `${1 + (i % 3)}px`, borderRadius: '50%', background: i % 3 === 0 ? '#D4AF37' : i % 3 === 1 ? '#88ccdd' : '#F0D060', left: `${(i * 11 + 3) % 96}%`, top: `${(i * 7 + 5) % 92}%`, '--op': `${0.3 + (i % 7) * 0.1}`, opacity: `${0.3 + (i % 7) * 0.1}`, animation: `combined-particle ${4 + (i % 5)}s ease-in-out ${(i % 8) * 0.4}s infinite` } as React.CSSProperties} />
+          ))}
+        </div>
+        <div className="relative z-10 text-center px-6" style={{ animation: 'combined-text-in 1.2s ease-out 0.3s both' }}>
+          <div className="text-5xl mb-6" style={{ filter: 'drop-shadow(0 0 12px #D4AF37)' }}>☸</div>
+          {temple.denomination && <p className="text-sm tracking-[0.3em] mb-3" style={{ color: '#D4AF37' }}>{temple.denomination}</p>}
+          <h1 className="font-bold mb-2" style={{ color: '#FFFAF0', fontSize: 'clamp(2rem,8vw,3.5rem)', textShadow: `0 0 30px ${primary}99` }}>{temple.name}</h1>
+          {temple.abbotName && <p className="text-base mb-8" style={{ color: '#D4AF37' }}>주지 {temple.abbotName}</p>}
+          <div className="flex gap-3 justify-center">
+            <a href="#location" className="px-6 py-3 rounded-full font-bold text-base" style={{ background: primary, color: '#FFFAF0' }}>📍 오시는 길</a>
+            <a href="#notice" className="px-6 py-3 rounded-full font-semibold text-base" style={{ background: 'transparent', color: '#D4AF37', border: '2px solid #D4AF37' }}>📢 공지사항</a>
+          </div>
+        </div>
+      </section>
+    </>
+  )
+}
+
+// named exports (block-preview에서 직접 임포트용)
+export { LanternHero, ParticleHero, ImageHero }
+
 export default function HeroBlock({ blockType, temple }: Props) {
-  if (blockType === 'H-01' || blockType === 'H-04') return <ParticleHero temple={temple} />
+  if (blockType === 'H-01') return <CombinedHero temple={temple} />
+  if (blockType === 'H-04') return <ParticleHero temple={temple} />
   if (blockType === 'H-02' || blockType === 'H-03') return <ImageHero temple={temple} />
   // H-05 기본값 (H-06 ~ H-10도 연등형으로 폴백)
   return <LanternHero temple={temple} />
