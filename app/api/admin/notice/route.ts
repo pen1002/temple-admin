@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { requireSession } from '@/lib/auth'
 import { saveNotice, saveUndo, getNotices } from '@/lib/kv'
 
@@ -22,6 +23,7 @@ export async function POST(request: NextRequest) {
       createdAt: new Date().toISOString(),
     }
     await saveNotice(slug, notice)
+    revalidatePath(`/${slug}`)
 
     return NextResponse.json({ ok: true })
   } catch (err) {

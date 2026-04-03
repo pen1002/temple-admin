@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { requireSession } from '@/lib/auth'
 import { getRitualTimes, saveRitualTimes, saveUndo } from '@/lib/kv'
 
@@ -15,6 +16,7 @@ export async function POST(request: NextRequest) {
       r.id === ritualId ? { ...r, time } : r
     )
     await saveRitualTimes(slug, updated)
+    revalidatePath(`/${slug}`)
     return NextResponse.json({ ok: true })
   } catch (err) {
     if (err instanceof Error && (err.message === 'UNAUTHORIZED' || err.message === 'FORBIDDEN')) {

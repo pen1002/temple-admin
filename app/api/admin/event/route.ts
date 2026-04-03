@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { requireSession } from '@/lib/auth'
 import { getEventList, saveEventList, saveUndo } from '@/lib/kv'
 
@@ -15,6 +16,7 @@ export async function POST(request: NextRequest) {
       e.id === eventId ? { ...e, date, memo: memo || '' } : e
     )
     await saveEventList(slug, updated)
+    revalidatePath(`/${slug}`)
     return NextResponse.json({ ok: true })
   } catch (err) {
     if (err instanceof Error && (err.message === 'UNAUTHORIZED' || err.message === 'FORBIDDEN')) {

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { put } from '@vercel/blob'
 import { requireSession } from '@/lib/auth'
 import { addGalleryItem, saveUndo, getGallery } from '@/lib/kv'
@@ -33,6 +34,7 @@ export async function POST(request: NextRequest) {
       location,
       uploadedAt: new Date().toISOString(),
     })
+    revalidatePath(`/${slug}`)
 
     return NextResponse.json({ ok: true, url: blob.url })
   } catch (err) {

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { requireSession } from '@/lib/auth'
 import { getDharma, saveDharma, saveUndo } from '@/lib/kv'
 
@@ -15,6 +16,7 @@ export async function POST(request: NextRequest) {
     const old = await getDharma(slug)
     await saveUndo(slug, { type: 'dharma', text: old.text, source: old.source })
     await saveDharma(slug, text.trim(), source?.trim() || '')
+    revalidatePath(`/${slug}`)
     return NextResponse.json({ ok: true })
   } catch (err) {
     if (err instanceof Error && (err.message === 'UNAUTHORIZED' || err.message === 'FORBIDDEN')) {
