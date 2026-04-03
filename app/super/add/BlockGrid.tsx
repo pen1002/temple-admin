@@ -289,7 +289,7 @@ export default function BlockGrid({ selected, onChange }: Props) {
 
             {/* 스크롤 영역 */}
             <div className="flex-1 overflow-y-auto px-5 py-5 space-y-4">
-              {/* 미리보기 이미지 */}
+              {/* 미리보기 이미지 / iframe */}
               {previewBlock.previewImageUrl ? (
                 <img
                   src={previewBlock.previewImageUrl}
@@ -298,14 +298,19 @@ export default function BlockGrid({ selected, onChange }: Props) {
                   style={{ maxHeight: '180px' }}
                 />
               ) : (
-                <div
-                  className="w-full rounded-xl flex flex-col items-center justify-center gap-2"
-                  style={{ height: '140px', backgroundColor: previewCat.color + '15' }}
-                >
-                  <span className="text-4xl">{previewCat.icon}</span>
-                  <span className="text-xs font-mono font-bold" style={{ color: previewCat.color }}>
-                    {previewBlock.code}
-                  </span>
+                <div className="w-full rounded-xl overflow-hidden relative" style={{ height: '180px', background: '#0d0a06' }}>
+                  <iframe
+                    src={`/block-preview/${previewBlock.code}`}
+                    title={previewBlock.name}
+                    style={{
+                      width: '375px',
+                      height: '600px',
+                      border: 'none',
+                      transformOrigin: 'top left',
+                      transform: 'scale(0.507)',
+                      pointerEvents: 'none',
+                    }}
+                  />
                 </div>
               )}
 
