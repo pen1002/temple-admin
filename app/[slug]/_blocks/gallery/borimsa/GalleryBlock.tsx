@@ -1,7 +1,7 @@
 // G-01 / SEC07-*: 경내 갤러리
 'use client'
 import { useState } from 'react'
-import type { TemplateContent, TempleData } from './types'
+import type { TemplateContent, TempleData } from '../../types'
 
 interface Props {
   content: TemplateContent

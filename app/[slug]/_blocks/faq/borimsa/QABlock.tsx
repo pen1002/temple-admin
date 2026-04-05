@@ -1,7 +1,7 @@
 // QA-01: FAQ·퀴즈·슬라이드·인포그래픽 학습관 (탭 패널)
 'use client'
 import { useState } from 'react'
-import type { TempleData } from './types'
+import type { TempleData } from '../../types'
 
 interface FaqItem { q: string; a: string }
 interface QuizItem { q: string; opts: string[]; ans: number; explain: string }

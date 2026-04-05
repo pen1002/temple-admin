@@ -116,11 +116,6 @@ export default function HeroH04Particle({ temple, config }: Props) {
   const cta1Href    = (config?.cta1Href    as string)  ?? "#notice";
   const cta2Label   = config?.cta2Label    as string   | undefined;
   const cta2Href    = (config?.cta2Href    as string)  ?? "#visit";
-  const aboutImageUrl = config?.aboutImageUrl as string | undefined;
-  const aboutExtra  = config?.aboutExtra   as string[] | undefined;
-  const quoteText   = config?.quoteText    as string   | undefined;
-  const quoteAuthor = config?.quoteAuthor  as string   | undefined;
-  const hasAbout    = !!(aboutExtra?.length || quoteText);
 
   return (
     <>
@@ -282,99 +277,6 @@ export default function HeroH04Particle({ temple, config }: Props) {
         </div>
       </section>
 
-      {/* ── 주지스님 인사말 섹션 ────────────────────── */}
-      {hasAbout && (
-        <section
-          style={{
-            background: "#0a0806",
-            padding:    "3.5rem 1.5rem",
-          }}
-        >
-          <div style={{ maxWidth: "640px", margin: "0 auto" }}>
-            {/* 섹션 헤더 */}
-            <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "1.8rem" }}>
-              <span style={{ fontSize: "1.5rem" }}>🙏</span>
-              <h2 style={{ fontWeight: 700, fontSize: "1.1rem", color: "#FFFAF0" }}>주지스님 인사말</h2>
-              <div style={{ flex: 1, height: 1, background: "#D4AF37", opacity: 0.3 }} />
-            </div>
-
-            {/* 사진 + 텍스트 레이아웃 */}
-            <div
-              style={{
-                display:       "flex",
-                gap:           "1.5rem",
-                flexDirection: "row",
-                flexWrap:      "wrap",
-                alignItems:    "flex-start",
-              }}
-            >
-              {/* 사진 영역 — 건드리지 말 것 */}
-              {aboutImageUrl && (
-                /* eslint-disable-next-line @next/next/no-img-element */
-                <img
-                  src={aboutImageUrl}
-                  alt="보림사 전경"
-                  style={{
-                    width:        "clamp(120px, 35%, 200px)",
-                    aspectRatio:  "3/4",
-                    objectFit:    "cover",
-                    borderRadius: "12px",
-                    border:       `1px solid ${primary}40`,
-                    flexShrink:   0,
-                  }}
-                />
-              )}
-
-              {/* 텍스트 영역 */}
-              <div style={{ flex: 1, minWidth: "200px" }}>
-                {aboutExtra?.map((para, i) => (
-                  <p
-                    key={i}
-                    style={{
-                      fontSize:    "clamp(13px, 2.2vw, 14.5px)",
-                      color:       "rgba(255,250,240,0.80)",
-                      lineHeight:  1.85,
-                      marginBottom: "0.9rem",
-                      wordBreak:   "keep-all",
-                    }}
-                  >
-                    {para}
-                  </p>
-                ))}
-
-                {/* 인사 법문 */}
-                {quoteText && (
-                  <blockquote
-                    style={{
-                      borderLeft:  `3px solid #D4AF37`,
-                      paddingLeft: "1rem",
-                      marginTop:   "1.2rem",
-                    }}
-                  >
-                    <p
-                      style={{
-                        fontSize:    "clamp(14px, 2.5vw, 16px)",
-                        color:       "#FCD34D",
-                        fontWeight:  600,
-                        whiteSpace:  "pre-line",
-                        lineHeight:  1.7,
-                        marginBottom: "0.4rem",
-                      }}
-                    >
-                      {quoteText}
-                    </p>
-                    {quoteAuthor && (
-                      <p style={{ fontSize: "13px", color: "#8B6914", textAlign: "right" }}>
-                        {quoteAuthor}
-                      </p>
-                    )}
-                  </blockquote>
-                )}
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
     </>
   );
 }

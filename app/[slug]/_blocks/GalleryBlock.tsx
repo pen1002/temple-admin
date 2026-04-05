@@ -14,37 +14,69 @@ export default function GalleryBlock({ content, temple }: Props) {
 
   if (gallery.length === 0) return null
 
-  const displayed = gallery.slice(0, 9)
+  const displayed = gallery.slice(0, 10)
 
   return (
+    <>
+    <style>{`
+      @media(max-width:640px){.gallery-grid-2col{grid-template-columns:1fr !important}}
+    `}</style>
     <section id="gallery" className="bt-section">
       <div className="bt-section-inner">
         <span className="bt-section-label">Gallery</span>
         <h2 className="bt-section-title">경내 풍경</h2>
 
-        <div className="bt-gallery-grid">
+        <div className="gallery-grid-2col" style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(2, 1fr)',
+          gap: '16px',
+          marginTop: '48px',
+        }}>
           {displayed.map((item, i) => (
             <div
               key={i}
-              className="bt-gallery-item"
               onClick={() => setLightbox(item.url)}
+              style={{
+                position: 'relative',
+                aspectRatio: '4/3',
+                overflow: 'hidden',
+                borderRadius: 'var(--radius-lg, 12px)',
+                cursor: 'pointer',
+                background: 'var(--color-bg-alt, #eee)',
+              }}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={item.url}
                 alt={item.caption ?? `${temple.name} 사진 ${i + 1}`}
                 loading="lazy"
+                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', transition: 'transform .35s' }}
               />
-              <div className="bt-gallery-overlay">
-                {item.caption && <span>{item.caption}</span>}
+              <div
+                className="bt-gallery-overlay"
+                style={{
+                  position: 'absolute', inset: 0,
+                  background: 'rgba(0,0,0,0)',
+                  display: 'flex', alignItems: 'flex-end',
+                  padding: '12px',
+                  transition: 'background .25s',
+                }}
+                onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = 'rgba(0,0,0,0.45)'; const img = e.currentTarget.previousElementSibling as HTMLImageElement; if (img) img.style.transform = 'scale(1.05)'; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = 'rgba(0,0,0,0)'; const img = e.currentTarget.previousElementSibling as HTMLImageElement; if (img) img.style.transform = 'scale(1)'; }}
+              >
+                {item.caption && (
+                  <span style={{ fontSize: '.75rem', color: '#fff', fontWeight: 600, textShadow: '0 1px 4px rgba(0,0,0,0.8)' }}>
+                    {item.caption}
+                  </span>
+                )}
               </div>
             </div>
           ))}
         </div>
 
-        {gallery.length > 9 && (
+        {gallery.length > 10 && (
           <p style={{ textAlign: 'center', marginTop: 24, fontSize: '.85rem', color: 'var(--color-text-light)' }}>
-            최근 {gallery.length}장 중 9장 표시
+            최근 {gallery.length}장 중 10장 표시
           </p>
         )}
       </div>
@@ -71,5 +103,6 @@ export default function GalleryBlock({ content, temple }: Props) {
         </div>
       )}
     </section>
+    </>
   )
 }

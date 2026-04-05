@@ -1,5 +1,5 @@
 // SEC13-01: 템플스테이
-import type { TempleData } from './types'
+import type { TempleData } from '../../types'
 
 interface TSProgram {
   icon: string

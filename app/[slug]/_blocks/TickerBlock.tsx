@@ -22,18 +22,20 @@ export default function TickerBlock({ content, temple, config }: Props) {
   const animDuration = `${Math.max(items.length * speed, 20)}s`
 
   return (
-    <div className="bt-ticker">
-      <div
-        className="bt-ticker-track"
-        style={{ animationDuration: animDuration }}
-      >
-        {doubled.map((item, i) => (
-          <span key={i}>
-            {item}
-            <span style={{ margin: '0 24px', opacity: 0.4 }}>✦</span>
-          </span>
-        ))}
+    <section aria-label="공지 티커">
+      <div className="bt-ticker">
+        <div
+          className="bt-ticker-track"
+          style={{ animationDuration: animDuration }}
+        >
+          {doubled.map((item, i) => (
+            <span key={i}>
+              {item}
+              <span style={{ margin: '0 24px', opacity: 0.4 }}>✦</span>
+            </span>
+          ))}
+        </div>
       </div>
-    </div>
+    </section>
   )
 }

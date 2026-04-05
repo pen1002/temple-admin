@@ -1,5 +1,5 @@
 // SEC08-01: 인등불사·기도 동참
-import type { TempleData } from './types'
+import type { TempleData } from '../../types'
 
 interface PlanItem {
   icon: string

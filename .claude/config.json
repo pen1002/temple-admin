@@ -1,0 +1,14 @@
+{
+  "version": "1.0",
+  "models": {
+    "search": "claude-3-5-haiku-latest",
+    "read": "claude-3-5-haiku-latest",
+    "edit": "claude-3-5-sonnet-latest",
+    "review": "claude-3-5-sonnet-latest",
+    "architect": "claude-3-opus-latest"
+  },
+  "options": {
+    "caching": { "enabled": true },
+    "sparsePaths": ["./src", "./app", "./components", "./lib"]
+  }
+}

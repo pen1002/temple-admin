@@ -1,5 +1,5 @@
 // H-05: 연등 부유형 (기본) | H-01: 파티클형 | H-02: 정지 이미지형
-import type { TempleData } from './types'
+import type { TempleData } from '../../types'
 import LanternLayer from '@/components/hero/LanternLayer'
 import HeroH04Particle from '@/components/hero/HeroH04Particle'
 

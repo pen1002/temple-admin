@@ -1,5 +1,5 @@
 // V-01: 오시는 길
-import type { TempleData } from './types'
+import type { TempleData } from '../../types'
 
 interface Props {
   temple: TempleData

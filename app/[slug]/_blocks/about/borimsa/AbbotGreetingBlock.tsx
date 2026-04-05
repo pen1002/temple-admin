@@ -1,5 +1,5 @@
 // SEC06-01: 주지스님 인사말 (소개 + 사진 + 사찰 정보)
-import type { TempleData } from './types'
+import type { TempleData } from '../../types'
 
 interface InfoItem {
   label: string

@@ -108,14 +108,14 @@ export default async function TemplePage(
   }
 
   // 블록이 없으면 기본 구성으로 폴백 (H-05, D-01, I-01, V-01)
-  const blocks = temple.blockConfigs.length > 0
-    ? temple.blockConfigs
+  const blocks = (temple.blockConfigs.length > 0
+    ? [...temple.blockConfigs].sort((a, b) => a.order - b.order)
     : [
         { id: 'default-hero',     blockType: 'H-05', order: 0, config: {}, isVisible: true },
         { id: 'default-dharma',   blockType: 'D-01', order: 1, config: {}, isVisible: true },
         { id: 'default-notice',   blockType: 'I-01', order: 2, config: {}, isVisible: true },
         { id: 'default-location', blockType: 'V-01', order: 3, config: {}, isVisible: true },
-      ]
+      ])
 
   return (
     <div data-theme={temple.pageTemplate} style={{ minHeight: '100vh' }}>

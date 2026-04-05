@@ -1,5 +1,5 @@
 // SEC05-04: 국보·보물 Heritage — 블로그 스타일 카드
-import type { TempleData } from './types'
+import type { TempleData } from '../../types'
 
 interface HeritageItem {
   name: string

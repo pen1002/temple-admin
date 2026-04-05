@@ -1,5 +1,5 @@
 // SEC05-01: 역사 타임라인
-import type { TempleData } from './types'
+import type { TempleData } from '../../types'
 
 interface TimelineEvent {
   year: string
