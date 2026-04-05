@@ -1,7 +1,6 @@
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { db } from '@/lib/db'
-import '../../styles/themes/borimsa-type.css'
 import { getNotices, getEventList, getRitualTimes, getDharma, getGallery } from '@/lib/kv'
 import BlockRenderer from './_blocks/BlockRenderer'
 import FooterBlock from './_blocks/FooterBlock'
