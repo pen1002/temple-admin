@@ -5,7 +5,8 @@ import NoticeBlock  from './NoticeBlock'
 import EventBlock   from './EventBlock'
 import GalleryBlock from './GalleryBlock'
 import LocationBlock from './LocationBlock'
-import TickerBlock  from './TickerBlock'
+import TickerBlock       from './TickerBlock'
+import AbbotGreetingBlock from './AbbotGreetingBlock'
 
 interface Props {
   blockType: string
@@ -58,6 +59,11 @@ export default function BlockRenderer({ blockType, config, temple, content }: Pr
     return <LocationBlock temple={temple} config={config} />
   }
 
-  // 미구현 블록 타입 (SEC05-*, SEC06-*, SEC08-*, SEC11-*, SEC13-*, QA-01 등) — 조용히 스킵
+  // SEC06-* 주지스님 인사말
+  if (blockType.startsWith('SEC06-')) {
+    return <AbbotGreetingBlock temple={temple} config={config} />
+  }
+
+  // 미구현 블록 타입 (SEC05-*, SEC08-*, SEC11-*, SEC13-*, QA-01 등) — 조용히 스킵
   return null
 }
