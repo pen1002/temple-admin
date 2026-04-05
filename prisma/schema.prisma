@@ -29,7 +29,11 @@ model Temple {
   foundedYear    Int?
   abbotName      String?
   tier           Int      @default(1)
+  themeType      String   @default("theme-2")
   themeColor     String?  @default("golden-lotus")
+  pageTemplate   String   @default("standard")
+  pin            String   @default("0000")
+  status         String   @default("active")
   isActive       Boolean  @default(true)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
@@ -53,6 +57,18 @@ model BlockConfig {
 
   @@index([templeId, order])
   @@index([templeId, blockType])
+}
+
+// 일별 법문 인용구
+model DharmaQuote {
+  id          Int      @id @default(autoincrement())
+  dayIndex    Int      @unique
+  text        String   @db.Text
+  source      String?
+  category    String?
+  isSpecial   Boolean  @default(false)
+  specialDate String?
+  createdAt   DateTime @default(now())
 }
 
 // 블록 카탈로그 — 어드민에서 블록 종류·defaultProps·adminSchema 관리
