@@ -7,6 +7,12 @@ import GalleryBlock from './GalleryBlock'
 import LocationBlock from './LocationBlock'
 import TickerBlock       from './TickerBlock'
 import AbbotGreetingBlock from './AbbotGreetingBlock'
+import HeritageBlock      from './HeritageBlock'
+import StatsBlock            from './StatsBlock'
+import HistoryTimelineBlock  from './HistoryTimelineBlock'
+import QABlock               from './QABlock'
+import TemplestayBlock       from './TemplestayBlock'
+import OfferingBlock         from './OfferingBlock'
 
 interface Props {
   blockType: string
@@ -64,6 +70,36 @@ export default function BlockRenderer({ blockType, config, temple, content }: Pr
     return <AbbotGreetingBlock temple={temple} config={config} />
   }
 
-  // 미구현 블록 타입 (SEC05-*, SEC08-*, SEC11-*, SEC13-*, QA-01 등) — 조용히 스킵
+  // SEC05-04 국보·보물 Heritage
+  if (blockType === 'SEC05-04') {
+    return <HeritageBlock temple={temple} config={config} />
+  }
+
+  // SEC11-* Stats Bar
+  if (blockType.startsWith('SEC11-')) {
+    return <StatsBlock temple={temple} config={config} />
+  }
+
+  // SEC05-01 역사 타임라인
+  if (blockType === 'SEC05-01') {
+    return <HistoryTimelineBlock temple={temple} config={config} />
+  }
+
+  // QA-01 FAQ·퀴즈 학습관
+  if (blockType === 'QA-01') {
+    return <QABlock temple={temple} config={config} />
+  }
+
+  // SEC13-* 템플스테이
+  if (blockType.startsWith('SEC13-')) {
+    return <TemplestayBlock temple={temple} config={config} />
+  }
+
+  // SEC08-* 인등불사·기도 동참
+  if (blockType.startsWith('SEC08-')) {
+    return <OfferingBlock temple={temple} config={config} />
+  }
+
+  // 미구현 블록 타입 — 조용히 스킵
   return null
 }
