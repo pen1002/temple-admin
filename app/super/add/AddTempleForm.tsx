@@ -33,6 +33,7 @@ export default function AddTempleForm() {
   const router = useRouter()
   const [selectedBlocks, setSelectedBlocks] = useState<string[]>(['H-01', 'D-01', 'I-01', 'V-01'])
   const [themeColor, setThemeColor] = useState('golden-lotus')
+  const [pageTemplate, setPageTemplate] = useState('standard')
 
   const [form, setForm] = useState({
     code: '', name: '', nameEn: '', description: '', address: '',
@@ -66,6 +67,7 @@ export default function AddTempleForm() {
         primaryColor: form.primaryColor,
         secondaryColor: form.secondaryColor,
         themeColor,
+        pageTemplate,
         tier: Number(form.tier),
       },
       blocks: selectedBlocks.map((id, i) => {
@@ -103,6 +105,7 @@ export default function AddTempleForm() {
     setResult(null)
     setSelectedBlocks(['H-01', 'D-01', 'I-01', 'V-01'])
     setThemeColor('golden-lotus')
+    setPageTemplate('standard')
     setForm({ code:'', name:'', nameEn:'', description:'', address:'', phone:'', denomination:'대한불교 조계종', abbotName:'', primaryColor:'#8B5E3C', secondaryColor:'#D4A017', tier:'2', pin:'' })
     setError('')
   }
@@ -235,9 +238,46 @@ export default function AddTempleForm() {
           <BlockGrid selected={selectedBlocks} onChange={setSelectedBlocks} />
         </section>
 
-        {/* ③ 컬러 테마 선택 ────────────────────────────────────────────────── */}
+        {/* ③ 홈페이지 테마 선택 ─────────────────────────────────────────────── */}
         <section>
-          <h2 className="text-temple-brown font-bold text-lg mb-1">③ 사찰 컬러 테마</h2>
+          <h2 className="text-temple-brown font-bold text-lg mb-1">③ 홈페이지 테마</h2>
+          <p className="text-gray-400 text-sm mb-4">홈페이지 전체 디자인 스타일을 선택하세요</p>
+          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+            {[
+              { id: 'borimsa-type',  label: '🌿 보림사형', desc: '크림 아이보리 · 초록 포인트', color: '#2C5F2D', bg: '#F5F0E8' },
+              { id: 'seonunsa-type', label: '🌸 선운사형', desc: '따뜻한 분홍 · 자연 테마',      color: '#8B3A3A', bg: '#FFF5F0' },
+              { id: 'standard',      label: '⚫ 기본형',   desc: '다크 배경 · 골드 포인트',      color: '#D4AF37', bg: '#0d0a06' },
+            ].map(t => {
+              const isActive = pageTemplate === t.id
+              return (
+                <button
+                  key={t.id}
+                  type="button"
+                  onClick={() => setPageTemplate(t.id)}
+                  style={{
+                    flex: '1 1 140px', padding: '14px 12px', borderRadius: 14,
+                    border: isActive ? `2.5px solid ${t.color}` : '2px solid #e8dcc8',
+                    background: isActive ? t.bg : '#fff',
+                    cursor: 'pointer', textAlign: 'left', transition: '.2s',
+                    boxShadow: isActive ? `0 0 0 4px ${t.color}20` : 'none',
+                  }}
+                >
+                  <div style={{ fontWeight: 700, fontSize: '.88rem', color: isActive ? t.color : '#2C1810', marginBottom: 3 }}>
+                    {t.label}
+                  </div>
+                  <div style={{ fontSize: '.72rem', color: '#9a7a50' }}>{t.desc}</div>
+                  {isActive && (
+                    <div style={{ marginTop: 6, fontSize: '.68rem', fontWeight: 700, color: t.color }}>● 선택됨</div>
+                  )}
+                </button>
+              )
+            })}
+          </div>
+        </section>
+
+        {/* ④ 컬러 테마 선택 ────────────────────────────────────────────────── */}
+        <section>
+          <h2 className="text-temple-brown font-bold text-lg mb-1">④ 사찰 컬러 테마</h2>
           <p className="text-gray-400 text-sm mb-4">도량의 분위기에 맞는 테마를 선택하세요</p>
 
           {/* 컬러 칩 그리드 — PC 5열, 모바일 가로 스와이프 */}
@@ -309,10 +349,10 @@ export default function AddTempleForm() {
           </div>
         </section>
 
-        {/* ④ JSON 미리보기 (읽기 전용) ────────────────────────────────────── */}
+        {/* ⑤ JSON 미리보기 (읽기 전용) ────────────────────────────────────── */}
         {selectedBlocks.length > 0 && (
           <section>
-            <h2 className="text-temple-brown font-bold text-lg mb-3">④ 블록 구성 미리보기</h2>
+            <h2 className="text-temple-brown font-bold text-lg mb-3">⑤ 블록 구성 미리보기</h2>
             <div className="bg-gray-900 rounded-2xl p-4">
               <p className="text-gray-500 text-xs font-mono mb-2">{'// 생성될 블록 (읽기 전용)'}</p>
               <pre className="text-green-400 text-[11px] leading-relaxed overflow-x-auto max-h-40">
@@ -329,7 +369,7 @@ export default function AddTempleForm() {
           </section>
         )}
 
-        {/* ⑤ 점안 버튼 ─────────────────────────────────────────────────────── */}
+        {/* ⑥ 점안 버튼 ─────────────────────────────────────────────────────── */}
         <button
           onClick={submitForm}
           disabled={loading || !form.code || !form.name}

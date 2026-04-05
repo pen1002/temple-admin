@@ -1,20 +1,14 @@
 import { redirect } from 'next/navigation'
 import { getSession } from '@/lib/auth'
 import { getTempleName } from '@/lib/kv'
-import { db } from '@/lib/db'
 import BigButton from '@/components/BigButton'
-import ThemePicker from './_components/ThemePicker'
 
 export default async function AdminHome({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
   const session = await getSession()
   if (!session || session.slug !== slug) redirect('/login')
 
-  const [templeName, templeRow] = await Promise.all([
-    getTempleName(slug),
-    db.temple.findUnique({ where: { code: slug }, select: { pageTemplate: true } }),
-  ])
-  const currentTheme = templeRow?.pageTemplate ?? 'standard'
+  const templeName = await getTempleName(slug)
 
   return (
     <div className="min-h-screen flex flex-col" style={{ background: 'linear-gradient(180deg, #2C1810 0%, #3a2015 40%, #FFF8E7 40%)' }}>
@@ -27,9 +21,6 @@ export default async function AdminHome({ params }: { params: Promise<{ slug: st
 
       {/* Button Grid */}
       <div className="flex-1 bg-temple-cream rounded-t-3xl px-5 pt-6 pb-8 -mt-4">
-        {/* ── 테마 선택기 ── */}
-        <ThemePicker slug={slug} currentTheme={currentTheme} />
-        <div className="border-t border-gray-200 mb-4" />
         <p className="text-gray-500 text-base mb-4 text-center">무엇을 업데이트할까요?</p>
         <div className="space-y-3">
           <BigButton
