@@ -5,6 +5,7 @@ import NoticeBlock  from './NoticeBlock'
 import EventBlock   from './EventBlock'
 import GalleryBlock from './GalleryBlock'
 import LocationBlock from './LocationBlock'
+import TickerBlock  from './TickerBlock'
 
 interface Props {
   blockType: string
@@ -31,6 +32,10 @@ export default function BlockRenderer({ blockType, config, temple, content }: Pr
     return <HeroBlock blockType={blockType} temple={temple} config={config} />
   }
 
+  if (blockType === 'T-01') {
+    return <TickerBlock content={content} temple={temple} config={config} />
+  }
+
   if (blockType === 'D-01') {
     return <DharmaBlock dharma={content.dharma} temple={temple} />
   }
@@ -39,11 +44,13 @@ export default function BlockRenderer({ blockType, config, temple, content }: Pr
     return <NoticeBlock content={content} temple={temple} />
   }
 
-  if (blockType.startsWith('E-') || blockType.startsWith('L-')) {
+  // SEC03-* 법회·행사 → EventBlock으로 렌더링
+  if (blockType.startsWith('E-') || blockType.startsWith('L-') || blockType.startsWith('SEC03-')) {
     return <EventBlock content={content} temple={temple} />
   }
 
-  if (blockType.startsWith('G-')) {
+  // SEC07-* 갤러리 → GalleryBlock으로 렌더링
+  if (blockType.startsWith('G-') || blockType.startsWith('SEC07-')) {
     return <GalleryBlock content={content} temple={temple} />
   }
 
@@ -51,6 +58,6 @@ export default function BlockRenderer({ blockType, config, temple, content }: Pr
     return <LocationBlock temple={temple} config={config} />
   }
 
-  // 미구현 블록 타입 — 조용히 스킵
+  // 미구현 블록 타입 (SEC05-*, SEC06-*, SEC08-*, SEC11-*, SEC13-*, QA-01 등) — 조용히 스킵
   return null
 }
