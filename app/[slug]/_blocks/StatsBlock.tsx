@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { TempleData } from './types'
 
 interface StatItem {
-  value: string   // "759", "2", "5+", "300년" 등
+  value: string
   label: string
   prefix?: string
   suffix?: string
@@ -23,7 +23,7 @@ function useCountUp(target: number, duration = 1400, start = false) {
     const step = (now: number) => {
       const elapsed = now - startTime
       const progress = Math.min(elapsed / duration, 1)
-      const eased = 1 - Math.pow(1 - progress, 3) // ease-out cubic
+      const eased = 1 - Math.pow(1 - progress, 3)
       setCount(Math.floor(eased * target))
       if (progress < 1) requestAnimationFrame(step)
       else setCount(target)
@@ -33,30 +33,17 @@ function useCountUp(target: number, duration = 1400, start = false) {
   return count
 }
 
-function StatItemComponent({ item, primary, active }: { item: StatItem; primary: string; active: boolean }) {
-  // 숫자 부분 추출 ("759" → 759, "300년" → 300, "5+" → 5)
+function StatItemComponent({ item, active }: { item: StatItem; active: boolean }) {
   const numMatch = item.value.match(/^(\d+)/)
   const numPart = numMatch ? parseInt(numMatch[1]) : 0
-  const suffix = item.value.replace(/^\d+/, '') // "년", "+", "" 등
-
+  const suffix = item.value.replace(/^\d+/, '')
   const count = useCountUp(numPart, 1400, active)
   const display = numPart > 0 ? `${count}${suffix}` : item.value
 
   return (
-    <div style={{ textAlign: 'center', padding: '8px 0' }}>
-      <h3 style={{
-        fontFamily: "'Playfair Display', 'Noto Serif KR', serif",
-        fontSize: 'clamp(1.6rem, 4vw, 2.4rem)',
-        fontWeight: 700,
-        color: primary,
-        lineHeight: 1,
-        marginBottom: 8,
-      }}>
-        {item.prefix}{display}
-      </h3>
-      <p style={{ fontSize: '.78rem', color: '#6B6560', fontWeight: 500, lineHeight: 1.4 }}>
-        {item.label}
-      </p>
+    <div className="bt-stat-item">
+      <h3>{item.prefix}{display}</h3>
+      <p>{item.label}</p>
     </div>
   )
 }
@@ -74,8 +61,6 @@ export default function StatsBlock({ temple, config }: Props) {
     return () => observer.disconnect()
   }, [])
 
-  const primary = temple.primaryColor ?? '#2C5F2D'
-
   const defaultStats: StatItem[] = [
     { value: '759', label: 'AD 원표대덕 가지산사 창건' },
     { value: '2', label: '국보 (철조비로자나불·석탑석등)' },
@@ -88,23 +73,10 @@ export default function StatsBlock({ temple, config }: Props) {
     : defaultStats
 
   return (
-    <div
-      ref={ref}
-      style={{
-        background: '#FDFBF7',
-        borderBottom: '1px solid #D4CEC4',
-        padding: '40px 24px',
-      }}
-    >
-      <div style={{
-        maxWidth: 1200,
-        margin: '0 auto',
-        display: 'grid',
-        gridTemplateColumns: `repeat(${Math.min(stats.length, 4)}, 1fr)`,
-        gap: 24,
-      }}>
+    <div ref={ref} className="bt-stats-bar">
+      <div className="bt-stats-inner">
         {stats.map((item, i) => (
-          <StatItemComponent key={i} item={item} primary={primary} active={active} />
+          <StatItemComponent key={i} item={item} active={active} />
         ))}
       </div>
     </div>

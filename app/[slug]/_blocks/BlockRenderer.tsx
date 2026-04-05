@@ -13,6 +13,7 @@ import HistoryTimelineBlock  from './HistoryTimelineBlock'
 import QABlock               from './QABlock'
 import TemplestayBlock       from './TemplestayBlock'
 import OfferingBlock         from './OfferingBlock'
+import QuoteBannerBlock      from './QuoteBannerBlock'
 
 interface Props {
   blockType: string
@@ -98,6 +99,11 @@ export default function BlockRenderer({ blockType, config, temple, content }: Pr
   // SEC08-* 인등불사·기도 동참
   if (blockType.startsWith('SEC08-')) {
     return <OfferingBlock temple={temple} config={config} />
+  }
+
+  // QB-01 인용구 배너
+  if (blockType === 'QB-01') {
+    return <QuoteBannerBlock temple={temple} config={config} />
   }
 
   // 미구현 블록 타입 — 조용히 스킵

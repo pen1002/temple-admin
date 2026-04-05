@@ -1,4 +1,4 @@
-// QA-01: FAQ·퀴즈 학습관 (탭 패널)
+// QA-01: FAQ·퀴즈·슬라이드·인포그래픽 학습관 (탭 패널)
 'use client'
 import { useState } from 'react'
 import type { TempleData } from './types'
@@ -29,97 +29,86 @@ const BORIMSA_QUIZ: QuizItem[] = [
   { q: '보림사가 동양 3보림으로 불리는 이유는?', opts: ['세 나라 사찰의 동일 건축 양식','세 사찰 모두 동양 최대 규모','중국 혜능 선맥의 정통을 잇는 선종 중심 사찰','같은 해 창건'], ans: 2, explain: '보림사라는 명칭은 중국 선종 제6조 혜능 스님의 보림사에서 유래했으며, 선맥의 정통을 상징합니다.' },
 ]
 
-function FaqPanel({ items, primary }: { items: FaqItem[]; primary: string }) {
+function FaqPanel({ items }: { items: FaqItem[] }) {
   const [open, setOpen] = useState<number | null>(null)
   return (
-    <div style={{ marginTop: 24 }}>
+    <div className="bt-faq-list">
       {items.map((item, i) => (
-        <div key={i} style={{ borderBottom: '1px solid #D4CEC4' }}>
+        <div key={i} className={`bt-faq-item${open === i ? ' open' : ''}`}>
           <button
+            className="bt-faq-q"
             onClick={() => setOpen(open === i ? null : i)}
-            style={{
-              width: '100%', textAlign: 'left', padding: '18px 0',
-              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-              background: 'none', border: 'none', cursor: 'pointer',
-              fontSize: '.92rem', fontWeight: 600, color: open === i ? primary : '#2E2B26',
-              lineHeight: 1.5,
-            }}
           >
-            <span style={{ paddingRight: 16 }}>{item.q}</span>
-            <span style={{ flexShrink: 0, color: primary, fontSize: '1.1rem', transition: '.3s', transform: open === i ? 'rotate(180deg)' : 'none' }}>▾</span>
+            {item.q}
           </button>
-          {open === i && (
-            <div style={{ padding: '4px 0 20px', fontSize: '.88rem', color: '#6B6560', lineHeight: 1.8 }}>
-              {item.a}
-            </div>
-          )}
+          <div className="bt-faq-a">
+            <p>{item.a}</p>
+          </div>
         </div>
       ))}
     </div>
   )
 }
 
-function QuizPanel({ items, primary }: { items: QuizItem[]; primary: string }) {
+function QuizPanel({ items }: { items: QuizItem[] }) {
   const [idx, setIdx] = useState(0)
   const [selected, setSelected] = useState<number | null>(null)
   const item = items[idx]
   const correct = selected === item.ans
 
   return (
-    <div style={{ marginTop: 24, maxWidth: 640 }}>
-      <p style={{ fontSize: '.78rem', color: '#9B8654', fontWeight: 600, marginBottom: 12 }}>
-        문제 {idx + 1} / {items.length}
-      </p>
-      <p style={{ fontSize: '.97rem', fontWeight: 700, color: '#1A1A18', marginBottom: 20, lineHeight: 1.6 }}>
-        {item.q}
-      </p>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 20 }}>
+    <div className="bt-quiz-container">
+      <div className="bt-quiz-progress">
+        {items.map((_, i) => (
+          <div
+            key={i}
+            className={`bt-quiz-dot${i === idx ? ' active' : i < idx ? ' correct' : ''}`}
+          />
+        ))}
+      </div>
+
+      <p className="bt-quiz-question">{item.q}</p>
+
+      <div className="bt-quiz-options">
         {item.opts.map((opt, i) => {
-          let bg = '#FDFBF7'
-          let border = '#D4CEC4'
-          let color = '#2E2B26'
+          let cls = 'bt-quiz-opt'
           if (selected !== null) {
-            if (i === item.ans) { bg = '#e8f5e9'; border = '#4CAF50'; color = '#1b5e20' }
-            else if (i === selected) { bg = '#ffeaea'; border = '#f44336'; color = '#b71c1c' }
+            if (i === item.ans) cls += ' correct-ans'
+            else if (i === selected) cls += ' wrong-ans'
           }
           return (
             <button
               key={i}
+              className={cls}
               disabled={selected !== null}
               onClick={() => setSelected(i)}
-              style={{
-                textAlign: 'left', padding: '12px 18px',
-                background: bg, border: `1.5px solid ${border}`, color,
-                borderRadius: 8, cursor: selected !== null ? 'default' : 'pointer',
-                fontSize: '.88rem', lineHeight: 1.5, transition: '.2s',
-              }}
             >
               {i + 1}. {opt}
             </button>
           )
         })}
       </div>
+
       {selected !== null && (
-        <div style={{ padding: '14px 18px', background: correct ? '#e8f5e9' : '#fff3e0', borderRadius: 8, marginBottom: 20 }}>
-          <p style={{ fontWeight: 700, color: correct ? '#2e7d32' : '#e65100', marginBottom: 6 }}>
-            {correct ? '✓ 정답입니다!' : '✗ 틀렸습니다.'}
-          </p>
-          <p style={{ fontSize: '.85rem', color: '#555', lineHeight: 1.7 }}>{item.explain}</p>
+        <div className="bt-quiz-explain">
+          <strong>{correct ? '✓ 정답입니다!' : '✗ 틀렸습니다.'}</strong>
+          <p style={{ marginTop: 6 }}>{item.explain}</p>
         </div>
       )}
-      <div style={{ display: 'flex', gap: 10 }}>
+
+      <div className="bt-quiz-nav">
         {selected !== null && idx < items.length - 1 && (
           <button
+            className="bt-quiz-btn bt-quiz-btn-next"
             onClick={() => { setIdx(idx + 1); setSelected(null) }}
-            style={{ padding: '10px 24px', background: primary, color: '#fff', borderRadius: 8, border: 'none', cursor: 'pointer', fontWeight: 700, fontSize: '.88rem' }}
           >
             다음 문제 →
           </button>
         )}
         {selected !== null && idx === items.length - 1 && (
           <button
+            className="bt-quiz-btn bt-quiz-btn-retry"
             onClick={() => { setIdx(0); setSelected(null) }}
-            style={{ padding: '10px 24px', background: '#9B8654', color: '#fff', borderRadius: 8, border: 'none', cursor: 'pointer', fontWeight: 700, fontSize: '.88rem' }}
           >
             처음부터 다시
           </button>
@@ -129,9 +118,107 @@ function QuizPanel({ items, primary }: { items: QuizItem[]; primary: string }) {
   )
 }
 
+const SLIDE_TITLES = [
+  '천년의 깨달음에서 현대의 치유로',
+  '보림사를 읽는 3가지 시선',
+  '깨달음의 동진, 가지산문의 개창',
+  '도슨트 투어: 천년의 유산을 걷다',
+  '조선 목조각의 걸작, 사천왕상',
+  '완벽한 비례미, 남·북 삼층석탑과 석등',
+  '절대 연대를 품은 최초의 철불',
+  '창건의 주역을 기리다, 보조선사 창성탑비',
+  '소실과 중건, 멈추지 않는 법맥',
+  '다선일미와 비자나무 숲',
+  '나를 찾는 시간, 보림사 템플스테이',
+  '장흥의 자연과 연결된 치유 여행',
+  '천년의 선이 건네는 위로',
+  '보림사 방문 안내',
+]
+const SLIDE_BASE = 'https://k-buddhism.vercel.app/images'
+const INFOGRAPHIC_URL = 'https://k-buddhism.vercel.app/images/Zen_history.png'
+
+function SlidesPanel() {
+  const [idx, setIdx] = useState(0)
+  const total = SLIDE_TITLES.length
+  const prev = () => setIdx(i => (i - 1 + total) % total)
+  const next = () => setIdx(i => (i + 1) % total)
+
+  return (
+    <div style={{ marginTop: 32 }}>
+      <div className="slide-viewer" style={{ borderRadius: 8, overflow: 'hidden', background: '#1a1a18', boxShadow: '0 8px 40px rgba(0,0,0,.15)' }}>
+        <div style={{ position: 'relative', width: '100%', aspectRatio: '4/3', overflow: 'hidden', background: '#1a1a18' }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={`${SLIDE_BASE}/slide-${String(idx + 1).padStart(2, '0')}.jpg`}
+            alt={SLIDE_TITLES[idx]}
+            style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }}
+          />
+        </div>
+        {/* 점 네비게이션 */}
+        <div style={{ display: 'flex', gap: 5, justifyContent: 'center', padding: 8, background: '#1a1a18' }}>
+          {SLIDE_TITLES.map((_, i) => (
+            <span
+              key={i}
+              onClick={() => setIdx(i)}
+              style={{
+                width: i === idx ? 22 : 7, height: 7, borderRadius: i === idx ? 4 : '50%',
+                background: i === idx ? 'var(--color-gold, #9B8654)' : 'rgba(255,255,255,.2)',
+                cursor: 'pointer', transition: '.3s', display: 'inline-block',
+              }}
+            />
+          ))}
+        </div>
+        {/* 컨트롤 */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 16px', background: '#1a1a18', borderTop: '1px solid rgba(255,255,255,.08)' }}>
+          <button onClick={prev} style={{ color: '#fff', fontSize: '.82rem', fontWeight: 500, padding: '7px 18px', borderRadius: 20, border: '1px solid rgba(255,255,255,.2)', background: 'none', cursor: 'pointer' }}>← 이전</button>
+          <span style={{ color: 'rgba(255,255,255,.6)', fontSize: '.78rem' }}>{idx + 1} / {total}</span>
+          <button onClick={next} style={{ color: '#fff', fontSize: '.82rem', fontWeight: 500, padding: '7px 18px', borderRadius: 20, border: '1px solid rgba(255,255,255,.2)', background: 'none', cursor: 'pointer' }}>다음 →</button>
+        </div>
+      </div>
+      <p style={{ marginTop: 16, fontSize: '.82rem', color: 'var(--color-text-light, #6B6560)', textAlign: 'center' }}>
+        ※ 보림사 소개 슬라이드 (NotebookLM 생성 자료 기반 14페이지)
+      </p>
+    </div>
+  )
+}
+
+function InfographicPanel() {
+  const [lightbox, setLightbox] = useState(false)
+  return (
+    <div style={{ marginTop: 48, textAlign: 'center' }}>
+      <div style={{ background: 'var(--color-card, #FDFBF7)', border: '1px solid var(--color-border, #D4CEC4)', borderRadius: 16, overflow: 'hidden', boxShadow: '0 4px 20px rgba(0,0,0,.1)', display: 'inline-block', maxWidth: '100%' }}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={INFOGRAPHIC_URL}
+          alt="한국 선종의 역사적 기원 인포그래픽"
+          style={{ width: '100%', maxWidth: 1200, cursor: 'zoom-in', display: 'block' }}
+          onClick={() => setLightbox(true)}
+        />
+        <div style={{ padding: '20px 28px', textAlign: 'left', borderTop: '1px solid var(--color-border, #D4CEC4)' }}>
+          <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: '1rem', fontWeight: 700, color: 'var(--color-dark, #1A1A18)', marginBottom: 4 }}>
+            한국 선종의 종가(宗家), 장흥 보림사 — 인포그래픽
+          </h4>
+          <p style={{ fontSize: '.82rem', color: 'var(--color-text-light, #6B6560)' }}>
+            한국 선종의 역사적 기원과 천년을 건너온 국보급 문화유산을 한눈에 살펴보세요. (클릭하면 확대됩니다)
+          </p>
+        </div>
+      </div>
+      {lightbox && (
+        <div
+          style={{ position: 'fixed', inset: 0, zIndex: 2000, background: 'rgba(0,0,0,.9)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24, cursor: 'zoom-out' }}
+          onClick={() => setLightbox(false)}
+        >
+          <button style={{ position: 'absolute', top: 20, right: 24, color: '#fff', fontSize: '1.5rem', background: 'none', border: 'none', cursor: 'pointer', padding: 8 }} onClick={() => setLightbox(false)}>✕</button>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={INFOGRAPHIC_URL} alt="인포그래픽 확대" style={{ maxWidth: '95vw', maxHeight: '90vh', objectFit: 'contain', borderRadius: 8 }} onClick={e => e.stopPropagation()} />
+        </div>
+      )}
+    </div>
+  )
+}
+
 export default function QABlock({ temple, config }: Props) {
-  const [tab, setTab] = useState<'faq' | 'quiz'>('faq')
-  const primary = temple.primaryColor ?? '#8B2500'
+  const [tab, setTab] = useState<'faq' | 'quiz' | 'slides' | 'infographic'>('faq')
 
   const faqItems: FaqItem[] = Array.isArray(config.faqItems) && (config.faqItems as FaqItem[]).length > 0
     ? (config.faqItems as FaqItem[])
@@ -142,54 +229,39 @@ export default function QABlock({ temple, config }: Props) {
     : BORIMSA_QUIZ
 
   const TABS = [
-    { key: 'faq' as const,  label: '📋 FAQ 리포트' },
-    { key: 'quiz' as const, label: '🧩 문화유산 퀴즈' },
+    { key: 'faq'          as const, label: '📋 FAQ 리포트' },
+    { key: 'quiz'         as const, label: '🧩 문화유산 퀴즈' },
+    { key: 'slides'       as const, label: '🖼 슬라이드' },
+    { key: 'infographic'  as const, label: '📊 인포그래픽' },
   ]
 
   return (
-    <section
-      id="qa"
-      style={{ background: '#F5F0E8', padding: '80px 24px' }}
-    >
-      <div style={{ maxWidth: 900, margin: '0 auto' }}>
-        {/* 헤더 */}
-        <p style={{ fontSize: '.75rem', fontWeight: 700, letterSpacing: '.12em', color: '#9B8654', marginBottom: 12, textTransform: 'uppercase' }}>
-          Learning & Explore
-        </p>
-        <h2 style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 'clamp(1.4rem, 3vw, 2rem)', fontWeight: 700, color: '#1A1A18', marginBottom: 12, lineHeight: 1.4 }}>
+    <section id="components" className="bt-section">
+      <div className="bt-section-inner" style={{ maxWidth: 900 }}>
+        <span className="bt-section-label">Learning &amp; Explore</span>
+        <h2 className="bt-section-title">
           {typeof config.sectionTitle === 'string' ? config.sectionTitle : `${temple.name} 학습관`}
         </h2>
         {typeof config.sectionDesc === 'string' && (
-          <p style={{ fontSize: '.92rem', color: '#6B6560', marginBottom: 36 }}>
-            {config.sectionDesc}
-          </p>
+          <p className="bt-section-desc">{config.sectionDesc}</p>
         )}
 
-        {/* 탭 */}
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 4 }}>
+        <div className="bt-comp-tabs" id="compTabs">
           {TABS.map(t => (
             <button
               key={t.key}
+              className={`bt-comp-tab${tab === t.key ? ' active' : ''}`}
               onClick={() => setTab(t.key)}
-              style={{
-                padding: '10px 22px',
-                background: tab === t.key ? primary : '#FDFBF7',
-                color: tab === t.key ? '#fff' : '#6B6560',
-                border: `1.5px solid ${tab === t.key ? primary : '#D4CEC4'}`,
-                borderRadius: 24,
-                fontWeight: 600,
-                fontSize: '.84rem',
-                cursor: 'pointer',
-                transition: '.2s',
-              }}
             >
               {t.label}
             </button>
           ))}
         </div>
 
-        {tab === 'faq'  && <FaqPanel  items={faqItems}  primary={primary} />}
-        {tab === 'quiz' && <QuizPanel items={quizItems} primary={primary} />}
+        {tab === 'faq'         && <FaqPanel         items={faqItems} />}
+        {tab === 'quiz'        && <QuizPanel        items={quizItems} />}
+        {tab === 'slides'      && <SlidesPanel />}
+        {tab === 'infographic' && <InfographicPanel />}
       </div>
     </section>
   )

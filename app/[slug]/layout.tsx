@@ -1,5 +1,6 @@
 // 퍼블릭 사찰 사이트 레이아웃 — DB themeType → data-theme 바인딩
 import { db } from '@/lib/db'
+import './styles/borimsa-type.css'
 
 export default async function TemplePublicLayout({
   children,

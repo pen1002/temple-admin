@@ -21,9 +21,6 @@ interface Props {
 }
 
 export default function OfferingBlock({ temple, config }: Props) {
-  const primary = temple.primaryColor ?? '#8B2500'
-  const gold = '#9B8654'
-
   const sectionTitle = typeof config.sectionTitle === 'string' ? config.sectionTitle : '인등불사·기도 동참'
   const sectionDesc = typeof config.sectionDesc === 'string' ? config.sectionDesc
     : `${temple.name}의 기도에 동참하여 복덕을 쌓으세요.`
@@ -44,67 +41,33 @@ export default function OfferingBlock({ temple, config }: Props) {
     : []
 
   return (
-    <section
-      id="offering"
-      style={{ background: '#1A1008', padding: '80px 24px' }}
-    >
-      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-        {/* 헤더 */}
-        <p style={{ fontSize: '.75rem', fontWeight: 700, letterSpacing: '.12em', color: gold, marginBottom: 12, textTransform: 'uppercase' }}>
-          Offering of Light
-        </p>
-        <h2 style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 'clamp(1.4rem, 3vw, 2rem)', fontWeight: 700, color: '#FFFAF0', marginBottom: 12, lineHeight: 1.4 }}>
-          {sectionTitle}
-        </h2>
-        <p style={{ fontSize: '.92rem', color: 'rgba(255,250,240,.65)', marginBottom: 48, maxWidth: 560 }}>
-          {sectionDesc}
-        </p>
+    <section id="offering" className="bt-section bt-indung-section">
+      <div className="bt-section-inner">
+        <span className="bt-section-label">Offering of Light</span>
+        <h2 className="bt-section-title">{sectionTitle}</h2>
+        <p className="bt-section-desc">{sectionDesc}</p>
 
-        {/* 인등 플랜 카드 */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 20, marginBottom: 48 }}>
+        <div className="bt-indung-grid">
           {plans.map((plan, i) => (
-            <div
-              key={i}
-              style={{
-                background: '#261a0e',
-                border: `1px solid ${i === 0 ? primary + '60' : '#3a2a18'}`,
-                borderRadius: 16,
-                padding: '28px 24px',
-                position: 'relative',
-              }}
-            >
-              {plan.tag && (
-                <span style={{
-                  position: 'absolute', top: 14, right: 14,
-                  background: gold, color: '#fff',
-                  padding: '3px 10px', borderRadius: 12,
-                  fontSize: '.68rem', fontWeight: 700,
-                }}>
-                  {plan.tag}
-                </span>
-              )}
-              <div style={{ fontSize: '2rem', marginBottom: 12 }}>{plan.icon}</div>
-              <h4 style={{ color: '#FFFAF0', fontWeight: 700, fontSize: '1rem', marginBottom: 8 }}>{plan.name}</h4>
-              <div style={{ color: gold, fontSize: '1.25rem', fontWeight: 700, marginBottom: 12 }}>{plan.price}</div>
-              <p style={{ color: 'rgba(255,250,240,.6)', fontSize: '.84rem', lineHeight: 1.75, whiteSpace: 'pre-line' }}>
-                {plan.desc}
-              </p>
+            <div key={i} className="bt-indung-card">
+              <div style={{ fontSize: '2rem', marginBottom: 8 }}>{plan.icon}</div>
+              <h4>{plan.name}</h4>
+              <div className="price">{plan.price}</div>
+              <p style={{ whiteSpace: 'pre-line' }}>{plan.desc}</p>
+              {plan.tag && <span className="tag">{plan.tag}</span>}
             </div>
           ))}
         </div>
 
-        {/* 계좌 안내 */}
         {accounts.length > 0 && (
-          <div style={{ background: '#261a0e', borderRadius: 12, padding: '24px 28px', display: 'inline-block', minWidth: 280 }}>
-            <p style={{ color: gold, fontWeight: 700, fontSize: '.85rem', marginBottom: 12 }}>계좌 안내</p>
+          <div className="bt-indung-account">
+            <p style={{ fontWeight: 700, marginBottom: 8 }}>계좌 안내</p>
             {accounts.map((acc, i) => (
-              <div key={i} style={{ marginBottom: i < accounts.length - 1 ? 10 : 0 }}>
-                <span style={{ color: 'rgba(255,250,240,.55)', fontSize: '.82rem' }}>{acc.bankName} </span>
-                <span style={{ color: '#FFFAF0', fontWeight: 700, fontSize: '.9rem' }}>{acc.accountNumber}</span>
-                <span style={{ color: 'rgba(255,250,240,.55)', fontSize: '.82rem' }}> ({acc.accountHolder})</span>
-              </div>
+              <p key={i}>
+                {acc.bankName} <strong>{acc.accountNumber}</strong> ({acc.accountHolder})
+              </p>
             ))}
-            <p style={{ color: 'rgba(255,250,240,.35)', fontSize: '.75rem', marginTop: 10 }}>
+            <p style={{ marginTop: 8, opacity: 0.5, fontSize: '.75rem' }}>
               입금 후 사찰 전화(061-864-2055)로 확인해 주세요
             </p>
           </div>

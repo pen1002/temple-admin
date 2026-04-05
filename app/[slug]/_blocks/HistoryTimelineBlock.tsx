@@ -5,7 +5,7 @@ interface TimelineEvent {
   year: string
   title: string
   desc?: string
-  highlight?: boolean   // 국보·보물 등 강조
+  highlight?: boolean
 }
 
 interface Props {
@@ -30,79 +30,19 @@ export default function HistoryTimelineBlock({ temple, config }: Props) {
     ? (config.events as TimelineEvent[])
     : BORIMSA_DEFAULTS
 
-  const primary = temple.primaryColor ?? '#8B2500'
-  const gold = '#9B8654'
-
   return (
-    <section
-      id="history"
-      style={{ background: '#EDE7DB', padding: '80px 24px' }}
-    >
-      <div style={{ maxWidth: 900, margin: '0 auto' }}>
-        {/* 헤더 */}
-        <p style={{ fontSize: '.75rem', fontWeight: 700, letterSpacing: '.12em', color: gold, marginBottom: 12, textTransform: 'uppercase' }}>
-          History
-        </p>
-        <h2 style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 'clamp(1.4rem, 3vw, 2rem)', fontWeight: 700, color: '#1A1A18', marginBottom: 12, lineHeight: 1.4 }}>
-          {temple.name} 연혁
-        </h2>
-        <p style={{ fontSize: '.92rem', color: '#6B6560', marginBottom: 56 }}>
-          759년 창건부터 천년을 이어온 가지산 성지의 발자취
-        </p>
+    <section id="history" className="bt-section">
+      <div className="bt-section-inner" style={{ maxWidth: 900 }}>
+        <span className="bt-section-label">History</span>
+        <h2 className="bt-section-title">{temple.name} 연혁</h2>
+        <p className="bt-section-desc">759년 창건부터 천년을 이어온 가지산 성지의 발자취</p>
 
-        {/* 타임라인 */}
-        <div style={{ position: 'relative', paddingLeft: 32 }}>
-          {/* 세로선 */}
-          <div style={{
-            position: 'absolute', left: 10, top: 8, bottom: 8,
-            width: 2, background: `linear-gradient(to bottom, ${primary}, ${gold}44)`,
-          }} />
-
+        <div className="bt-timeline">
           {events.map((ev, i) => (
-            <div key={i} style={{ position: 'relative', marginBottom: 36 }}>
-              {/* 점 */}
-              <div style={{
-                position: 'absolute', left: -26, top: 4,
-                width: ev.highlight ? 16 : 12,
-                height: ev.highlight ? 16 : 12,
-                borderRadius: '50%',
-                background: ev.highlight ? primary : '#D4CEC4',
-                border: `2px solid ${ev.highlight ? primary : '#9B8654'}`,
-                transform: 'translateX(-50%)',
-                boxShadow: ev.highlight ? `0 0 0 4px ${primary}22` : 'none',
-              }} />
-
-              <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start', flexWrap: 'wrap' }}>
-                {/* 연도 */}
-                <span style={{
-                  flexShrink: 0,
-                  fontFamily: "'Playfair Display', serif",
-                  fontSize: ev.highlight ? '1.15rem' : '1rem',
-                  fontWeight: 700,
-                  color: ev.highlight ? primary : gold,
-                  minWidth: 56,
-                  lineHeight: 1.3,
-                }}>
-                  {ev.year}
-                </span>
-
-                <div style={{ flex: 1 }}>
-                  <h3 style={{
-                    fontSize: ev.highlight ? '.97rem' : '.9rem',
-                    fontWeight: ev.highlight ? 700 : 600,
-                    color: '#1A1A18',
-                    marginBottom: ev.desc ? 6 : 0,
-                    lineHeight: 1.5,
-                  }}>
-                    {ev.title}
-                  </h3>
-                  {ev.desc && (
-                    <p style={{ fontSize: '.84rem', color: '#6B6560', lineHeight: 1.75 }}>
-                      {ev.desc}
-                    </p>
-                  )}
-                </div>
-              </div>
+            <div key={i} className={`bt-tl-item${ev.highlight ? ' highlight' : ''}`}>
+              <div className="bt-tl-year">{ev.year}</div>
+              <div className="bt-tl-title">{ev.title}</div>
+              {ev.desc && <p className="bt-tl-desc">{ev.desc}</p>}
             </div>
           ))}
         </div>

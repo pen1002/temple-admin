@@ -15,9 +15,6 @@ interface Props {
 }
 
 export default function TemplestayBlock({ temple, config }: Props) {
-  const primary = temple.primaryColor ?? '#8B2500'
-  const green = '#2C5F2D'
-
   const title = typeof config.title === 'string' ? config.title : `${temple.name} 템플스테이`
   const desc = typeof config.desc === 'string' ? config.desc
     : '비자나무 숲과 야생 차향이 어우러진 가지산 자연 속에서 비움과 쉼을 경험하세요'
@@ -34,51 +31,27 @@ export default function TemplestayBlock({ temple, config }: Props) {
     : defaultPrograms
 
   return (
-    <section
-      id="templestay"
-      style={{ background: '#EDE7DB', padding: '80px 24px' }}
-    >
-      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-        {/* 헤더 */}
-        <p style={{ fontSize: '.75rem', fontWeight: 700, letterSpacing: '.12em', color: green, marginBottom: 12, textTransform: 'uppercase' }}>
-          Temple Stay
-        </p>
-        <h2 style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 'clamp(1.4rem, 3vw, 2rem)', fontWeight: 700, color: '#1A1A18', marginBottom: 12, lineHeight: 1.4 }}>
-          {title}
-        </h2>
-        <p style={{ fontSize: '.92rem', color: '#6B6560', marginBottom: 48, maxWidth: 640 }}>
-          {desc}
-        </p>
+    <section id="templestay" className="bt-section">
+      <div className="bt-section-inner">
+        <span className="bt-section-label">Temple Stay</span>
+        <h2 className="bt-section-title">{title}</h2>
+        <p className="bt-section-desc">{desc}</p>
 
-        {/* 프로그램 카드 */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 24, marginBottom: 40 }}>
+        <div className="bt-templestay-grid">
           {programs.map((prog, i) => (
-            <div
-              key={i}
-              style={{
-                background: '#FDFBF7',
-                border: '1px solid #D4CEC4',
-                borderRadius: 16,
-                padding: '32px 28px',
-                transition: '.3s',
-              }}
-            >
-              <div style={{ fontSize: '2rem', marginBottom: 16 }}>{prog.icon}</div>
-              <h3 style={{ fontFamily: "'Noto Serif KR', serif", fontSize: '1.05rem', fontWeight: 700, color: '#1A1A18', marginBottom: 12, lineHeight: 1.4 }}>
-                {prog.name}
-              </h3>
-              <p style={{ fontSize: '.88rem', color: '#6B6560', lineHeight: 1.8, marginBottom: prog.price ? 16 : 0 }}>
-                {prog.desc}
-              </p>
+            <div key={i} className="bt-ts-card">
+              <div className="bt-ts-icon">{prog.icon}</div>
+              <h3>{prog.name}</h3>
+              <p>{prog.desc}</p>
               {(prog.price || prog.duration) && (
-                <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center', marginTop: 16 }}>
                   {prog.price && (
-                    <span style={{ background: `${green}18`, color: green, padding: '4px 12px', borderRadius: 20, fontSize: '.78rem', fontWeight: 700 }}>
+                    <span style={{ background: 'rgba(44,95,45,.12)', color: 'var(--color-accent)', padding: '4px 14px', borderRadius: 20, fontSize: '.78rem', fontWeight: 700 }}>
                       {prog.price}
                     </span>
                   )}
                   {prog.duration && (
-                    <span style={{ background: '#EDE7DB', color: '#6B6560', padding: '4px 12px', borderRadius: 20, fontSize: '.78rem', fontWeight: 600 }}>
+                    <span style={{ background: 'var(--color-bg-alt)', color: 'var(--color-text-light)', padding: '4px 14px', borderRadius: 20, fontSize: '.78rem', fontWeight: 600 }}>
                       {prog.duration}
                     </span>
                   )}
@@ -88,27 +61,16 @@ export default function TemplestayBlock({ temple, config }: Props) {
           ))}
         </div>
 
-        {/* 예약 버튼 */}
-        <div style={{ textAlign: 'center' }}>
+        <div style={{ textAlign: 'center', marginTop: 48 }}>
           <a
             href={bookingUrl}
             target="_blank"
             rel="noopener noreferrer"
-            style={{
-              display: 'inline-block',
-              padding: '14px 36px',
-              background: green,
-              color: '#fff',
-              borderRadius: 9999,
-              fontWeight: 700,
-              fontSize: '.95rem',
-              textDecoration: 'none',
-              letterSpacing: '.04em',
-            }}
+            className="bt-visit-btn bt-visit-btn-primary"
           >
             템플스테이 예약하기
           </a>
-          <p style={{ marginTop: 12, fontSize: '.8rem', color: '#9B8654' }}>
+          <p style={{ marginTop: 12, fontSize: '.8rem', color: 'var(--color-gold)' }}>
             한국불교문화사업단 공식 예약 사이트 (templestay.com)
           </p>
         </div>

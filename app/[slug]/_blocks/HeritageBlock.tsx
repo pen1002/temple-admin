@@ -56,120 +56,47 @@ export default function HeritageBlock({ temple, config }: Props) {
       ? (config.items as HeritageItem[])
       : BORIMSA_DEFAULTS
 
-  const primary = temple.primaryColor ?? '#8B2500'
-  const gold = '#9B8654'
-
   return (
-    <section
-      id="heritage"
-      style={{ background: '#F5F0E8', padding: '80px 24px' }}
-    >
-      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-        {/* 헤더 */}
-        <div style={{ textAlign: 'center', maxWidth: 720, margin: '0 auto 64px' }}>
-          <p style={{ fontSize: '.75rem', fontWeight: 700, letterSpacing: '.12em', color: primary, marginBottom: 12, textTransform: 'uppercase' }}>
-            National Treasures & Heritage
-          </p>
-          <h2 style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 'clamp(1.4rem, 3vw, 2rem)', fontWeight: 700, color: '#1A1A18', marginBottom: 16, lineHeight: 1.4 }}>
-            천년을 건너온 국보급 문화유산
-          </h2>
-          <p style={{ fontSize: '.92rem', color: '#6B6560', lineHeight: 1.8, margin: '0 auto' }}>
+    <section id="heritage" className="bt-section">
+      <div className="bt-section-inner">
+        <div className="bt-heritage-intro">
+          <span className="bt-section-label">National Treasures &amp; Heritage</span>
+          <h2 className="bt-section-title">천년을 건너온 국보급 문화유산</h2>
+          <p className="bt-section-desc">
             제작 연대가 확실한 9세기 유물들이 한국 불교 미술 연구의 절대적 기준점이 되고 있습니다
           </p>
         </div>
 
-        {/* 카드 목록 */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 40 }}>
-          {items.map((item, idx) => {
-            const isEven = idx % 2 === 1
-            return (
-              <div
-                key={idx}
-                style={{
-                  background: '#FDFBF7',
-                  border: '1px solid #D4CEC4',
-                  borderRadius: 16,
-                  overflow: 'hidden',
-                  boxShadow: '0 4px 20px rgba(0,0,0,.06)',
-                }}
-              >
-                <div style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'clamp(280px, 35%, 420px) 1fr',
-                  minHeight: 320,
-                  direction: isEven ? 'rtl' : 'ltr',
-                }}>
-                  {/* 이미지 */}
-                  <div style={{ position: 'relative', overflow: 'hidden', minHeight: 280, background: '#ddd', direction: 'ltr' }}>
-                    {item.imageUrl && (
-                      <img
-                        src={item.imageUrl}
-                        alt={item.imageAlt ?? item.name}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-                      />
-                    )}
-                    {/* 등급 뱃지 */}
-                    <div style={{ position: 'absolute', top: 16, left: 16, zIndex: 2, direction: 'ltr' }}>
-                      <span style={{
-                        background: 'rgba(0,0,0,.65)',
-                        color: '#fff',
-                        padding: '5px 14px',
-                        borderRadius: 20,
-                        fontSize: '.7rem',
-                        fontWeight: 700,
-                        letterSpacing: '.04em',
-                        backdropFilter: 'blur(6px)',
-                      }}>
-                        {item.grade}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* 본문 */}
-                  <div style={{ padding: '36px 32px', display: 'flex', flexDirection: 'column', justifyContent: 'center', direction: 'ltr' }}>
-                    <p style={{ fontSize: '.78rem', color: gold, fontWeight: 700, letterSpacing: '.06em', marginBottom: 10 }}>
-                      {item.year}
-                    </p>
-                    <h3 style={{
-                      fontFamily: "'Noto Serif KR', serif",
-                      fontSize: 'clamp(1rem, 2vw, 1.35rem)',
-                      fontWeight: 700,
-                      color: '#1A1A18',
-                      marginBottom: 16,
-                      lineHeight: 1.5,
-                      whiteSpace: 'pre-line',
-                    }}>
-                      {item.name}
-                    </h3>
-                    <p style={{ fontSize: '.9rem', color: '#6B6560', lineHeight: 1.85, marginBottom: 12 }}>
-                      {item.desc}
-                    </p>
-                    {item.quote && (
-                      <blockquote style={{
-                        borderLeft: `3px solid ${gold}`,
-                        padding: '12px 20px',
-                        margin: '16px 0',
-                        background: `rgba(155,134,84,.06)`,
-                        borderRadius: '0 8px 8px 0',
-                        fontFamily: "'Noto Serif KR', serif",
-                        fontStyle: 'italic',
-                        color: '#2E2B26',
-                        fontSize: '.88rem',
-                        lineHeight: 1.8,
-                      }}>
-                        {item.quote}
-                      </blockquote>
-                    )}
-                    {item.detail && (
-                      <p style={{ fontSize: '.78rem', color: '#9a8060', marginTop: 8, fontWeight: 500 }}>
-                        {item.detail}
-                      </p>
-                    )}
+        <div className="bt-heritage-grid">
+          {items.map((item, idx) => (
+            <div key={idx} className="bt-heritage-card">
+              <div className="bt-heritage-card-inner">
+                <div className="bt-heritage-img">
+                  {item.imageUrl && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={item.imageUrl} alt={item.imageAlt ?? item.name} />
+                  )}
+                  <div className="bt-heritage-badge">
+                    <span>{item.grade}</span>
                   </div>
                 </div>
+
+                <div className="bt-heritage-body">
+                  <p style={{ fontSize: '.78rem', color: 'var(--color-gold)', fontWeight: 700, letterSpacing: '.06em', marginBottom: 10 }}>
+                    {item.year}
+                  </p>
+                  <h3 style={{ whiteSpace: 'pre-line' }}>{item.name}</h3>
+                  <p>{item.desc}</p>
+                  {item.quote && <blockquote>{item.quote}</blockquote>}
+                  {item.detail && (
+                    <div className="bt-heritage-detail">
+                      <span>{item.detail}</span>
+                    </div>
+                  )}
+                </div>
               </div>
-            )
-          })}
+            </div>
+          ))}
         </div>
       </div>
     </section>

@@ -3,57 +3,48 @@ import type { TempleData } from './types'
 
 export default function FooterBlock({ temple }: { temple: TempleData }) {
   return (
-    <footer
-      className="px-5 py-10"
-      style={{ background: '#0a0704', borderTop: '1px solid #2a1e10' }}
-    >
-      <div className="max-w-xl mx-auto text-center space-y-3">
-        {/* 법륜 아이콘 */}
-        <div className="text-3xl mb-4" style={{ color: '#D4AF37', opacity: 0.6 }}>☸</div>
-
-        {/* 사찰명 */}
-        <p className="font-bold text-lg" style={{ color: '#C4A882' }}>{temple.name}</p>
-
-        {/* 종단 */}
-        {temple.denomination && (
-          <p className="text-sm" style={{ color: '#6b5a40' }}>{temple.denomination}</p>
-        )}
-
-        {/* 주소 */}
-        {temple.address && (
-          <p className="text-sm" style={{ color: '#6b5a40' }}>{temple.address}</p>
-        )}
-
-        {/* 연락처 */}
-        {temple.phone && (
-          <a href={`tel:${temple.phone}`} className="text-sm block" style={{ color: '#6b5a40' }}>
-            {temple.phone}
-          </a>
-        )}
-
-        {/* 이메일 */}
-        {temple.email && (
-          <a href={`mailto:${temple.email}`} className="text-sm block" style={{ color: '#6b5a40' }}>
-            {temple.email}
-          </a>
-        )}
-
-        <div className="pt-4" style={{ borderTop: '1px solid #2a1e10' }}>
-          <p className="text-xs" style={{ color: '#3d2e1a' }}>
-            © {new Date().getFullYear()} {temple.name}. All rights reserved.
-          </p>
-          <p className="text-xs mt-1" style={{ color: '#2a1e10' }}>
-            1080 사찰 자동화 대작불사
-          </p>
-          {/* 관리자 로그인 (매우 작게) */}
-          <a
-            href={`/admin/${temple.code}`}
-            className="text-xs mt-3 inline-block opacity-20 hover:opacity-50 transition-opacity"
-            style={{ color: '#8B6914' }}
-          >
-            관리
-          </a>
+    <footer className="bt-footer">
+      <div className="bt-footer-inner">
+        {/* 브랜드 */}
+        <div className="bt-footer-brand">
+          <h3>{temple.name}</h3>
+          {temple.denomination && <p>{temple.denomination}</p>}
+          {temple.address && <p>{temple.address}</p>}
+          {temple.phone && (
+            <p><a href={`tel:${temple.phone}`} style={{ color: 'inherit' }}>{temple.phone}</a></p>
+          )}
+          {temple.email && (
+            <p><a href={`mailto:${temple.email}`} style={{ color: 'inherit' }}>{temple.email}</a></p>
+          )}
         </div>
+
+        {/* 링크 컬럼 1 */}
+        <div className="bt-footer-col">
+          <h4>사찰 안내</h4>
+          <a href="#intro">소개</a>
+          <a href="#heritage">문화유산</a>
+          <a href="#history">연혁</a>
+        </div>
+
+        {/* 링크 컬럼 2 */}
+        <div className="bt-footer-col">
+          <h4>프로그램</h4>
+          <a href="#templestay">템플스테이</a>
+          <a href="#events">법회·행사</a>
+          <a href="#offering">인등불사</a>
+        </div>
+
+        {/* 링크 컬럼 3 */}
+        <div className="bt-footer-col">
+          <h4>관련 링크</h4>
+          <a href="https://www.templestay.com" target="_blank" rel="noopener noreferrer">템플스테이</a>
+          <a href="https://www.jogye.or.kr" target="_blank" rel="noopener noreferrer">조계종</a>
+          <a href={`/admin/${temple.code}`} style={{ opacity: 0.3 }}>관리자</a>
+        </div>
+      </div>
+
+      <div className="bt-footer-bottom">
+        © {new Date().getFullYear()} {temple.name}. All rights reserved. · 1080 사찰 자동화 대작불사
       </div>
     </footer>
   )
