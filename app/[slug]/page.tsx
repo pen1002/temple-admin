@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { db } from '@/lib/db'
+import '../../styles/themes/borimsa-type.css'
 import { getNotices, getEventList, getRitualTimes, getDharma, getGallery } from '@/lib/kv'
 import BlockRenderer from './_blocks/BlockRenderer'
 import FooterBlock from './_blocks/FooterBlock'
@@ -62,7 +63,12 @@ export default async function TemplePage(
   // DB: 사찰 기본 정보 + 노출 블록 목록 (order 정렬, visible만)
   const temple = await db.temple.findUnique({
     where: { code: slug, isActive: true },
-    include: {
+    select: {
+      id: true, code: true, name: true, nameEn: true, description: true,
+      address: true, phone: true, email: true, heroImageUrl: true, logoUrl: true,
+      primaryColor: true, secondaryColor: true, denomination: true,
+      abbotName: true, foundedYear: true, tier: true, isActive: true,
+      pageTemplate: true,
       blockConfigs: {
         where: { isVisible: true },
         orderBy: { order: 'asc' },
@@ -113,7 +119,7 @@ export default async function TemplePage(
       ]
 
   return (
-    <>
+    <div data-theme={temple.pageTemplate} style={{ minHeight: '100vh' }}>
       {blocks.map(block => (
         <BlockRenderer
           key={block.id}
@@ -124,6 +130,6 @@ export default async function TemplePage(
         />
       ))}
       <FooterBlock temple={templeData} />
-    </>
+    </div>
   )
 }

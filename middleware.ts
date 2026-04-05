@@ -13,15 +13,7 @@ export async function middleware(request: NextRequest) {
 
   // ── 서브도메인 라우팅: {slug}.k-buddhism.kr ────────────────────────────────
   if (hostname.endsWith('.k-buddhism.kr') && slug !== 'www' && slug !== 'admin') {
-    // borimsa: 완성본 HTML 프록시 (k-buddhism.vercel.app/borimsa)
-    if (slug === 'borimsa') {
-      const targetPath = request.nextUrl.pathname === '/' ? '/borimsa' : `/borimsa${request.nextUrl.pathname}`
-      const proxyUrl = new URL(targetPath, 'https://k-buddhism.vercel.app')
-      if (request.nextUrl.search) proxyUrl.search = request.nextUrl.search
-      return NextResponse.rewrite(proxyUrl)
-    }
-
-    // 나머지 사찰: DB 블록 템플릿 렌더링 (app/[slug]/page.tsx)
+    // 모든 사찰: DB 블록 템플릿 렌더링 (app/[slug]/page.tsx)
     const url = request.nextUrl.clone()
     url.pathname = `/${slug}${request.nextUrl.pathname}`
     return NextResponse.rewrite(url)
