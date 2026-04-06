@@ -41,7 +41,7 @@ const ROW_CFG = [
 // ── Types ─────────────────────────────────────────────────────────────────────
 interface Star     { xR: number; yR: number; r: number }
 interface Building { xR: number; wR: number; hR: number; col: string; wr: number; wc: number; lit: boolean[][] }
-interface Lantern  { rx: number; rope: 0|1|2; col: string; ph: number; sz: number; swayS: number }
+interface Lantern  { rx: number; rope: 0|1|2; col: string; ph: number; sz: number; swayS: number; swayA: number }
 interface Person   {
   x: number; row: number; wp: number; spd: number
   skin: string; cls: string; hat: 0|1|2; hatC: string
@@ -110,7 +110,8 @@ function makeLanterns(count: number): Lantern[] {
         col:   LAN_C[(ri * 5 + i) % LAN_C.length],
         ph:    Math.random() * Math.PI * 2,
         sz:    rnd(0.85, 1.15),
-        swayS: 0.72 + Math.random() * 0.88,
+        swayS: 0.4  + Math.random() * 0.5,
+        swayA: 3    + Math.random() * 6,
       })
     }
   })
@@ -239,7 +240,7 @@ function drawLanterns(
   lns: Lantern[], t: number, gm: number,
 ) {
   for (const ln of lns) {
-    const sw = Math.sin(t * 0.002 * ln.swayS + ln.ph) * 3
+    const sw = Math.sin(t * 0.001 * ln.swayS + ln.ph) * ln.swayA
     const lx = ln.rx * w + sw
     const ly = ropeYAt(ln.rx, ln.rope, h) + 6
     const lw = 10 * ln.sz, lh = lw * 1.65
@@ -297,7 +298,7 @@ function drawLanternReflect(
   const roadY = ROAD_YR * h
   ctx.save(); ctx.globalAlpha = 0.15 * gm
   for (const ln of lns) {
-    const sw = Math.sin(t * 0.002 * ln.swayS + ln.ph) * 3
+    const sw = Math.sin(t * 0.001 * ln.swayS + ln.ph) * ln.swayA
     const lx = ln.rx * w + sw
     const [r, g, b] = hexRgb(ln.col)
     const rfl = ctx.createRadialGradient(lx, roadY, 0, lx, roadY, 22)
@@ -540,92 +541,80 @@ export default function LanternParadeHeroBlock({
           }}
         />
 
-        {/* ── 상단 헤더 바: 햄버거 + GNB ── */}
-        <div
+        {/* ── 좌측 상단: 햄버거 버튼 + SNS 드롭다운 ── */}
+        <div style={{ position: 'absolute', top: '20px', left: '20px', zIndex: 10 }}>
+          <button
+            className="ph-hamburger"
+            onClick={() => setSnsOpen(o => !o)}
+            aria-label="SNS 메뉴"
+          >
+            {snsOpen ? '✕' : '≡'}
+          </button>
+          {snsOpen && (
+            <div
+              style={{
+                position:      'absolute',
+                top:           '48px',
+                left:          0,
+                display:       'flex',
+                flexDirection: 'column',
+                gap:           '6px',
+                animation:     'sns-down 0.22s ease-out both',
+              }}
+            >
+              {SNS_ITEMS.map(s => (
+                <a
+                  key={s.label}
+                  href={s.href}
+                  style={{
+                    background:     s.bg,
+                    color:          s.color,
+                    padding:        '8px 18px',
+                    borderRadius:   '8px',
+                    fontSize:       '0.82rem',
+                    fontWeight:     700,
+                    whiteSpace:     'nowrap',
+                    textDecoration: 'none',
+                    display:        'block',
+                    boxShadow:      '0 2px 8px rgba(0,0,0,0.4)',
+                  }}
+                >
+                  {s.label}
+                </a>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* ── 우측 상단: GNB 메뉴 4개 ── */}
+        <nav
           style={{
             position:   'absolute',
             top:        '20px',
-            left:       '20px',
-            right:      '20px',
+            right:      '24px',
             zIndex:     10,
             display:    'flex',
-            alignItems: 'flex-start',
-            gap:        '16px',
+            alignItems: 'center',
+            gap:        'clamp(12px, 2.5vw, 32px)',
           }}
         >
-          {/* 햄버거 버튼 + SNS 드롭다운 */}
-          <div style={{ position: 'relative', flexShrink: 0 }}>
-            <button
-              className="ph-hamburger"
-              onClick={() => setSnsOpen(o => !o)}
-              aria-label="SNS 메뉴"
+          {GNB_ITEMS.map(item => (
+            <a
+              key={item.label}
+              href={item.href}
+              className="ph-gnb-link"
+              style={{
+                fontSize:      'clamp(0.78rem, 1.5vw, 0.96rem)',
+                fontFamily:    '"Noto Serif KR","Nanum Myeongjo",serif',
+                fontWeight:    600,
+                letterSpacing: '0.04em',
+                textShadow:    '0 1px 6px rgba(0,0,0,0.9)',
+              }}
             >
-              {snsOpen ? '✕' : '≡'}
-            </button>
-            {snsOpen && (
-              <div
-                style={{
-                  position:  'absolute',
-                  top:       '48px',
-                  left:      0,
-                  display:   'flex',
-                  flexDirection: 'column',
-                  gap:       '6px',
-                  animation: 'sns-down 0.22s ease-out both',
-                }}
-              >
-                {SNS_ITEMS.map(s => (
-                  <a
-                    key={s.label}
-                    href={s.href}
-                    style={{
-                      background:    s.bg,
-                      color:         s.color,
-                      padding:       '8px 18px',
-                      borderRadius:  '8px',
-                      fontSize:      '0.82rem',
-                      fontWeight:    700,
-                      whiteSpace:    'nowrap',
-                      textDecoration:'none',
-                      display:       'block',
-                      boxShadow:     '0 2px 8px rgba(0,0,0,0.4)',
-                    }}
-                  >
-                    {s.label}
-                  </a>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* GNB 메뉴 4개 */}
-          <nav
-            style={{
-              display:    'flex',
-              alignItems: 'center',
-              gap:        'clamp(12px, 2.5vw, 32px)',
-              paddingTop: '8px',
-              flexWrap:   'wrap',
-            }}
-          >
-            {GNB_ITEMS.map(item => (
-              <a
-                key={item.label}
-                href={item.href}
-                className="ph-gnb-link"
-                style={{
-                  fontSize:      'clamp(0.78rem, 1.5vw, 0.96rem)',
-                  fontFamily:    '"Noto Serif KR","Nanum Myeongjo",serif',
-                  fontWeight:    600,
-                  letterSpacing: '0.04em',
-                  textShadow:    '0 1px 6px rgba(0,0,0,0.9)',
-                }}
-              >
-                {item.label}
-              </a>
-            ))}
-          </nav>
-        </div>
+              {item.label}
+            </a>
+          ))}
+        </nav>
 
         {/* ── 텍스트 오버레이 (중앙 상단) ── */}
         <div
@@ -691,17 +680,9 @@ export default function LanternParadeHeroBlock({
             animation:  'ph-sub 1s ease-out 2s both',
           }}
         >
-          <button
-            className="ph-wisdom-btn"
-            onClick={() => {
-              const el =
-                document.getElementById('wisdom') ??
-                document.querySelector('[data-section="wisdom"]')
-              el?.scrollIntoView({ behavior: 'smooth' })
-            }}
-          >
-            오늘의 부처님말씀 보기 ↓
-          </button>
+          <a href="/" className="ph-wisdom-btn" style={{ display: 'inline-block', textDecoration: 'none' }}>
+            홈페이지 바로가기 →
+          </a>
         </div>
       </section>
     </>
