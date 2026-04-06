@@ -8,7 +8,7 @@ const typeMessages: Record<string, string> = {
   notice: '공지사항이 올라갔습니다! 🙏',
   event: '행사 날짜가 변경되었습니다! 📅',
   ritual: '법회 시간이 변경되었습니다! 🔔',
-  dharma: '오늘의 법문이 올라갔습니다! 📖',
+  dharma: '오늘의 부처님말씀이 올라갔습니다! 📖',
   photo: '사진이 올라갔습니다! 📷',
 }
 

@@ -38,7 +38,8 @@ model Temple {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
-  blockConfigs BlockConfig[]
+  blockConfigs          BlockConfig[]
+  wisdomOverrides       TempleWisdomOverride[]
 
   @@index([code])
 }
@@ -69,6 +70,29 @@ model DharmaQuote {
   isSpecial   Boolean  @default(false)
   specialDate String?
   createdAt   DateTime @default(now())
+}
+
+// 365일 오늘의 부처님말씀 공통 데이터
+model DailyWisdom {
+  id        String   @id @default(cuid())
+  monthDay  String   @unique  // e.g. "04-06"
+  title     String
+  content   String   @db.Text
+  source    String
+  verse     String?
+  createdAt DateTime @default(now())
+}
+
+// 사찰별 부처님말씀 Override
+model TempleWisdomOverride {
+  id        String   @id @default(cuid())
+  templeId  String
+  monthDay  String
+  content   String   @db.Text
+  isActive  Boolean  @default(true)
+  temple    Temple   @relation(fields: [templeId], references: [id])
+
+  @@unique([templeId, monthDay])
 }
 
 // 블록 카탈로그 — 어드민에서 블록 종류·defaultProps·adminSchema 관리

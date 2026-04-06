@@ -46,8 +46,8 @@ export default async function AdminHome({ params }: { params: Promise<{ slug: st
           />
           <BigButton
             icon="📖"
-            label="오늘의 법문"
-            description="이번 주 법문을 입력합니다"
+            label="오늘의 부처님말씀"
+            description="오늘의 부처님말씀을 입력합니다"
             color="#10B981"
             href={`/admin/${slug}/dharma`}
           />

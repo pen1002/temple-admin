@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { db } from '@/lib/db'
 import { getNotices, getEventList, getRitualTimes, getDharma, getGallery } from '@/lib/kv'
+import { getDailyWisdom } from '@/lib/getDailyWisdom'
 import BlockRenderer from './_blocks/BlockRenderer'
 import FooterBlock from './_blocks/FooterBlock'
 import type { TempleData, TemplateContent } from './_blocks/types'
@@ -77,12 +78,13 @@ export default async function TemplePage(
   if (!temple) notFound()
 
   // Redis: 동적 콘텐츠 (병렬 fetch)
-  const [notices, eventList, ritualTimes, dharma, gallery] = await Promise.all([
+  const [notices, eventList, ritualTimes, dharma, gallery, dailyWisdom] = await Promise.all([
     getNotices(slug),
     getEventList(slug),
     getRitualTimes(slug),
     getDharma(slug),
     getGallery(slug),
+    getDailyWisdom(slug),
   ])
 
   const content: TemplateContent = { notices, eventList, ritualTimes, dharma, gallery }
@@ -126,6 +128,7 @@ export default async function TemplePage(
           config={(block.config ?? {}) as Record<string, unknown>}
           temple={templeData}
           content={content}
+          dailyWisdom={dailyWisdom}
         />
       ))}
       <FooterBlock temple={templeData} />

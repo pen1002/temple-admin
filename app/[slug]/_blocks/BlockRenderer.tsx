@@ -1,4 +1,6 @@
 import type { TempleData, TemplateContent } from './types'
+import type { DailyWisdomData } from '@/lib/getDailyWisdom'
+import DailyWisdomBlock from './wisdom/DailyWisdomBlock'
 import NavBlock      from './NavBlock'
 import HeroBlock    from './HeroBlock'
 import DharmaBlock  from './DharmaBlock'
@@ -17,10 +19,11 @@ import OfferingBlock         from './OfferingBlock'
 import QuoteBannerBlock      from './QuoteBannerBlock'
 
 interface Props {
-  blockType: string
-  config:    Record<string, unknown>
-  temple:    TempleData
-  content:   TemplateContent
+  blockType:    string
+  config:       Record<string, unknown>
+  temple:       TempleData
+  content:      TemplateContent
+  dailyWisdom?: DailyWisdomData | null
 }
 
 /**
@@ -36,7 +39,12 @@ interface Props {
  *
  * 미구현 블록 타입은 null 반환 (렌더링 스킵)
  */
-export default function BlockRenderer({ blockType, config, temple, content }: Props) {
+export default function BlockRenderer({ blockType, config, temple, content, dailyWisdom }: Props) {
+  // WISDOM-01: 오늘의 부처님말씀
+  if (blockType === 'WISDOM-01') {
+    return <DailyWisdomBlock wisdom={dailyWisdom ?? null} temple={temple} />
+  }
+
   // N-01: GNB 네비게이션
   if (blockType === 'N-01') {
     return <NavBlock temple={temple} config={config} />
