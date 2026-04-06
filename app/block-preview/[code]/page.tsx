@@ -3,6 +3,8 @@
 import { notFound } from 'next/navigation'
 import TempleH06Hero, { defaultProps as h06DefaultProps } from '@/components/blocks/TempleH06Hero'
 import HeroH05Lantern from '@/components/hero/HeroH05Lantern'
+// @ts-ignore
+import LanternHeroBlock from '@/app/[slug]/_blocks/hero/borimsa/LanternHeroBlock'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore — [slug] 디렉토리명에 대괄호 포함
 import HeroBlock, { CombinedHero, LanternHero, ParticleHero, ImageHero } from '@/app/[slug]/_blocks/HeroBlock'
@@ -26,6 +28,18 @@ const T: TempleData = {
   primaryColor: '#8B2500', secondaryColor: '#C5A572',
   denomination: '대한불교 조계종', abbotName: '법광 스님',
   foundedYear: 936, tier: 2,
+}
+
+// H-05 미리보기: 보림사 실제 데이터
+const T_BORIMSA: TempleData = {
+  id: 'borimsa', code: 'borimsa',
+  name: '보림사', nameEn: 'Borimsa Temple',
+  description: '한국 선종의 종가, 동양 3보림의 하나',
+  address: '전라남도 장흥군 유치면 봉덕리 45', phone: '061-860-1232',
+  email: null, heroImageUrl: null, logoUrl: null,
+  primaryColor: '#C9A84C', secondaryColor: '#8B6914',
+  denomination: '대한불교 조계종', abbotName: '정응 스님',
+  foundedYear: 858, tier: 2,
 }
 
 const DHARMA: DharmaData = {
@@ -194,7 +208,7 @@ export default async function BlockPreviewPage(
   if (code === 'H-02') return <div style={{ margin:0, padding:0, overflow:'hidden' }}><ImageHero temple={T} /></div>
   if (code === 'H-03') return <Placeholder code={code} name="슬라이드형" desc="3~5장 자동전환·터치스와이프" catColor="#1B3A6B" catBg="#f0f4ff" catIcon="🏯" />
   if (code === 'H-04') return <div style={{ margin:0, padding:0, overflow:'hidden' }}><ParticleHero temple={T} /></div>
-  if (code === 'H-05') return <div style={{ margin:0, padding:0, overflow:'hidden' }}><HeroH05Lantern temple={T} /></div>
+  if (code === 'H-05') return <div style={{ margin:0, padding:0, overflow:'hidden' }}><LanternHeroBlock temple={T_BORIMSA} /></div>
   if (code === 'H-06') return <div style={{ margin:0, padding:0, overflow:'hidden' }}><TempleH06Hero {...h06DefaultProps} blockId="h06-preview-chunguansa" denomination="대한불교조계종" templeName="천 관 사" subtitle="천년의 빛이 머무는 곳" description={"마음의 등불을 밝혀\n진리의 길을 걷습니다"} ctaLabel="홈페이지 바로가기" ctaHref="/about" theme="gold" mobileLanternScale={0.8} /></div>
   if (code === 'H-07') return <Placeholder code={code} name="원형→그리드 변환형" desc="원이 스크롤 시 4×4 메뉴로 전환" catColor="#1B3A6B" catBg="#f0f4ff" catIcon="🏯" />
   if (code === 'H-08') return <Placeholder code={code} name="행사 전면 배치형" desc="D-30 이내 행사 금색 강조" catColor="#1B3A6B" catBg="#f0f4ff" catIcon="🏯" />
