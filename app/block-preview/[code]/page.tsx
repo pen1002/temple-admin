@@ -5,6 +5,8 @@ import TempleH06Hero, { defaultProps as h06DefaultProps } from '@/components/blo
 import HeroH05Lantern from '@/components/hero/HeroH05Lantern'
 // @ts-ignore
 import StandardLanternHero from '@/app/[slug]/_blocks/hero/standard/LanternHeroBlock'
+// @ts-ignore
+import BorimsaCandleHero from '@/app/[slug]/_blocks/hero/borimsa/CandleHeroBlock'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore — [slug] 디렉토리명에 대괄호 포함
 import HeroBlock, { CombinedHero, LanternHero, ParticleHero, ImageHero } from '@/app/[slug]/_blocks/HeroBlock'
@@ -219,7 +221,7 @@ export default async function BlockPreviewPage(
   /></div>
   if (code === 'H-06') return <div style={{ margin:0, padding:0, overflow:'hidden' }}><TempleH06Hero {...h06DefaultProps} blockId="h06-preview-chunguansa" denomination="대한불교조계종" templeName="천 관 사" subtitle="천년의 빛이 머무는 곳" description={"마음의 등불을 밝혀\n진리의 길을 걷습니다"} ctaLabel="홈페이지 바로가기" ctaHref="/about" theme="gold" mobileLanternScale={0.8} /></div>
   if (code === 'H-07') return <Placeholder code={code} name="원형→그리드 변환형" desc="원이 스크롤 시 4×4 메뉴로 전환" catColor="#1B3A6B" catBg="#f0f4ff" catIcon="🏯" />
-  if (code === 'H-08') return <Placeholder code={code} name="행사 전면 배치형" desc="D-30 이내 행사 금색 강조" catColor="#1B3A6B" catBg="#f0f4ff" catIcon="🏯" />
+  if (code === 'H-08') return <div style={{ margin:0, padding:0, overflow:'hidden' }}><BorimsaCandleHero temple={T_BORIMSA} /></div>
   if (code === 'H-09') return <Placeholder code={code} name="계절 테마형" desc="봄·여름·가을·겨울 자동 전환" catColor="#1B3A6B" catBg="#f0f4ff" catIcon="🏯" />
   if (code === 'H-10') return <Placeholder code={code} name="3D 모델형" desc="Sketchfab 불상 3D 인터랙션" catColor="#1B3A6B" catBg="#f0f4ff" catIcon="🏯" />
 

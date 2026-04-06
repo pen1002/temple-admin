@@ -5,6 +5,8 @@ import NavBlock      from './NavBlock'
 import HeroBlock    from './HeroBlock'
 import LanternHeroBlock from './hero/borimsa/LanternHeroBlock'
 import StandardLanternHero from './hero/standard/LanternHeroBlock'
+import BorimsaCandleHero from './hero/borimsa/CandleHeroBlock'
+import StandardCandleHero from './hero/standard/CandleHeroBlock'
 import DharmaBlock  from './DharmaBlock'
 import NoticeBlock  from './NoticeBlock'
 import EventBlock   from './EventBlock'
@@ -69,6 +71,29 @@ export default function BlockRenderer({ blockType, config, temple, content, dail
         ctaSecondary={      (cfg.ctaSecondary      as { text: string; href: string }) ?? { text: '오시는 길', href: '#location' }}
         lanternCount={      (cfg.lanternCount      as number) ?? 12}
         bgColor={           (cfg.bgColor           as string) ?? '#0a1020'}
+      />
+    )
+  }
+
+  // H-08: 보림사 전용 촛불법당형 히어로
+  if (blockType === 'H-08' && temple.code === 'borimsa') {
+    return <BorimsaCandleHero temple={temple} />
+  }
+
+  // H-08 표준: config props 주입 → temple 기본값 fallback
+  if (blockType === 'H-08') {
+    const cfg = config as Record<string, unknown>
+    return (
+      <StandardCandleHero
+        templeName={       (cfg.templeName       as string) ?? temple.name}
+        templeNameHanja={  (cfg.templeNameHanja  as string) ?? ''}
+        badge={            (cfg.badge            as string) ?? `● ${temple.denomination ?? '대한불교조계종'}`}
+        taglines={         (cfg.taglines         as string[]) ?? ['천년의 고요한 도량', '마음을 내려놓는 공간', '부처님의 자비가 함께합니다']}
+        ctaPrimary={       (cfg.ctaPrimary       as { text: string; href: string }) ?? { text: '기도 동참하기', href: '#offering' }}
+        ctaSecondary={     (cfg.ctaSecondary     as { text: string; href: string }) ?? { text: '오시는 길',   href: '#location' }}
+        candleCount={      (cfg.candleCount      as number) ?? 7}
+        bgColor={          (cfg.bgColor          as string) ?? '#070201'}
+        buddhaType={       (cfg.buddhaType       as string) ?? 'vairocana'}
       />
     )
   }
