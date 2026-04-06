@@ -14,7 +14,13 @@ export default function GalleryBlock({ content, temple }: Props) {
 
   if (gallery.length === 0) return null
 
-  const displayed = gallery.slice(0, 10)
+  // 10칸 채우기 — 부족하면 플레이스홀더로 패딩
+  const GRID_SIZE = 10
+  const displayed = gallery.slice(0, GRID_SIZE)
+  const padded: (typeof gallery[0] | null)[] = [
+    ...displayed,
+    ...Array<null>(Math.max(0, GRID_SIZE - displayed.length)).fill(null),
+  ]
 
   return (
     <>
@@ -32,49 +38,66 @@ export default function GalleryBlock({ content, temple }: Props) {
           gap: '12px',
           marginTop: '48px',
         }}>
-          {displayed.map((item, i) => (
-            <div
-              key={i}
-              onClick={() => setLightbox(item.url)}
-              style={{
-                position: 'relative',
-                aspectRatio: '4/3',
-                overflow: 'hidden',
-                borderRadius: 'var(--radius-lg, 12px)',
-                cursor: 'pointer',
-                background: 'var(--color-bg-alt, #eee)',
-              }}
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={item.url}
-                alt={item.caption ?? `${temple.name} 사진 ${i + 1}`}
-                loading="lazy"
-                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', transition: 'transform .35s' }}
-              />
+          {padded.map((item, i) => (
+            item ? (
               <div
-                className="bt-gallery-overlay"
+                key={i}
+                onClick={() => setLightbox(item.url)}
                 style={{
-                  position: 'absolute', inset: 0,
-                  background: 'rgba(0,0,0,0)',
-                  display: 'flex', alignItems: 'flex-end',
-                  padding: '12px',
-                  transition: 'background .25s',
+                  position: 'relative',
+                  aspectRatio: '4/3',
+                  overflow: 'hidden',
+                  borderRadius: 'var(--radius-lg, 12px)',
+                  cursor: 'pointer',
+                  background: 'var(--color-bg-alt, #eee)',
                 }}
-                onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = 'rgba(0,0,0,0.45)'; const img = e.currentTarget.previousElementSibling as HTMLImageElement; if (img) img.style.transform = 'scale(1.03)'; }}
-                onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = 'rgba(0,0,0,0)'; const img = e.currentTarget.previousElementSibling as HTMLImageElement; if (img) img.style.transform = 'scale(1)'; }}
               >
-                {item.caption && (
-                  <span style={{ fontSize: '.75rem', color: '#fff', fontWeight: 600, textShadow: '0 1px 4px rgba(0,0,0,0.8)' }}>
-                    {item.caption}
-                  </span>
-                )}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={item.url}
+                  alt={item.caption ?? `${temple.name} 사진 ${i + 1}`}
+                  loading="lazy"
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', transition: 'transform .35s' }}
+                />
+                <div
+                  style={{
+                    position: 'absolute', inset: 0,
+                    background: 'rgba(0,0,0,0)',
+                    display: 'flex', alignItems: 'flex-end',
+                    padding: '12px',
+                    transition: 'background .25s',
+                  }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = 'rgba(0,0,0,0.45)'; const img = e.currentTarget.previousElementSibling as HTMLImageElement; if (img) img.style.transform = 'scale(1.03)'; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = 'rgba(0,0,0,0)'; const img = e.currentTarget.previousElementSibling as HTMLImageElement; if (img) img.style.transform = 'scale(1)'; }}
+                >
+                  {item.caption && (
+                    <span style={{ fontSize: '.75rem', color: '#fff', fontWeight: 600, textShadow: '0 1px 4px rgba(0,0,0,0.8)' }}>
+                      {item.caption}
+                    </span>
+                  )}
+                </div>
               </div>
-            </div>
+            ) : (
+              /* 플레이스홀더 */
+              <div
+                key={i}
+                style={{
+                  aspectRatio: '4/3',
+                  borderRadius: 'var(--radius-lg, 12px)',
+                  background: 'var(--color-bg-alt, #e8e3d8)',
+                  border: '1px dashed var(--color-border, #ccc)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <span style={{ fontSize: '1.5rem', opacity: 0.25 }}>📷</span>
+              </div>
+            )
           ))}
         </div>
 
-        {gallery.length > 10 && (
+        {gallery.length > GRID_SIZE && (
           <p style={{ textAlign: 'center', marginTop: 24, fontSize: '.85rem', color: 'var(--color-text-light)' }}>
             최근 {gallery.length}장 중 10장 표시
           </p>

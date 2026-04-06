@@ -22,8 +22,8 @@ export default function TickerBlock({ content, temple, config }: Props) {
   const animDuration = `${Math.max(items.length * speed, 20)}s`
 
   return (
-    <section aria-label="공지 티커">
-      <div className="bt-ticker">
+    <section aria-label="공지 티커" style={{ background: '#2C5F2D', overflow: 'hidden', padding: '12px 0', whiteSpace: 'nowrap' }}>
+      <div className="bt-ticker" style={{ background: 'transparent' }}>
         <div
           className="bt-ticker-track"
           style={{ animationDuration: animDuration }}

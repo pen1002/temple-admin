@@ -270,69 +270,29 @@ export default function HeroH04Particle({ temple, config, content }: Props) {
           </div>
         </div>
 
-        {/* ── 하단 공지·행사 바 ─────────────────────── */}
-        {((content?.notices?.length ?? 0) > 0 || (content?.eventList?.length ?? 0) > 0) && (
-          <div
-            style={{
-              position:    "absolute",
-              bottom:       0,
-              left:         0,
-              right:        0,
-              zIndex:       4,
-              background:  "rgba(5,8,16,0.88)",
-              borderTop:   "1px solid rgba(212,175,55,0.2)",
-              display:     "flex",
-              flexWrap:    "wrap",
-              gap:          0,
-            }}
-          >
-            {content?.notices?.[0] && (
-              <div style={{
-                flex:       "1 1 50%",
-                minWidth:    0,
-                display:    "flex",
-                alignItems: "center",
-                gap:         8,
-                padding:    "10px 20px",
-                borderRight: "1px solid rgba(212,175,55,0.1)",
-              }}>
-                <span style={{ fontSize: 13, flexShrink: 0, color: "#D4AF37" }}>📢</span>
-                <span style={{
-                  fontSize:     "clamp(11px,2vw,13px)",
-                  color:        "rgba(255,250,240,0.8)",
-                  overflow:     "hidden",
-                  textOverflow: "ellipsis",
-                  whiteSpace:   "nowrap",
-                  flex:          1,
-                }}>
-                  {content.notices[0].title}
-                </span>
-              </div>
-            )}
-            {content?.eventList?.[0] && (
-              <div style={{
-                flex:       "1 1 50%",
-                minWidth:    0,
-                display:    "flex",
-                alignItems: "center",
-                gap:         8,
-                padding:    "10px 20px",
-              }}>
-                <span style={{ fontSize: 13, flexShrink: 0, color: "#88ccdd" }}>📅</span>
-                <span style={{
-                  fontSize:     "clamp(11px,2vw,13px)",
-                  color:        "rgba(255,250,240,0.8)",
-                  overflow:     "hidden",
-                  textOverflow: "ellipsis",
-                  whiteSpace:   "nowrap",
-                  flex:          1,
-                }}>
-                  {content.eventList[0].name}
-                </span>
-              </div>
-            )}
-          </div>
-        )}
+        {/* ── 하단 사찰명 바 ─────────────────────────── */}
+        <div
+          style={{
+            position:   "absolute",
+            bottom:      0,
+            left:        0,
+            right:       0,
+            zIndex:      4,
+            background: "rgba(5,8,16,0.75)",
+            borderTop:  "1px solid rgba(212,175,55,0.15)",
+            padding:    "8px 20px",
+            display:    "flex",
+            alignItems: "center",
+            gap:         8,
+          }}
+        >
+          <span style={{ fontSize: 12, color: "rgba(212,175,55,0.6)", letterSpacing: "0.2em" }}>
+            ☸
+          </span>
+          <span style={{ fontSize: "clamp(11px,2vw,13px)", color: "rgba(255,250,240,0.5)", letterSpacing: "0.05em" }}>
+            {temple.denomination} {temple.name}
+          </span>
+        </div>
       </section>
 
     </>
