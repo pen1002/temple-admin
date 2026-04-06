@@ -1,4 +1,4 @@
-// G-01 / SEC07-*: 경내 갤러리
+// G-01 / SEC07-*: 사찰 갤러리
 'use client'
 import { useState } from 'react'
 import type { TemplateContent, TempleData } from './types'
@@ -12,7 +12,31 @@ export default function GalleryBlock({ content, temple }: Props) {
   const { gallery } = content
   const [lightbox, setLightbox] = useState<string | null>(null)
 
-  if (gallery.length === 0) return null
+  // 갤러리 비어있으면 어드민 안내 문구 표시
+  if (gallery.length === 0) {
+    return (
+      <section id="gallery" className="bt-section">
+        <div className="bt-section-inner">
+          <span className="bt-section-label">Gallery</span>
+          <h2 className="bt-section-title">사찰 갤러리</h2>
+          <div style={{
+            marginTop: 48, padding: '60px 24px', textAlign: 'center',
+            border: '2px dashed var(--color-border, #D4CEC4)',
+            borderRadius: 'var(--radius-lg, 16px)',
+            background: 'var(--color-bg-alt, #EDE7DB)',
+          }}>
+            <p style={{ fontSize: '2rem', marginBottom: 16 }}>📷</p>
+            <p style={{ fontSize: '1rem', color: 'var(--color-text-light)', fontWeight: 600 }}>
+              사찰 어드민에서 사진을 올려주세요
+            </p>
+            <p style={{ fontSize: '.85rem', color: 'var(--color-text-light)', marginTop: 8 }}>
+              관리자 페이지 → 사진 올리기에서 경내 사진을 등록하면 갤러리에 즉시 반영됩니다
+            </p>
+          </div>
+        </div>
+      </section>
+    )
+  }
 
   // 10칸 채우기 — 부족하면 플레이스홀더로 패딩
   const GRID_SIZE = 10
@@ -30,7 +54,7 @@ export default function GalleryBlock({ content, temple }: Props) {
     <section id="gallery" className="bt-section">
       <div className="bt-section-inner">
         <span className="bt-section-label">Gallery</span>
-        <h2 className="bt-section-title">경내 풍경</h2>
+        <h2 className="bt-section-title">사찰 갤러리</h2>
 
         <div className="gallery-grid-2col" style={{
           display: 'grid',
