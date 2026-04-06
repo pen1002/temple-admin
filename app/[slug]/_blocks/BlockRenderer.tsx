@@ -7,6 +7,8 @@ import LanternHeroBlock from './hero/borimsa/LanternHeroBlock'
 import StandardLanternHero from './hero/standard/LanternHeroBlock'
 import BorimsaCandleHero from './hero/borimsa/CandleHeroBlock'
 import StandardCandleHero from './hero/standard/CandleHeroBlock'
+import BorimsaParadeHero from './hero/borimsa/LanternParadeHeroBlock'
+import StandardParadeHero from './hero/standard/LanternParadeHeroBlock'
 import DharmaBlock  from './DharmaBlock'
 import NoticeBlock  from './NoticeBlock'
 import EventBlock   from './EventBlock'
@@ -94,6 +96,24 @@ export default function BlockRenderer({ blockType, config, temple, content, dail
         candleCount={      (cfg.candleCount      as number) ?? 7}
         bgColor={          (cfg.bgColor          as string) ?? '#070201'}
         buddhaType={       (cfg.buddhaType       as string) ?? 'vairocana'}
+      />
+    )
+  }
+
+  // H-10: 보림사 전용 연등행렬형
+  if (blockType === 'H-10' && temple.code === 'borimsa') {
+    return <BorimsaParadeHero temple={temple} />
+  }
+
+  // H-10 표준: config props 주입 → temple 기본값 fallback
+  if (blockType === 'H-10') {
+    const cfg = config as Record<string, unknown>
+    return (
+      <StandardParadeHero
+        mainTitle={      (cfg.mainTitle      as string) ?? '부처님 오신 날'}
+        subtitle={       (cfg.subtitle       as string) ?? `${temple.name} 연등행렬 · 불기 2569년`}
+        lanternCount={   (cfg.lanternCount   as number) ?? 35}
+        glowIntensity={  (cfg.glowIntensity  as number) ?? 3}
       />
     )
   }
