@@ -6,8 +6,8 @@ import BlockRenderer from './_blocks/BlockRenderer'
 import FooterBlock from './_blocks/FooterBlock'
 import type { TempleData, TemplateContent } from './_blocks/types'
 
-// ISR: 1시간마다 재생성
-export const revalidate = 3600
+// ISR: 1분마다 재생성 (on-demand revalidation 병행)
+export const revalidate = 60
 // 정적 목록에 없는 slug도 요청 시 생성 허용
 export const dynamicParams = true
 
