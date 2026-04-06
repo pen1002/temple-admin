@@ -41,7 +41,7 @@ const ROW_CFG = [
 // ── Types ─────────────────────────────────────────────────────────────────────
 interface Star     { xR: number; yR: number; r: number }
 interface Building { xR: number; wR: number; hR: number; col: string; wr: number; wc: number; lit: boolean[][] }
-interface Lantern  { rx: number; rope: 0|1|2; col: string; ph: number; sz: number }
+interface Lantern  { rx: number; rope: 0|1|2; col: string; ph: number; sz: number; swayS: number }
 interface Person   {
   x: number; row: number; wp: number; spd: number
   skin: string; cls: string; hat: 0|1|2; hatC: string
@@ -105,11 +105,12 @@ function makeLanterns(count: number): Lantern[] {
   ;([c0, c1, c2] as [number, number, number]).forEach((n, ri) => {
     for (let i = 0; i < n; i++) {
       result.push({
-        rx:   (i + 0.5) / n,
-        rope: ri as 0|1|2,
-        col:  LAN_C[(ri * 5 + i) % LAN_C.length],
-        ph:   Math.random() * Math.PI * 2,
-        sz:   rnd(0.85, 1.15),
+        rx:    (i + 0.5) / n,
+        rope:  ri as 0|1|2,
+        col:   LAN_C[(ri * 5 + i) % LAN_C.length],
+        ph:    Math.random() * Math.PI * 2,
+        sz:    rnd(0.85, 1.15),
+        swayS: 0.09 + Math.random() * 0.11,
       })
     }
   })
@@ -238,7 +239,7 @@ function drawLanterns(
   lns: Lantern[], t: number, gm: number,
 ) {
   for (const ln of lns) {
-    const sw = Math.sin(ln.ph + t * 0.5) * 3
+    const sw = Math.sin(t * 0.00025 * ln.swayS + ln.ph) * 3
     const lx = ln.rx * w + sw
     const ly = ropeYAt(ln.rx, ln.rope, h) + 6
     const lw = 10 * ln.sz, lh = lw * 1.65
@@ -296,7 +297,7 @@ function drawLanternReflect(
   const roadY = ROAD_YR * h
   ctx.save(); ctx.globalAlpha = 0.15 * gm
   for (const ln of lns) {
-    const sw = Math.sin(ln.ph + t * 0.5) * 3
+    const sw = Math.sin(t * 0.00025 * ln.swayS + ln.ph) * 3
     const lx = ln.rx * w + sw
     const [r, g, b] = hexRgb(ln.col)
     const rfl = ctx.createRadialGradient(lx, roadY, 0, lx, roadY, 22)
@@ -314,7 +315,7 @@ function drawPerson(
   p: Person, t: number, al: number,
 ) {
   // 보행: Math.sin(t*0.003+walkPhase)*2
-  const wk  = Math.sin(t * 0.003 + p.wp) * 2
+  const wk  = Math.sin(t * 0.00075 + p.wp) * 2
   const bob = Math.abs(wk) * 0.9 * sc
   const fy  = py - bob
 
@@ -372,7 +373,7 @@ function drawPerson(
 
   // 손 연등 (65% 확률) — pulse glow + 9색 랜덤
   if (p.hl) {
-    const pulse = 1 + Math.sin(p.hlPh + t * 0.004) * 0.18
+    const pulse = 1 + Math.sin(p.hlPh + t * 0.001) * 0.18
     const hx = rEx + 1 * sc, hy = rEy - 4 * sc
     const [r, g, b] = hexRgb(p.hlC)
     const gg = ctx.createRadialGradient(hx, hy, 0, hx, hy, 7 * sc * pulse)
