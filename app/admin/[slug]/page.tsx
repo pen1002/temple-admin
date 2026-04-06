@@ -58,6 +58,13 @@ export default async function AdminHome({ params }: { params: Promise<{ slug: st
             color="#6B7280"
             href={`/admin/${slug}/photo`}
           />
+          <BigButton
+            icon="🖼️"
+            label="갤러리 제목 수정"
+            description="사진 제목을 수정하거나 사진을 삭제합니다"
+            color="#0EA5E9"
+            href={`/admin/${slug}/gallery`}
+          />
         </div>
       </div>
 
