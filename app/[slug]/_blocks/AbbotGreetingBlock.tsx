@@ -14,7 +14,7 @@ interface Props {
 export default function AbbotGreetingBlock({ temple, config }: Props) {
   const abbotName = (config.abbotName as string) ?? temple.abbotName ?? '정응 스님'
   const imageUrl = (config.imageUrl as string) ??
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Borimsa_Daeungjeon_11-05025.JPG/800px-Borimsa_Daeungjeon_11-05025.JPG'
+    'https://res.cloudinary.com/db3izttcy/image/upload/brs-dharmahall_jggvn9'
 
   const paragraphs: string[] = Array.isArray(config.aboutExtra)
     ? (config.aboutExtra as string[])

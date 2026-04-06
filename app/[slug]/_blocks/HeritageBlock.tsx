@@ -22,7 +22,7 @@ const BORIMSA_DEFAULTS: HeritageItem[] = [
     name: '장흥 보림사 남북 삼층석탑 및 석등',
     grade: '국보 제44호',
     year: '870년 (경문왕 10년, 통일신라)',
-    imageUrl: 'https://res.cloudinary.com/db3izttcy/image/upload/brs-nt44_vmceyo',
+    imageUrl: 'https://res.cloudinary.com/db3izttcy/image/upload/eastwest3rdtower_bnwfor',
     imageAlt: '장흥 보림사 남북 삼층석탑 및 석등',
     desc: '2기 한 쌍이 완전히 보존된 통일신라 석탑으로, 1933년 해체 복원 시 내부에서 납석제 석탑지가 발견되어 870년이라는 정확한 건립 연대가 확인되었습니다.',
     quote: '납석제 석탑지(石塔誌)에 870년(경문왕 10년)이라는 명확한 건립 연대가 기록되어 있어, 한국 석탑 연구의 타임캡슐이 되고 있습니다.',
@@ -119,18 +119,45 @@ export default function HeritageBlock({ temple, config }: Props) {
         <div className="bt-heritage-grid">
           {items.map((item, idx) => (
             <div key={idx} className="bt-heritage-card">
-              <div className="bt-heritage-card-inner">
-                <div className="bt-heritage-img">
-                  {item.imageUrl && (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={item.imageUrl} alt={item.imageAlt ?? item.name} />
-                  )}
-                  <div className="bt-heritage-badge">
-                    <span>{item.grade}</span>
+              {/* 이미지 있을 때: 40/60 그리드. 없을 때: 텍스트 전체 폭 */}
+              <div
+                className="bt-heritage-card-inner"
+                style={item.imageUrl ? {
+                  display: 'grid',
+                  gridTemplateColumns: '40% 60%',
+                  minHeight: 320,
+                } : {
+                  display: 'block',
+                }}
+              >
+                {/* 이미지 컬럼 */}
+                {item.imageUrl ? (
+                  <div
+                    className="bt-heritage-img"
+                    style={{ position: 'relative', overflow: 'hidden', minHeight: 280 }}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={item.imageUrl}
+                      alt={item.imageAlt ?? item.name}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                    />
+                    <div className="bt-heritage-badge">
+                      <span>{item.grade}</span>
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  /* 이미지 없을 때: 회색 플레이스홀더 없이 배지만 텍스트 위에 표시 */
+                  null
+                )}
 
-                <div className="bt-heritage-body">
+                <div className="bt-heritage-body" style={!item.imageUrl ? { padding: '32px 28px' } : undefined}>
+                  {/* 이미지 없는 항목: 등급 배지를 텍스트 영역 상단에 표시 */}
+                  {!item.imageUrl && (
+                    <div className="bt-heritage-badge" style={{ position: 'static', marginBottom: 12 }}>
+                      <span>{item.grade}</span>
+                    </div>
+                  )}
                   <p style={{ fontSize: '.78rem', color: 'var(--color-gold)', fontWeight: 700, letterSpacing: '.06em', marginBottom: 10 }}>
                     {item.year}
                   </p>
