@@ -1,7 +1,7 @@
 'use client'
 // H-10: 연등행렬형 히어로 — 부처님오신날 종로 연등행렬
 // Canvas 단일 구조: Sky→Stars→Buildings→Road+Lamps→Ropes→Lanterns→반영→5열 군중
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 
 export interface LanternParadeHeroProps {
   mainTitle?:     string   // 기본 "부처님 오신 날"
@@ -411,7 +411,6 @@ export default function LanternParadeHeroBlock({
   glowIntensity = 3,
 }: LanternParadeHeroProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const [snsOpen, setSnsOpen] = useState(false)
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -462,18 +461,6 @@ export default function LanternParadeHeroBlock({
     }
   }, [lanternCount, glowIntensity])
 
-  const SNS_ITEMS = [
-    { label: '카카오톡',    bg: '#FEE500', color: '#3A1D1D', href: '#' },
-    { label: '네이버 블로그', bg: '#03C75A', color: '#fff',    href: '#' },
-    { label: '유튜브',      bg: '#FF0000', color: '#fff',    href: '#' },
-  ]
-  const GNB_ITEMS = [
-    { label: '사찰소개',    href: '#about'  },
-    { label: '공지사항',    href: '#notice' },
-    { label: '기도법회행사', href: '#events' },
-    { label: '오시는길',    href: '#visit'  },
-  ]
-
   return (
     <>
       <style>{`
@@ -484,41 +471,6 @@ export default function LanternParadeHeroBlock({
         @keyframes ph-sub {
           from { opacity: 0; }
           to   { opacity: 1; }
-        }
-        @keyframes sns-down {
-          from { opacity: 0; transform: translateY(-8px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-        .ph-gnb-link { color: rgba(255,255,255,0.85); text-decoration: none; transition: color 0.2s; }
-        .ph-gnb-link:hover { color: #FFD700; }
-        .ph-wisdom-btn {
-          background: rgba(0,0,0,0.45);
-          border: 1.5px solid ${GOLD};
-          color: ${GOLD};
-          padding: 10px 28px;
-          border-radius: 999px;
-          font-size: clamp(0.75rem, 1.6vw, 0.92rem);
-          font-family: "Noto Serif KR","Nanum Myeongjo",serif;
-          letter-spacing: 0.06em;
-          cursor: pointer;
-          backdrop-filter: blur(6px);
-          transition: background 0.2s, box-shadow 0.2s;
-        }
-        .ph-wisdom-btn:hover {
-          background: rgba(201,168,76,0.18);
-          box-shadow: 0 0 18px ${GOLD}55;
-        }
-        .ph-hamburger {
-          background: rgba(0,0,0,0.45);
-          border: 1.5px solid rgba(255,255,255,0.30);
-          color: rgba(255,255,255,0.90);
-          width: 40px; height: 40px;
-          border-radius: 8px;
-          font-size: 1.3rem;
-          cursor: pointer;
-          display: flex; align-items: center; justify-content: center;
-          backdrop-filter: blur(6px);
-          flex-shrink: 0;
         }
       `}</style>
 
@@ -541,82 +493,7 @@ export default function LanternParadeHeroBlock({
           }}
         />
 
-        {/* ── 좌측 상단: 햄버거 버튼 + SNS 드롭다운 ── */}
-        <div style={{ position: 'absolute', top: '20px', left: '20px', zIndex: 10 }}>
-          <button
-            className="ph-hamburger"
-            onClick={() => setSnsOpen(o => !o)}
-            aria-label="SNS 메뉴"
-          >
-            {snsOpen ? '✕' : '≡'}
-          </button>
-          {snsOpen && (
-            <div
-              style={{
-                position:      'absolute',
-                top:           '48px',
-                left:          0,
-                display:       'flex',
-                flexDirection: 'column',
-                gap:           '6px',
-                animation:     'sns-down 0.22s ease-out both',
-              }}
-            >
-              {SNS_ITEMS.map(s => (
-                <a
-                  key={s.label}
-                  href={s.href}
-                  style={{
-                    background:     s.bg,
-                    color:          s.color,
-                    padding:        '8px 18px',
-                    borderRadius:   '8px',
-                    fontSize:       '0.82rem',
-                    fontWeight:     700,
-                    whiteSpace:     'nowrap',
-                    textDecoration: 'none',
-                    display:        'block',
-                    boxShadow:      '0 2px 8px rgba(0,0,0,0.4)',
-                  }}
-                >
-                  {s.label}
-                </a>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* ── 우측 상단: GNB 메뉴 4개 ── */}
-        <nav
-          style={{
-            position:   'absolute',
-            top:        '20px',
-            right:      '24px',
-            zIndex:     10,
-            display:    'flex',
-            alignItems: 'center',
-            gap:        'clamp(12px, 2.5vw, 32px)',
-          }}
-        >
-          {GNB_ITEMS.map(item => (
-            <a
-              key={item.label}
-              href={item.href}
-              className="ph-gnb-link"
-              style={{
-                fontSize:      'clamp(0.78rem, 1.5vw, 0.96rem)',
-                fontFamily:    '"Noto Serif KR","Nanum Myeongjo",serif',
-                fontWeight:    600,
-                letterSpacing: '0.04em',
-                textShadow:    '0 1px 6px rgba(0,0,0,0.9)',
-              }}
-            >
-              {item.label}
-            </a>
-          ))}
-        </nav>
-
-        {/* ── 텍스트 오버레이 (중앙 상단) ── */}
+        {/* 텍스트 오버레이 */}
         <div
           style={{
             position:      'absolute',
@@ -667,22 +544,6 @@ export default function LanternParadeHeroBlock({
           >
             {subtitle}
           </p>
-        </div>
-
-        {/* ── 하단 중앙: 오늘의 부처님말씀 보기 버튼 ── */}
-        <div
-          style={{
-            position:   'absolute',
-            bottom:     '2.2rem',
-            left:       0, right: 0,
-            textAlign:  'center',
-            zIndex:     2,
-            animation:  'ph-sub 1s ease-out 2s both',
-          }}
-        >
-          <a href="/" className="ph-wisdom-btn" style={{ display: 'inline-block', textDecoration: 'none' }}>
-            홈페이지 바로가기 →
-          </a>
         </div>
       </section>
     </>

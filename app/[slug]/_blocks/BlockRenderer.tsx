@@ -1,7 +1,7 @@
 import type { TempleData, TemplateContent } from './types'
 import type { DailyWisdomData } from '@/lib/getDailyWisdom'
 import DailyWisdomBlock from './wisdom/DailyWisdomBlock'
-import NavBlock      from './NavBlock'
+import NavBlock      from './nav/standard/NavBlock'
 import HeroBlock    from './HeroBlock'
 import LanternHeroBlock from './hero/borimsa/LanternHeroBlock'
 import StandardLanternHero from './hero/standard/LanternHeroBlock'
@@ -53,7 +53,17 @@ export default function BlockRenderer({ blockType, config, temple, content, dail
 
   // N-01: GNB 네비게이션
   if (blockType === 'N-01') {
-    return <NavBlock temple={temple} config={config} />
+    return (
+      <NavBlock
+        temple={{
+          name:         temple.name,
+          primaryColor: temple.primaryColor,
+          kakao:        (config.kakao   as string | undefined),
+          blog:         (config.blog    as string | undefined),
+          youtube:      (config.youtube as string | undefined),
+        }}
+      />
+    )
   }
 
   if (blockType === 'H-05' && temple.code === 'borimsa') {
