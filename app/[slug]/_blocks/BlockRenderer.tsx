@@ -4,6 +4,7 @@ import DailyWisdomBlock from './wisdom/DailyWisdomBlock'
 import NavBlock      from './NavBlock'
 import HeroBlock    from './HeroBlock'
 import LanternHeroBlock from './hero/borimsa/LanternHeroBlock'
+import StandardLanternHero from './hero/standard/LanternHeroBlock'
 import DharmaBlock  from './DharmaBlock'
 import NoticeBlock  from './NoticeBlock'
 import EventBlock   from './EventBlock'
@@ -53,6 +54,23 @@ export default function BlockRenderer({ blockType, config, temple, content, dail
 
   if (blockType === 'H-05' && temple.code === 'borimsa') {
     return <LanternHeroBlock temple={temple} />
+  }
+
+  // H-05 표준: config에서 props 주입, 없으면 temple 기본값으로 fallback
+  if (blockType === 'H-05') {
+    const cfg = config as Record<string, unknown>
+    return (
+      <StandardLanternHero
+        templeName={        (cfg.templeName        as string) ?? temple.name}
+        templeNameHanja={   (cfg.templeNameHanja   as string) ?? ''}
+        badge={             (cfg.badge             as string) ?? `● ${temple.denomination ?? '대한불교조계종'}`}
+        taglines={          (cfg.taglines          as string[]) ?? ['함께하는 불심', '천년의 도량', '마음의 안식처']}
+        ctaPrimary={        (cfg.ctaPrimary        as { text: string; href: string }) ?? { text: '사찰 소개', href: '#about' }}
+        ctaSecondary={      (cfg.ctaSecondary      as { text: string; href: string }) ?? { text: '오시는 길', href: '#location' }}
+        lanternCount={      (cfg.lanternCount      as number) ?? 12}
+        bgColor={           (cfg.bgColor           as string) ?? '#0a1020'}
+      />
+    )
   }
 
   if (blockType.startsWith('H-')) {
