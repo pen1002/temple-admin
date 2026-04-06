@@ -240,7 +240,7 @@ function drawLanterns(
   lns: Lantern[], t: number, gm: number,
 ) {
   for (const ln of lns) {
-    const sw = Math.sin(t * 0.001 * ln.swayS + ln.ph) * ln.swayA
+    const sw = Math.sin(t * 0.04 * ln.swayS + ln.ph) * ln.swayA
     const lx = ln.rx * w + sw
     const ly = ropeYAt(ln.rx, ln.rope, h) + 6
     const lw = 10 * ln.sz, lh = lw * 1.65
@@ -298,7 +298,7 @@ function drawLanternReflect(
   const roadY = ROAD_YR * h
   ctx.save(); ctx.globalAlpha = 0.15 * gm
   for (const ln of lns) {
-    const sw = Math.sin(t * 0.001 * ln.swayS + ln.ph) * ln.swayA
+    const sw = Math.sin(t * 0.04 * ln.swayS + ln.ph) * ln.swayA
     const lx = ln.rx * w + sw
     const [r, g, b] = hexRgb(ln.col)
     const rfl = ctx.createRadialGradient(lx, roadY, 0, lx, roadY, 22)
