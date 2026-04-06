@@ -45,7 +45,7 @@ export default function NavBlock({ temple, menus = DEFAULT_MENUS }: NavBlockProp
         }
         .nb-link:hover {
           text-decoration: underline;
-          color: var(--nb-accent);
+          color: ${accent};
         }
         @keyframes nb-slide-in {
           from { transform: translateX(100%); opacity: 0; }
@@ -59,20 +59,18 @@ export default function NavBlock({ temple, menus = DEFAULT_MENUS }: NavBlockProp
       {/* ── 네비게이션 바 ── */}
       <nav
         style={{
-          position:        'fixed',
-          top:             0, left: 0,
-          width:           '100%',
-          height:          '60px',
-          zIndex:          100,
-          background:      'rgba(255,255,255,0.95)',
-          backdropFilter:  'blur(8px)',
-          boxShadow:       '0 1px 8px rgba(0,0,0,0.08)',
-          display:         'flex',
-          alignItems:      'center',
-          padding:         '0 24px',
-          boxSizing:       'border-box',
-          // CSS 변수로 accent 전달
-          ['--nb-accent' as string]: accent,
+          position:       'fixed',
+          top:            0, left: 0,
+          width:          '100%',
+          height:         '60px',
+          zIndex:         100,
+          background:     'rgba(255,255,255,0.95)',
+          backdropFilter: 'blur(8px)',
+          boxShadow:      '0 1px 8px rgba(0,0,0,0.08)',
+          display:        'flex',
+          alignItems:     'center',
+          padding:        '0 24px',
+          boxSizing:      'border-box',
         }}
       >
         {/* 좌측: 사찰명 */}
