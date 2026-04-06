@@ -2,6 +2,7 @@
 import type { TempleData, TemplateContent } from './types'
 import LanternLayer from '@/components/hero/LanternLayer'
 import HeroH04Particle from '@/components/hero/HeroH04Particle'
+import HeroH06Lamp from '@/components/hero/HeroH06Lamp'
 
 interface Props {
   blockType: string
@@ -313,6 +314,7 @@ export { LanternHero, ParticleHero, ImageHero }
 export default function HeroBlock({ blockType, temple, config, content }: Props) {
   if (blockType === 'H-01') return <CombinedHero temple={temple} />
   if (blockType === 'H-04') return <HeroH04Particle temple={temple} config={config} content={content} />
+  if (blockType === 'H-06') return <HeroH06Lamp temple={temple} config={config} />
   if (blockType === 'H-02' || blockType === 'H-03') return <ImageHero temple={temple} />
   // H-05 기본값 (H-06 ~ H-10도 연등형으로 폴백)
   return <LanternHero temple={temple} />

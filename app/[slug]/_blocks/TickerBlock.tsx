@@ -10,13 +10,18 @@ interface Props {
 export default function TickerBlock({ content, temple, config }: Props) {
   const speed = (config.speed as number) ?? 40
 
-  const items: string[] =
-    content.notices.length > 0
+  // config.staticItems 있으면 우선 사용 (DB 설정값 — 국가지정문화재 등)
+  const staticItems = Array.isArray(config.staticItems)
+    ? (config.staticItems as string[])
+    : null
+
+  const items: string[] = staticItems
+    ?? (content.notices.length > 0
       ? content.notices.map(n => `📢 ${n.title}`)
       : [
           `${temple.name} 홈페이지에 오신 것을 환영합니다`,
           '📅 법회 및 행사 일정은 아래를 확인해주세요',
-        ]
+        ])
 
   const doubled = [...items, ...items]
   const animDuration = `${Math.max(items.length * speed, 20)}s`

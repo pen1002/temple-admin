@@ -10,6 +10,34 @@ import { cn } from "@/lib/utils";
    파티클·빛 색상 변수 중앙 관리
 ───────────────────────────────────────────── */
 export const LAMP_THEMES = {
+  forest: {
+    bgFrom:       "#0a2010",
+    bgMid:        "#05140a",
+    bgBase:       "#020a04",
+    glowColor:    "#047857",
+    glowAccent:   "#065F46",
+    barCenter:    "#d1fae5",
+    coneRgba:     "4,120,87",
+    particleColors: [
+      "rgba(4,120,87,",
+      "rgba(6,95,70,",
+      "rgba(16,185,129,",
+      "rgba(52,211,153,",
+      "rgba(110,231,183,",
+    ],
+    lantern: {
+      outer:        "#065F46",
+      inner:        "#047857",
+      highlight:    "#d1fae5",
+      stripe:       "#022c22",
+      cap:          "#064e3b",
+      capMid:       "#047857",
+      capTop:       "#10b981",
+      tassel:       "#10b981",
+      tasselAccent: "#6ee7b7",
+      char:         "#022c22",
+    },
+  },
   gold: {
     bgFrom:       "#3d1a00",
     bgMid:        "#1a0800",
