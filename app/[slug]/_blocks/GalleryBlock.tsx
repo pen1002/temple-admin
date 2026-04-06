@@ -29,7 +29,7 @@ export default function GalleryBlock({ content, temple }: Props) {
         <div className="gallery-grid-2col" style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(2, 1fr)',
-          gap: '16px',
+          gap: '12px',
           marginTop: '48px',
         }}>
           {displayed.map((item, i) => (
@@ -61,7 +61,7 @@ export default function GalleryBlock({ content, temple }: Props) {
                   padding: '12px',
                   transition: 'background .25s',
                 }}
-                onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = 'rgba(0,0,0,0.45)'; const img = e.currentTarget.previousElementSibling as HTMLImageElement; if (img) img.style.transform = 'scale(1.05)'; }}
+                onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = 'rgba(0,0,0,0.45)'; const img = e.currentTarget.previousElementSibling as HTMLImageElement; if (img) img.style.transform = 'scale(1.03)'; }}
                 onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = 'rgba(0,0,0,0)'; const img = e.currentTarget.previousElementSibling as HTMLImageElement; if (img) img.style.transform = 'scale(1)'; }}
               >
                 {item.caption && (

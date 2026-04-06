@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import type { TempleData } from "@/app/[slug]/_blocks/types";
+import type { TempleData, TemplateContent } from "@/app/[slug]/_blocks/types";
 
 /* ──────────────────────────────────────────────────────────────
    H-04 파티클 히어로 — Canvas RAF + ctx.clip() h1 Bounding Box
@@ -37,9 +37,10 @@ function spawnParticle(h1Rect: DOMRect, cvRect: DOMRect): Particle {
 interface Props {
   temple: TempleData;
   config?: Record<string, unknown>;
+  content?: TemplateContent;
 }
 
-export default function HeroH04Particle({ temple, config }: Props) {
+export default function HeroH04Particle({ temple, config, content }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const h1Ref     = useRef<HTMLHeadingElement>(null);
 
@@ -215,13 +216,6 @@ export default function HeroH04Particle({ temple, config }: Props) {
             {temple.name}
           </h1>
 
-          {/* 주지스님 */}
-          {temple.abbotName && (
-            <p style={{ color: "#D4AF37", marginBottom: "0.6rem" }}>
-              주지 {temple.abbotName}
-            </p>
-          )}
-
           {/* heroDesc */}
           {heroDesc && (
             <p
@@ -275,6 +269,70 @@ export default function HeroH04Particle({ temple, config }: Props) {
             )}
           </div>
         </div>
+
+        {/* ── 하단 공지·행사 바 ─────────────────────── */}
+        {((content?.notices?.length ?? 0) > 0 || (content?.eventList?.length ?? 0) > 0) && (
+          <div
+            style={{
+              position:    "absolute",
+              bottom:       0,
+              left:         0,
+              right:        0,
+              zIndex:       4,
+              background:  "rgba(5,8,16,0.88)",
+              borderTop:   "1px solid rgba(212,175,55,0.2)",
+              display:     "flex",
+              flexWrap:    "wrap",
+              gap:          0,
+            }}
+          >
+            {content?.notices?.[0] && (
+              <div style={{
+                flex:       "1 1 50%",
+                minWidth:    0,
+                display:    "flex",
+                alignItems: "center",
+                gap:         8,
+                padding:    "10px 20px",
+                borderRight: "1px solid rgba(212,175,55,0.1)",
+              }}>
+                <span style={{ fontSize: 13, flexShrink: 0, color: "#D4AF37" }}>📢</span>
+                <span style={{
+                  fontSize:     "clamp(11px,2vw,13px)",
+                  color:        "rgba(255,250,240,0.8)",
+                  overflow:     "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace:   "nowrap",
+                  flex:          1,
+                }}>
+                  {content.notices[0].title}
+                </span>
+              </div>
+            )}
+            {content?.eventList?.[0] && (
+              <div style={{
+                flex:       "1 1 50%",
+                minWidth:    0,
+                display:    "flex",
+                alignItems: "center",
+                gap:         8,
+                padding:    "10px 20px",
+              }}>
+                <span style={{ fontSize: 13, flexShrink: 0, color: "#88ccdd" }}>📅</span>
+                <span style={{
+                  fontSize:     "clamp(11px,2vw,13px)",
+                  color:        "rgba(255,250,240,0.8)",
+                  overflow:     "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace:   "nowrap",
+                  flex:          1,
+                }}>
+                  {content.eventList[0].name}
+                </span>
+              </div>
+            )}
+          </div>
+        )}
       </section>
 
     </>

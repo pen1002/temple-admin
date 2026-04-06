@@ -1,4 +1,5 @@
 import type { TempleData, TemplateContent } from './types'
+import NavBlock      from './NavBlock'
 import HeroBlock    from './HeroBlock'
 import DharmaBlock  from './DharmaBlock'
 import NoticeBlock  from './NoticeBlock'
@@ -36,8 +37,13 @@ interface Props {
  * 미구현 블록 타입은 null 반환 (렌더링 스킵)
  */
 export default function BlockRenderer({ blockType, config, temple, content }: Props) {
+  // N-01: GNB 네비게이션
+  if (blockType === 'N-01') {
+    return <NavBlock temple={temple} config={config} />
+  }
+
   if (blockType.startsWith('H-')) {
-    return <HeroBlock blockType={blockType} temple={temple} config={config} />
+    return <HeroBlock blockType={blockType} temple={temple} config={config} content={content} />
   }
 
   if (blockType === 'T-01') {
