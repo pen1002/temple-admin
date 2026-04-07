@@ -1,0 +1,1493 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>천관사 (天冠寺) — 장흥 천관보살 도량</title>
+<meta name="description" content="전남 장흥 천관산 도립공원에 위치한 천관사. 천오백년 역사와 보물 삼층석탑을 보유한 국내 유일의 천관보살 도량.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+
+<style>
+/* ════════════════════════════════════════════════════
+   단청 (丹靑) 컬러 팔레트 & 디자인 토큰
+════════════════════════════════════════════════════ */
+:root{
+  /* 단청 5색 */
+  --dan:    #C8372D;   /* 단주(丹朱) — 주홍 */
+  --dan-lt: #E8594A;
+  --dan-bg: #FDE8E6;
+  --chung:  #2B5BA8;  /* 쪽빛(靑) — 군청 */
+  --chung-lt:#4A7DC4;
+  --chung-bg:#E6EEF8;
+  --nok:    #3A7D44;  /* 녹색(綠) — 쑥빛 */
+  --nok-lt: #56A863;
+  --nok-bg: #E6F3E8;
+  --hwang:  #D4820A;  /* 황(黃) — 황토 */
+  --hwang-lt:#F0A830;
+  --hwang-bg:#FEF3DC;
+  --baek:   #F8F3E8;  /* 백(白) — 호분 */
+
+  /* 배경/텍스트 */
+  --bg:     #FDFAF4;
+  --bg2:    #F5EFE0;
+  --ink:    #1A120A;
+  --ink-2:  #3D2B1A;
+  --ink-3:  #6B5340;
+  --ink-4:  #9C7E65;
+
+  /* 서체 — 노토 서리프 단일 */
+  --font: 'Noto Serif KR', 'KoPub Batang', Georgia, serif;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-family:var(--font);background:#FDFAF4;color:var(--ink);-webkit-font-smoothing:antialiased;scroll-behavior:smooth}
+body{background:#FDFAF4;min-height:100%}
+::selection{background:var(--dan);color:#fff}
+:focus-visible{outline:2px solid var(--chung);outline-offset:3px}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--dan)}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+p{word-break:keep-all;overflow-wrap:break-word}
+.w{max-width:1280px;margin:0 auto;padding:0 1.4rem}
+@media(min-width:1024px){.w{padding:0 3.5rem}}
+
+/* ── 단청 패턴 배경 유틸 ── */
+.dancheong-pat{
+  background-image:
+    repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(200,55,45,.06) 39px,rgba(200,55,45,.06) 40px),
+    repeating-linear-gradient(90deg,transparent,transparent 39px,rgba(43,91,168,.06) 39px,rgba(43,91,168,.06) 40px);
+}
+.dan-stripe{height:4px;background:linear-gradient(to right,var(--dan),var(--hwang-lt),var(--nok),var(--chung),var(--dan))}
+
+/* ════════════════════════════════════════════════════
+   NAV
+════════════════════════════════════════════════════ */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:90;
+  height:60px;display:flex;align-items:center;
+  padding:0 1.4rem;
+  background:rgba(253,250,244,.96);
+  border-bottom:2px solid var(--dan);
+  box-shadow:0 2px 20px rgba(200,55,45,.12);
+  backdrop-filter:blur(12px);
+}
+@media(min-width:1024px){.nav{padding:0 3.5rem}}
+.nav-logo{display:flex;align-items:center;gap:.6rem;flex-shrink:0}
+.nav-lotus{font-size:1.5rem}
+.nav-ko{font-family:var(--font);font-size:1.05rem;font-weight:700;color:var(--ink);letter-spacing:.06em}
+.nav-hj{font-size:.58rem;letter-spacing:.4em;color:var(--dan);margin-top:1px}
+.nav-links{display:none;align-items:center;gap:0;margin-left:auto}
+@media(min-width:768px){.nav-links{display:flex}}
+.nav-a{
+  padding:.48rem .9rem;
+  font-family:var(--font);font-size:.72rem;letter-spacing:.1em;
+  color:var(--ink-3);transition:color .2s;
+  border-bottom:2px solid transparent;
+  white-space:nowrap;
+}
+.nav-a:hover,.nav-a.on{color:var(--dan);border-bottom-color:var(--dan)}
+.nav-cta{
+  margin-left:1rem;padding:.45rem 1.1rem;
+  background:var(--dan);color:#fff;
+  font-family:var(--font);font-size:.72rem;letter-spacing:.1em;
+  transition:background .2s;white-space:nowrap;
+  border-radius:2px;
+}
+.nav-cta:hover{background:var(--dan-lt)}
+.ham{display:flex;flex-direction:column;gap:5px;margin-left:auto;cursor:pointer;padding:.4rem}
+@media(min-width:768px){.ham{display:none}}
+.ham span{display:block;width:22px;height:2px;background:var(--dan)}
+.mob{
+  display:none;position:fixed;inset:0;z-index:89;
+  background:rgba(253,250,244,.98);
+  padding:80px 2rem 2rem;flex-direction:column;gap:1rem;
+}
+.mob.open{display:flex}
+.mob a{
+  font-family:var(--font);font-size:1.25rem;letter-spacing:.08em;
+  color:var(--ink-2);padding:.65rem 0;
+  border-bottom:1px solid rgba(200,55,45,.12);
+}
+.mob a:hover{color:var(--dan)}
+
+/* ════════════════════════════════════════════════════
+   HERO  — 단청 느낌 밝은 버전
+════════════════════════════════════════════════════ */
+.hero{
+  position:relative;width:100%;height:100svh;
+  min-height:580px;max-height:920px;
+  overflow:hidden;display:flex;align-items:flex-end;
+  background:#1A0A06;
+  margin-top:60px;
+}
+.hero-img{
+  position:absolute;inset:0;z-index:1;
+  width:100%;height:100%;
+  object-fit:cover;
+  object-position:center 25%;
+}
+@media(max-width:767px){
+  .hero-img{object-position:center center}
+  .hero{min-height:100svh !important;max-height:none}
+}
+/* 단청풍 오버레이 — 최대한 밝게 */
+.hero-ov{position:absolute;inset:0;z-index:2;
+  background:linear-gradient(170deg,
+    rgba(200,55,45,.05) 0%,
+    rgba(10,8,6,.04) 40%,
+    rgba(10,8,6,.45) 100%)}
+.hero-ov2{position:absolute;bottom:0;left:0;right:0;z-index:2;
+  height:28%;background:linear-gradient(to top,rgba(10,8,6,.55) 0%,transparent 100%)}
+/* 단청 상단 테두리 */
+.hero-top-bar{
+  position:absolute;top:0;left:0;right:0;z-index:5;
+  height:6px;
+  background:linear-gradient(to right,var(--dan),var(--hwang-lt),var(--nok-lt),var(--chung),var(--hwang-lt),var(--dan));
+}
+/* 단청 패턴 코너 장식 */
+.hero-deco{
+  position:absolute;top:20px;right:20px;z-index:5;
+  width:60px;height:60px;opacity:.6;
+}
+@media(min-width:768px){.hero-deco{width:90px;height:90px}}
+.hero-deco svg{width:100%;height:100%}
+
+.hero-text{
+  position:relative;z-index:10;width:100%;
+  max-width:1280px;margin:0 auto;
+  padding:0 1.4rem 5rem;
+}
+@media(min-width:1024px){.hero-text{padding:0 3.5rem 5.5rem}}
+.hero-inner{max-width:760px}
+
+.hero-sect{
+  display:inline-block;margin-bottom:.9rem;
+  padding:.18rem .85rem;
+  background:rgba(200,55,45,.9);
+  font-family:var(--font);font-size:.68rem;letter-spacing:.2em;color:#fff;
+  animation:fd .6s .1s both;
+}
+.hero-h1{
+  font-family:var(--font);font-size:clamp(3.5rem,10vw,8rem);
+  font-weight:900;color:#fff;line-height:.9;letter-spacing:.04em;
+  text-shadow:0 2px 0 rgba(0,0,0,.9),0 4px 20px rgba(0,0,0,.8);
+  animation:fd .9s .2s both;
+}
+.hero-hanja{
+  font-family:var(--font);font-size:clamp(.85rem,2vw,1.1rem);
+  letter-spacing:.5em;color:var(--hwang-lt);margin-top:.6rem;
+  animation:fd .9s .35s both;
+}
+.hero-slogan{
+  font-family:var(--font);font-size:clamp(.85rem,1.8vw,1.05rem);
+  color:rgba(255,255,255,.82);margin-top:1.1rem;
+  letter-spacing:.06em;font-style:italic;line-height:2;
+  animation:fd .9s .5s both;
+}
+.hero-badges{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:1.3rem;animation:fd .9s .65s both}
+.hbadge{
+  padding:.22rem .85rem;
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.3);
+  font-family:var(--font);font-size:.68rem;letter-spacing:.1em;color:rgba(255,255,255,.9);
+  backdrop-filter:blur(4px);
+}
+.scroll-hint{
+  position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);
+  z-index:10;display:flex;flex-direction:column;align-items:center;gap:5px;
+  animation:bob 2.2s ease-in-out infinite;pointer-events:none;
+}
+.scroll-line{width:1px;height:44px;background:linear-gradient(to bottom,transparent,rgba(240,168,48,.7))}
+.scroll-txt{font-family:var(--font);font-size:8px;letter-spacing:.3em;color:rgba(240,168,48,.6);text-transform:uppercase}
+@keyframes fd{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+@keyframes bob{0%,100%{transform:translateX(-50%) translateY(0);opacity:.7}50%{transform:translateX(-50%) translateY(8px);opacity:1}}
+
+/* ════════════════════════════════════════════════════
+   SECTION 공통 헤더
+════════════════════════════════════════════════════ */
+.sec-en{
+  font-family:var(--font);font-size:.62rem;letter-spacing:.32em;
+  text-transform:uppercase;font-style:italic;
+}
+.sec-h2{
+  font-family:var(--font);font-weight:800;
+  line-height:1.15;letter-spacing:.06em;
+  color:var(--ink);
+}
+.sec-sub{
+  font-family:var(--font);font-size:.8rem;
+  letter-spacing:.06em;color:var(--ink-3);
+  margin-top:.35rem;
+}
+/* 단청 강조 라인 */
+.dc-bar{
+  display:flex;gap:4px;margin:1rem 0 2rem;
+}
+.dc-bar span{display:block;height:4px;border-radius:2px}
+.dc-bar .b1{width:36px;background:var(--dan)}
+.dc-bar .b2{width:20px;background:var(--hwang-lt)}
+.dc-bar .b3{width:14px;background:var(--nok)}
+.dc-bar .b4{width:10px;background:var(--chung)}
+
+/* ════════════════════════════════════════════════════
+   EVENTS — 법회·행사 (사찰소개 위)
+════════════════════════════════════════════════════ */
+.events-sec{
+  background:var(--bg);
+  padding:5rem 0 5.5rem;
+  border-top:1px solid rgba(200,55,45,.1);
+}
+/* 단청 패턴 헤더 배경 */
+.ev-header{
+  background:linear-gradient(135deg,var(--dan) 0%,#9C1F18 100%);
+  padding:3rem 1.4rem 2.5rem;
+  text-align:center;margin-bottom:3rem;
+  position:relative;overflow:hidden;
+}
+@media(min-width:1024px){.ev-header{padding:3rem 3.5rem 2.5rem}}
+.ev-header::before{
+  content:'';position:absolute;inset:0;
+  background-image:
+    radial-gradient(circle at 20% 50%,rgba(255,255,255,.08) 0%,transparent 60%),
+    radial-gradient(circle at 80% 50%,rgba(240,168,48,.15) 0%,transparent 50%);
+}
+.ev-header-inner{position:relative;z-index:1}
+.ev-en{font-family:var(--font);font-size:.62rem;letter-spacing:.32em;text-transform:uppercase;color:rgba(255,255,255,.6);font-style:italic}
+.ev-title{font-family:var(--font);font-size:clamp(1.7rem,4vw,2.6rem);font-weight:900;color:#fff;letter-spacing:.08em;margin-top:.3rem}
+.ev-desc{font-family:var(--font);font-size:.82rem;letter-spacing:.08em;color:rgba(255,255,255,.75);margin-top:.5rem}
+
+/* 탭 영역 */
+.ev-tabs{display:flex;gap:.5rem;margin-bottom:2rem;flex-wrap:wrap}
+.ev-tab{
+  padding:.42rem 1.15rem;
+  font-family:var(--font);font-size:.72rem;letter-spacing:.1em;
+  border:1.5px solid rgba(200,55,45,.25);color:var(--ink-3);
+  cursor:pointer;transition:all .2s;background:#fff;
+}
+.ev-tab:hover,.ev-tab.on{background:var(--dan);color:#fff;border-color:var(--dan)}
+
+/* 이벤트 카드 그리드 */
+.ev-grid{display:grid;gap:1rem;grid-template-columns:1fr}
+@media(min-width:640px){.ev-grid{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:1024px){.ev-grid{grid-template-columns:repeat(4,1fr)}}
+.ev-card{
+  background:#fff;
+  border-top:4px solid var(--dan);
+  padding:1.5rem 1.4rem;
+  box-shadow:0 2px 12px rgba(26,18,10,.07);
+  transition:transform .2s,box-shadow .2s;
+}
+.ev-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(26,18,10,.12)}
+.ev-card:nth-child(2){border-top-color:var(--chung)}
+.ev-card:nth-child(3){border-top-color:var(--nok)}
+.ev-card:nth-child(4){border-top-color:var(--hwang)}
+.ev-date{
+  display:inline-block;padding:.15rem .6rem;
+  font-family:var(--font);font-size:.65rem;letter-spacing:.14em;
+  background:var(--dan-bg);color:var(--dan);
+  margin-bottom:.7rem;
+}
+.ev-card:nth-child(2) .ev-date{background:var(--chung-bg);color:var(--chung)}
+.ev-card:nth-child(3) .ev-date{background:var(--nok-bg);color:var(--nok)}
+.ev-card:nth-child(4) .ev-date{background:var(--hwang-bg);color:var(--hwang)}
+.ev-name{font-family:var(--font);font-size:1.05rem;font-weight:700;color:var(--ink);line-height:1.5;letter-spacing:.04em;margin-bottom:.5rem}
+.ev-note{font-family:var(--font);font-size:.76rem;color:var(--ink-3);line-height:1.8;letter-spacing:.03em}
+
+/* 티커 바 */
+.ticker-wrap{
+  background:var(--dan);
+  padding:.6rem 0;overflow:hidden;margin-bottom:0;
+}
+.ticker-in{display:flex;align-items:center;gap:1.25rem;padding:0 1.4rem}
+.ticker-lbl{
+  flex-shrink:0;display:flex;align-items:center;gap:.4rem;
+  font-family:var(--font);font-size:.68rem;letter-spacing:.2em;color:#fff;
+  padding-right:1rem;border-right:1px solid rgba(255,255,255,.4);white-space:nowrap;
+}
+.ticker-scroll{overflow:hidden;flex:1;min-width:0}
+.ticker-track{display:inline-flex;gap:5.5rem;white-space:nowrap;animation:tick 18s linear infinite}
+.ticker-track:hover{animation-play-state:paused}
+.ticker-item{display:inline-flex;align-items:center;gap:.55rem;
+  font-family:var(--font);font-size:.78rem;color:rgba(255,255,255,.85)}
+.ticker-dt{color:rgba(255,255,255,.55);font-style:italic}
+@keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ════════════════════════════════════════════════════
+   사찰 소개
+════════════════════════════════════════════════════ */
+.intro-sec{background:var(--bg2);padding:5.5rem 0 6rem;scroll-margin-top:64px}
+.intro-grid{display:grid;gap:3rem;grid-template-columns:1fr}
+@media(min-width:1024px){.intro-grid{grid-template-columns:1fr 1fr;gap:4rem;align-items:start}}
+
+/* 인사말 */
+.greeting{
+  position:relative;padding:1.4rem 1.5rem 1.4rem 2rem;
+  margin-bottom:2rem;
+  background:#fff;
+  border-left:4px solid var(--dan);
+  box-shadow:0 2px 12px rgba(26,18,10,.06);
+}
+.greeting p{
+  font-family:var(--font);font-size:clamp(.88rem,1.5vw,.96rem);
+  line-height:2.2;letter-spacing:.05em;color:var(--ink-2);font-style:italic;
+}
+.greeting-sig{
+  font-family:var(--font);font-size:.75rem;letter-spacing:.18em;
+  color:var(--dan);margin-top:.75rem;font-style:normal;
+}
+.desc-txt{
+  font-family:var(--font);font-size:.93rem;line-height:2.2;
+  letter-spacing:.04em;color:var(--ink-2);margin-bottom:1.2rem;
+}
+.prose-txt{
+  font-family:var(--font);font-size:.83rem;line-height:2.1;
+  letter-spacing:.03em;color:var(--ink-3);
+}
+.buildings-bar{
+  overflow-x:auto;scrollbar-width:none;margin-top:2rem;
+}
+.buildings-bar::-webkit-scrollbar{display:none}
+.buildings-inner{
+  display:inline-flex;align-items:center;gap:.5rem;
+  padding:.6rem 1.2rem;background:#fff;
+  border:1.5px solid rgba(200,55,45,.25);
+  font-family:var(--font);font-size:.78rem;letter-spacing:.08em;color:var(--dan);
+  white-space:nowrap;
+}
+
+/* 연혁 */
+.hist-box{
+  background:#fff;
+  border-top:4px solid var(--chung);
+  padding:2rem 1.75rem;
+  box-shadow:0 2px 16px rgba(26,18,10,.07);
+}
+.hist-ttl{font-family:var(--font);font-size:1.25rem;font-weight:800;
+  letter-spacing:.1em;color:var(--chung);margin-bottom:1.5rem}
+.hist-list{list-style:none}
+.hist-li{display:grid;grid-template-columns:9rem 1fr;gap:.75rem;
+  padding:.7rem 0;border-bottom:1px solid rgba(26,18,10,.07)}
+.hist-li:last-child{border-bottom:none}
+.hist-yr{
+  font-family:var(--font);font-size:.72rem;font-weight:600;
+  color:var(--chung);letter-spacing:.04em;line-height:1.7;padding-top:.05rem
+}
+.hist-ev{
+  font-family:var(--font);font-size:.85rem;line-height:1.85;
+  letter-spacing:.04em;color:var(--ink-2)
+}
+
+/* ════════════════════════════════════════════════════
+   사찰 갤러리
+════════════════════════════════════════════════════ */
+.gallery-sec{background:var(--bg);padding:5.5rem 0 6rem;scroll-margin-top:64px}
+
+/* 2행 레이아웃 */
+.gal-row1{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:6px}
+.gal-row2{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+@media(max-width:639px){
+  .gal-row1,.gal-row2{grid-template-columns:1fr}
+}
+.gi{position:relative;overflow:hidden;background:var(--bg2)}
+.gi img{width:100%;height:100%;object-fit:cover;transition:transform .6s cubic-bezier(.22,1,.36,1)}
+.gi:hover img{transform:scale(1.06)}
+.gi-ov{
+  position:absolute;top:0;right:0;bottom:0;left:0;
+  background:linear-gradient(to top,rgba(26,18,10,.8) 0%,transparent 55%);
+  opacity:0;transition:opacity .3s;
+}
+.gi:hover .gi-ov{opacity:1}
+.gi-cap{
+  position:absolute;bottom:0;inset-x:0;
+  padding:.9rem 1rem;opacity:0;transform:translateY(6px);
+  transition:opacity .3s,transform .3s;
+}
+.gi:hover .gi-cap{opacity:1;transform:translateY(0)}
+.gc-t{font-family:var(--font);font-size:.9rem;font-weight:700;color:#fff;letter-spacing:.05em}
+.gc-s{font-family:var(--font);font-size:.7rem;color:rgba(255,255,255,.6);margin-top:.1rem}
+/* 대표 이미지 — 첫 행 첫 번째 넓게 */
+.gi-wide{grid-column:span 2}
+@media(max-width:639px){.gi-wide{grid-column:span 1}}
+
+/* 단청 컬러 태그 */
+.gal-tag{
+  position:absolute;top:.65rem;left:.65rem;z-index:2;
+  padding:.12rem .55rem;
+  font-family:var(--font);font-size:.62rem;letter-spacing:.12em;
+  color:#fff;
+}
+.tag-dan{background:var(--dan)}
+.tag-chung{background:var(--chung)}
+.tag-nok{background:var(--nok)}
+.tag-hwang{background:var(--hwang)}
+
+/* ════════════════════════════════════════════════════
+   법회 일정 (카드) — CSS 유지 (사용 안 함)
+════════════════════════════════════════════════════ */
+.sch-sec{background:var(--bg2);padding:5.5rem 0 6rem;scroll-margin-top:64px}
+.sch-grid{display:grid;gap:1rem;grid-template-columns:1fr}
+@media(min-width:640px){.sch-grid{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:1024px){.sch-grid{grid-template-columns:repeat(4,1fr)}}
+.sch-card{background:#fff;padding:1.6rem 1.5rem;border-bottom:3px solid var(--dan);box-shadow:0 2px 10px rgba(26,18,10,.06);transition:transform .2s,box-shadow .2s}
+.sch-card:hover{transform:translateY(-3px);box-shadow:0 8px 20px rgba(26,18,10,.1)}
+.sch-ico{font-size:1.6rem;margin-bottom:.75rem}
+.sch-h3{font-family:var(--font);font-size:1.05rem;font-weight:700;letter-spacing:.05em;color:var(--ink);margin-bottom:.6rem;line-height:1.5}
+.sch-meta{font-family:var(--font);font-size:.77rem;color:var(--ink-3);line-height:1.85;letter-spacing:.04em}
+.sch-note{margin-top:.65rem;padding-top:.6rem;border-top:1px solid rgba(26,18,10,.07);font-family:var(--font);font-size:.72rem;color:var(--dan);line-height:1.75}
+
+/* ════════════════════════════════════════════════════
+   템플스테이
+════════════════════════════════════════════════════ */
+.ts-sec{background:var(--bg2);padding:5.5rem 0 6rem;scroll-margin-top:64px}
+.ts-wrap{
+  display:grid;grid-template-columns:1fr;gap:0;
+  background:#fff;box-shadow:0 4px 24px rgba(26,18,10,.1);
+  overflow:hidden;
+}
+@media(min-width:1024px){.ts-wrap{grid-template-columns:360px 1fr}}
+/* 좌: 붉은 배경 패널 */
+.ts-left{
+  background:linear-gradient(160deg,#B52A22 0%,#8A1A14 100%);
+  padding:3rem 2.2rem;
+  display:flex;flex-direction:column;justify-content:center;
+  position:relative;overflow:hidden;
+}
+.ts-left::before{
+  content:'';position:absolute;top:-40px;right:-40px;
+  width:200px;height:200px;border-radius:50%;
+  background:rgba(255,255,255,.05);
+}
+.ts-en{font-family:var(--font);font-size:.62rem;letter-spacing:.32em;color:rgba(255,255,255,.55);font-style:italic;margin-bottom:.6rem}
+.ts-title{font-family:var(--font);font-size:clamp(2.2rem,5vw,3.4rem);font-weight:900;color:#fff;line-height:1.05;letter-spacing:.06em;margin-bottom:.8rem}
+.ts-slogan{font-family:var(--font);font-size:.88rem;color:rgba(255,255,255,.75);line-height:1.9;letter-spacing:.05em;font-style:italic;margin-bottom:1.8rem}
+.ts-btn{
+  display:inline-flex;align-items:center;gap:.5rem;
+  padding:.7rem 1.4rem;
+  border:1.5px solid rgba(255,255,255,.5);color:#fff;
+  font-family:var(--font);font-size:.75rem;letter-spacing:.12em;
+  transition:background .2s;width:fit-content;margin-bottom:1.2rem;
+}
+.ts-btn:hover{background:rgba(255,255,255,.15)}
+.ts-phone{font-family:var(--font);font-size:.88rem;color:rgba(255,255,255,.8);letter-spacing:.06em}
+/* 우: 카드 + 연락바 */
+.ts-right{display:flex;flex-direction:column}
+.ts-cards{display:grid;grid-template-columns:1fr;gap:0;flex:1}
+@media(min-width:640px){.ts-cards{grid-template-columns:repeat(3,1fr)}}
+.ts-card{
+  padding:2rem 1.6rem;border-right:1px solid rgba(26,18,10,.07);
+  border-bottom:1px solid rgba(26,18,10,.07);
+}
+.ts-card:last-child{border-right:none}
+.ts-card-ico{font-size:1.8rem;margin-bottom:.7rem}
+.ts-card-name{font-family:var(--font);font-size:1.35rem;font-weight:800;letter-spacing:.06em;color:var(--ink);margin-bottom:.2rem}
+.ts-card-en{font-family:var(--font);font-size:.63rem;letter-spacing:.2em;font-style:italic;margin-bottom:.9rem}
+.ts-card:nth-child(1) .ts-card-en{color:var(--dan)}
+.ts-card:nth-child(2) .ts-card-en{color:var(--chung)}
+.ts-card:nth-child(3) .ts-card-en{color:var(--nok)}
+.ts-card-list{list-style:none}
+.ts-card-list li{
+  font-family:var(--font);font-size:.78rem;letter-spacing:.04em;
+  color:var(--ink-2);line-height:1.85;
+  padding-left:.9rem;position:relative;
+}
+.ts-card-list li::before{content:'•';position:absolute;left:0;color:var(--dan)}
+.ts-card:nth-child(2) .ts-card-list li::before{color:var(--chung)}
+.ts-card:nth-child(3) .ts-card-list li::before{color:var(--nok)}
+.ts-card-badge{
+  display:inline-block;margin-top:.9rem;
+  padding:.18rem .7rem;font-family:var(--font);font-size:.63rem;letter-spacing:.12em;
+  border:1px solid var(--dan);color:var(--dan);
+}
+.ts-card:nth-child(2) .ts-card-badge{border-color:var(--chung);color:var(--chung)}
+.ts-card:nth-child(3) .ts-card-badge{border-color:var(--nok);color:var(--nok)}
+/* 연락 바 */
+.ts-contact-bar{
+  background:var(--dan);
+  display:grid;grid-template-columns:1fr;
+  gap:0;
+}
+@media(min-width:640px){.ts-contact-bar{grid-template-columns:1fr 1fr auto}}
+.ts-cb{padding:1.4rem 1.8rem;border-right:1px solid rgba(255,255,255,.15)}
+.ts-cb:last-child{border-right:none}
+.ts-cb-lbl{font-family:var(--font);font-size:.62rem;letter-spacing:.2em;color:rgba(255,255,255,.6);margin-bottom:.3rem}
+.ts-cb-val{font-family:var(--font);font-size:clamp(1rem,2.5vw,1.3rem);font-weight:900;color:#fff;letter-spacing:.04em}
+.ts-cb-sub{font-family:var(--font);font-size:.68rem;color:rgba(255,255,255,.65);margin-top:.15rem}
+.ts-qr{
+  padding:1.2rem 1.4rem;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:.4rem;
+  background:rgba(0,0,0,.15);
+}
+.ts-qr-box{
+  width:52px;height:52px;background:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.6rem;
+}
+.ts-qr-txt{font-family:var(--font);font-size:.58rem;letter-spacing:.12em;color:rgba(255,255,255,.7)}
+
+/* ════════════════════════════════════════════════════
+   인등불사 + 스마트페이
+════════════════════════════════════════════════════ */
+.indung-sec{
+  background:var(--bg);
+  padding:5.5rem 0 6rem;scroll-margin-top:64px;
+  position:relative;overflow:hidden;
+}
+/* 단청 배경 패턴 */
+.indung-sec::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background-image:
+    radial-gradient(circle at 10% 20%,rgba(200,55,45,.05) 0%,transparent 50%),
+    radial-gradient(circle at 90% 80%,rgba(43,91,168,.05) 0%,transparent 50%),
+    radial-gradient(circle at 50% 50%,rgba(58,125,68,.03) 0%,transparent 60%);
+}
+
+/* 인등 헤더 */
+.ind-hdr{
+  text-align:center;padding:3.5rem 1.4rem 3rem;
+  background:linear-gradient(135deg,var(--hwang-bg) 0%,#FFFBF0 50%,var(--dan-bg) 100%);
+  border:1.5px solid rgba(212,130,10,.2);
+  margin-bottom:2.5rem;position:relative;
+}
+.ind-hdr::before,.ind-hdr::after{
+  content:'🪷';position:absolute;top:50%;
+  font-size:1.8rem;opacity:.2;transform:translateY(-50%);
+}
+.ind-hdr::before{left:1.5rem}
+.ind-hdr::after{right:1.5rem}
+
+.ind-en{font-family:var(--font);font-size:.62rem;letter-spacing:.32em;
+  text-transform:uppercase;font-style:italic;color:var(--hwang)}
+.ind-title{font-family:var(--font);font-size:clamp(2rem,5vw,3rem);
+  font-weight:900;letter-spacing:.1em;color:var(--ink);margin-top:.3rem}
+.ind-sub{font-family:var(--font);font-size:.82rem;letter-spacing:.12em;
+  color:var(--hwang);margin-top:.5rem;font-style:italic}
+
+/* 인등 종류 그리드 */
+.types-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;
+  max-width:900px;margin:0 auto 2rem}
+@media(min-width:640px){.types-grid{grid-template-columns:repeat(4,1fr)}}
+.type-cell{
+  background:#fff;text-align:center;padding:1.75rem 1rem;
+  border-top:3px solid var(--dan);
+  box-shadow:0 2px 12px rgba(26,18,10,.07);
+  transition:transform .2s;
+}
+.type-cell:hover{transform:translateY(-3px)}
+.type-cell:nth-child(2){border-top-color:var(--chung)}
+.type-cell:nth-child(3){border-top-color:var(--nok)}
+.type-cell:nth-child(4){border-top-color:var(--hwang)}
+.t-lbl{font-family:var(--font);font-size:.72rem;letter-spacing:.14em;color:var(--ink-3);margin-bottom:.6rem}
+.t-amt{font-family:var(--font);font-size:clamp(1.4rem,3vw,2rem);font-weight:900;color:var(--dan)}
+.type-cell:nth-child(2) .t-amt{color:var(--chung)}
+.type-cell:nth-child(3) .t-amt{color:var(--nok)}
+.type-cell:nth-child(4) .t-amt{color:var(--hwang)}
+.t-period{font-family:var(--font);font-size:.68rem;color:var(--ink-4);margin-top:.3rem}
+
+/* 계좌 + 결제 */
+.pay-wrap{
+  max-width:900px;margin:0 auto;
+  display:grid;grid-template-columns:1fr;gap:1rem;
+}
+@media(min-width:768px){.pay-wrap{grid-template-columns:1fr 1fr}}
+
+.acct-box{
+  background:#fff;border:1.5px solid rgba(200,55,45,.2);
+  padding:2rem 2.2rem;
+}
+.acct-ttl{font-family:var(--font);font-size:1.1rem;font-weight:800;
+  letter-spacing:.1em;color:var(--ink);margin-bottom:1.25rem}
+.acct-bank{font-family:var(--font);font-size:.8rem;letter-spacing:.08em;color:var(--ink-3);margin-bottom:.3rem}
+.acct-num{font-family:var(--font);font-size:clamp(1.3rem,3vw,1.7rem);
+  font-weight:900;color:var(--ink);letter-spacing:.06em;margin:.4rem 0}
+.acct-holder{font-family:var(--font);font-size:.8rem;letter-spacing:.14em;color:var(--dan)}
+.copy-btn{
+  display:inline-flex;align-items:center;gap:.4rem;
+  margin-top:1.1rem;padding:.55rem 1.2rem;
+  background:var(--dan-bg);border:1.5px solid rgba(200,55,45,.3);
+  font-family:var(--font);font-size:.72rem;letter-spacing:.1em;color:var(--dan);
+  cursor:pointer;transition:background .2s;
+}
+.copy-btn:hover{background:rgba(200,55,45,.12)}
+
+.pay-box{
+  background:#fff;border:1.5px solid rgba(43,91,168,.2);
+  padding:2rem 2.2rem;
+}
+.pay-ttl{font-family:var(--font);font-size:1.1rem;font-weight:800;
+  letter-spacing:.1em;color:var(--ink);margin-bottom:1.1rem}
+.pay-btns{display:flex;flex-direction:column;gap:.7rem}
+
+/* 카카오페이 */
+.btn-kakao{
+  display:flex;align-items:center;justify-content:center;gap:.7rem;
+  padding:1rem 1.5rem;
+  background:#FEE500;color:#191919;
+  font-family:var(--font);font-size:.9rem;font-weight:700;letter-spacing:.06em;
+  border:none;cursor:pointer;transition:opacity .2s,transform .15s;
+  width:100%;
+}
+.btn-kakao:hover{opacity:.9;transform:translateY(-1px)}
+.btn-kakao .ico{font-size:1.2rem}
+
+/* 네이버페이 */
+.btn-naver{
+  display:flex;align-items:center;justify-content:center;gap:.7rem;
+  padding:1rem 1.5rem;
+  background:#03C75A;color:#fff;
+  font-family:var(--font);font-size:.9rem;font-weight:700;letter-spacing:.06em;
+  border:none;cursor:pointer;transition:opacity .2s,transform .15s;
+  width:100%;
+}
+.btn-naver:hover{opacity:.9;transform:translateY(-1px)}
+.btn-naver .ico{font-size:1.2rem}
+
+/* 토스페이 */
+.btn-toss{
+  display:flex;align-items:center;justify-content:center;gap:.7rem;
+  padding:1rem 1.5rem;
+  background:#0064FF;color:#fff;
+  font-family:var(--font);font-size:.9rem;font-weight:700;letter-spacing:.06em;
+  border:none;cursor:pointer;transition:opacity .2s,transform .15s;
+  width:100%;
+}
+.btn-toss:hover{opacity:.9;transform:translateY(-1px)}
+.btn-toss .ico{font-size:1.2rem}
+
+.pay-note{
+  max-width:900px;margin:.9rem auto 0;
+  padding:1rem 1.5rem;background:var(--hwang-bg);
+  border-left:3px solid var(--hwang);
+  font-family:var(--font);font-size:.78rem;line-height:1.95;
+  letter-spacing:.04em;color:var(--ink-2);
+}
+
+/* ════════════════════════════════════════════════════
+   오시는 길
+════════════════════════════════════════════════════ */
+.visit-sec{background:var(--bg2);padding:5.5rem 0 6rem;scroll-margin-top:64px}
+.vis-grid{display:grid;gap:2rem;grid-template-columns:1fr}
+@media(min-width:1024px){.vis-grid{grid-template-columns:repeat(2,1fr);gap:3rem}}
+
+.addr-box{
+  background:#fff;padding:2rem 2.2rem;
+  border-top:4px solid var(--nok);
+  box-shadow:0 2px 12px rgba(26,18,10,.06);
+}
+.addr-ttl{font-family:var(--font);font-size:1.1rem;font-weight:800;
+  letter-spacing:.1em;color:var(--nok);margin-bottom:1.25rem}
+.addr-full{font-family:var(--font);font-size:1rem;letter-spacing:.05em;
+  line-height:1.75;color:var(--ink-2)}
+.addr-post{font-family:var(--font);font-size:.75rem;color:var(--ink-4);margin-top:.25rem}
+.map-btn{
+  display:inline-flex;align-items:center;gap:.5rem;
+  margin-top:1.5rem;padding:.7rem 1.5rem;
+  background:var(--nok);color:#fff;
+  font-family:var(--font);font-size:.78rem;letter-spacing:.12em;
+  transition:background .2s;
+}
+.map-btn:hover{background:var(--nok-lt)}
+
+.cont-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.7rem}
+.cc{
+  display:flex;align-items:center;gap:.75rem;
+  background:#fff;padding:1.1rem 1.15rem;
+  border-left:3px solid var(--dan);
+  box-shadow:0 2px 8px rgba(26,18,10,.05);
+  transition:transform .2s,box-shadow .2s;
+}
+.cc:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(26,18,10,.1)}
+.cc:nth-child(2){border-left-color:var(--chung)}
+.cc:nth-child(3){border-left-color:var(--nok);grid-column:span 2}
+.cc-ico{font-size:1.35rem;flex-shrink:0}
+.cc-lbl{font-family:var(--font);font-size:.62rem;letter-spacing:.16em;color:var(--ink-4);margin-bottom:.15rem}
+.cc-val{font-family:var(--font);font-size:.9rem;color:var(--ink);letter-spacing:.03em}
+
+/* ════════════════════════════════════════════════════
+   FOOTER
+════════════════════════════════════════════════════ */
+footer{
+  background:var(--ink);
+  border-top:4px solid transparent;
+  border-image:linear-gradient(to right,var(--dan),var(--hwang-lt),var(--nok),var(--chung)) 1;
+}
+.ft-grid{display:grid;gap:2.5rem;grid-template-columns:1fr;padding:3.5rem 0 2.5rem}
+@media(min-width:640px){.ft-grid{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:1024px){.ft-grid{grid-template-columns:2fr 1fr 1fr}}
+.ft-wide{display:block}
+@media(min-width:640px){.ft-wide{grid-column:span 2}}
+@media(min-width:1024px){.ft-wide{grid-column:span 1}}
+.ft-name{font-family:var(--font);font-size:1.1rem;font-weight:700;color:#fff;letter-spacing:.07em}
+.ft-hj{font-family:var(--font);font-size:.62rem;letter-spacing:.38em;color:rgba(240,168,48,.45);margin-top:2px}
+.ft-meta{font-family:var(--font);font-size:.73rem;line-height:2;letter-spacing:.04em;color:rgba(255,255,255,.3);margin-top:.85rem}
+.ft-phones{display:flex;gap:1.25rem;margin-top:1rem;flex-wrap:wrap}
+.ft-ph{font-family:var(--font);font-size:.72rem;letter-spacing:.08em;color:rgba(240,168,48,.55)}
+.ft-h3{font-family:var(--font);font-size:.82rem;letter-spacing:.2em;color:rgba(255,255,255,.4);margin-bottom:1.1rem}
+.ft-ul{list-style:none;display:flex;flex-direction:column;gap:.55rem}
+.ft-li a{font-family:var(--font);font-size:.75rem;letter-spacing:.08em;color:rgba(255,255,255,.3)}
+.ft-li a:hover{color:rgba(240,168,48,.65)}
+.ft-copy{
+  border-top:1px solid rgba(255,255,255,.07);
+  padding:1rem 0;
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem;
+}
+.ft-copy p{font-family:var(--font);font-size:.66rem;letter-spacing:.1em;color:rgba(255,255,255,.18)}
+
+/* FAB */
+.fab{
+  position:fixed;bottom:1.25rem;right:1.1rem;z-index:40;
+  width:40px;height:40px;display:flex;align-items:center;justify-content:center;
+  background:var(--dan);color:#fff;
+  font-size:.9rem;box-shadow:0 4px 16px rgba(200,55,45,.4);
+  transition:background .2s,transform .2s;
+}
+.fab:hover{background:var(--dan-lt);transform:translateY(-2px)}
+
+/* 단청 구분선 */
+.dc-div{height:4px;background:linear-gradient(to right,var(--dan),var(--hwang-lt),var(--nok),var(--chung),var(--dan))}
+
+/* 페이 결제 모달 */
+.pay-modal-overlay{
+  display:none;position:fixed;inset:0;z-index:200;
+  background:rgba(26,18,10,.7);backdrop-filter:blur(4px);
+  align-items:center;justify-content:center;padding:1.5rem;
+}
+.pay-modal-overlay.open{display:flex}
+.pay-modal{
+  background:#fff;max-width:420px;width:100%;padding:2.5rem 2rem;
+  position:relative;box-shadow:0 20px 60px rgba(26,18,10,.25);
+}
+.pm-close{
+  position:absolute;top:1rem;right:1rem;
+  font-size:1.4rem;color:var(--ink-3);cursor:pointer;
+  background:none;border:none;line-height:1;
+}
+.pm-title{font-family:var(--font);font-size:1.2rem;font-weight:800;
+  letter-spacing:.08em;color:var(--ink);margin-bottom:.4rem}
+.pm-sub{font-family:var(--font);font-size:.78rem;color:var(--ink-3);
+  letter-spacing:.06em;margin-bottom:1.5rem}
+.pm-amount-select{display:grid;grid-template-columns:repeat(2,1fr);gap:.5rem;margin-bottom:1.5rem}
+.pm-amt{
+  padding:.7rem .5rem;text-align:center;
+  border:1.5px solid rgba(200,55,45,.2);
+  font-family:var(--font);font-size:.82rem;color:var(--ink-2);
+  cursor:pointer;transition:all .15s;background:#fff;
+}
+.pm-amt:hover,.pm-amt.on{background:var(--dan);color:#fff;border-color:var(--dan)}
+.pm-pay-btns{display:flex;flex-direction:column;gap:.6rem}
+</style>
+</head>
+<body>
+
+<!-- ══ NAV ══ -->
+<nav class="nav" id="nav">
+  <div class="nav-logo">
+    <span class="nav-lotus">🪷</span>
+    <div>
+      <div class="nav-ko">천관사</div>
+      <div class="nav-hj">天冠寺</div>
+    </div>
+  </div>
+  <div class="nav-links">
+    <a href="#events"   class="nav-a">행사안내</a>
+    <a href="#intro"    class="nav-a">사찰소개</a>
+    <a href="#gallery"  class="nav-a">사찰갤러리</a>
+    <a href="#templestay" class="nav-a">템플스테이</a>
+    <a href="#indung"   class="nav-a">인등불사</a>
+    <a href="#visit"    class="nav-a">오시는 길</a>
+    <a href="tel:010-8230-7070" class="nav-cta">📞 전화 문의</a>
+  </div>
+  <div class="ham" id="ham" onclick="toggleMob()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+<div class="mob" id="mob">
+  <a href="#events"   onclick="closeMob()">🎏 행사안내</a>
+  <a href="#intro"    onclick="closeMob()">🏯 사찰소개</a>
+  <a href="#gallery"  onclick="closeMob()">🖼 사찰갤러리</a>
+  <a href="#templestay" onclick="closeMob()">🏕 템플스테이</a>
+  <a href="#indung"   onclick="closeMob()">🕯 인등불사</a>
+  <a href="#visit"    onclick="closeMob()">🗺 오시는 길</a>
+  <a href="tel:010-8230-7070" onclick="closeMob()" style="color:var(--dan)">📞 010-8230-7070</a>
+</div>
+
+
+<!-- ══ HERO ══ -->
+<section id="hero" style="margin-top:60px">
+  <div class="hero">
+    <div class="hero-top-bar"></div>
+    <img class="hero-img"
+      src="https://res.cloudinary.com/db3izttcy/image/upload/q_auto,f_auto,w_1920/chun-night_b4k2xj"
+      alt="천관사 야경" fetchpriority="high" loading="eager" decoding="async"
+      onerror="this.style.display='none'">
+    <div class="hero-ov" aria-hidden="true"></div>
+    <div class="hero-ov2" aria-hidden="true"></div>
+
+    <!-- 단청 코너 장식 SVG -->
+    <div class="hero-deco" aria-hidden="true">
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <rect x="0" y="0" width="100" height="100" fill="none" stroke="rgba(240,168,48,.7)" stroke-width="2"/>
+        <rect x="8" y="8" width="84" height="84" fill="none" stroke="rgba(200,55,45,.5)" stroke-width="1.5"/>
+        <circle cx="50" cy="50" r="28" fill="none" stroke="rgba(58,125,68,.6)" stroke-width="1.5"/>
+        <circle cx="50" cy="50" r="16" fill="rgba(240,168,48,.15)" stroke="rgba(240,168,48,.4)" stroke-width="1"/>
+        <line x1="50" y1="0" x2="50" y2="100" stroke="rgba(200,55,45,.3)" stroke-width="1"/>
+        <line x1="0" y1="50" x2="100" y2="50" stroke="rgba(200,55,45,.3)" stroke-width="1"/>
+      </svg>
+    </div>
+
+    <div class="hero-text">
+      <div class="hero-inner">
+        <span class="hero-sect">대한불교조계종 제21교구 송광사 말사</span>
+        <h1 class="hero-h1">천관사</h1>
+        <p class="hero-hanja">天冠寺</p>
+        <p class="hero-slogan">"국내 유일의 천관신앙 도량, 천관보살 3천인등공양으로 소원성취하소서"</p>
+        <div class="hero-badges">
+          <span class="hbadge">759년 창건</span>
+          <span class="hbadge">주불 · 천관보살</span>
+          <span class="hbadge">주지 · 연등스님</span>
+        </div>
+      </div>
+    </div>
+    <div class="scroll-hint" aria-hidden="true">
+      <div class="scroll-line"></div>
+      <span class="scroll-txt">Scroll</span>
+    </div>
+  </div>
+</section>
+<div class="dc-div"></div>
+
+
+<!-- ══ 템플스테이 ══ -->
+<section id="templestay" class="ts-sec" aria-labelledby="ts-ttl">
+  <div class="w">
+    <div class="ts-wrap">
+      <div class="ts-left">
+        <span class="ts-en">TEMPLE STAY · 천관사</span>
+        <h2 class="ts-title">천 관 사<br>템플스테이</h2>
+        <p class="ts-slogan">천관산의 고요함 속에서<br>나를 만나는 시간</p>
+        <a href="tel:01082307070" class="ts-btn">연중 상시 운영</a>
+        <span class="ts-phone">📞 010-8230-7070</span>
+      </div>
+      <div class="ts-right">
+        <div class="ts-cards">
+          <div class="ts-card">
+            <div class="ts-card-ico">🏡</div>
+            <div class="ts-card-name">휴식형</div>
+            <div class="ts-card-en">REST &amp; HEALING</div>
+            <ul class="ts-card-list">
+              <li>1박 2일 자유 일정</li>
+              <li>새벽 예불 참여</li>
+              <li>사찰 공양 체험</li>
+              <li>천관산 산책</li>
+              <li>연중 상시 운영</li>
+            </ul>
+            <span class="ts-card-badge">개인 · 가족</span>
+          </div>
+          <div class="ts-card">
+            <div class="ts-card-ico">⛩</div>
+            <div class="ts-card-name">전통형</div>
+            <div class="ts-card-en">TRADITIONAL</div>
+            <ul class="ts-card-list">
+              <li>예불 · 공양 · 포행 체험</li>
+              <li>발우공양 (사찰 식사)</li>
+              <li>108배 수행</li>
+              <li>다도 체험</li>
+              <li>스님과의 대화</li>
+            </ul>
+            <span class="ts-card-badge">소그룹</span>
+          </div>
+          <div class="ts-card">
+            <div class="ts-card-ico">👥</div>
+            <div class="ts-card-name">단체형</div>
+            <div class="ts-card-en">GROUP PROGRAM</div>
+            <ul class="ts-card-list">
+              <li>학교 · 기업 · 단체 맞춤</li>
+              <li>리더십 명상 프로그램</li>
+              <li>힐링 캠프 운영</li>
+              <li>천관산 트레킹</li>
+              <li>사전 예약 필수</li>
+            </ul>
+            <span class="ts-card-badge">10인 이상</span>
+          </div>
+        </div>
+        <div class="ts-contact-bar">
+          <div class="ts-cb">
+            <div class="ts-cb-lbl">예약 · 문의</div>
+            <div class="ts-cb-val">010-8230-7070</div>
+            <div class="ts-cb-sub">문자로 성명·소원 남겨주시면 기도 올려드립니다</div>
+          </div>
+          <div class="ts-cb">
+            <div class="ts-cb-lbl">천관산 도립공원</div>
+            <div class="ts-cb-val" style="font-size:.9rem">전남 장흥군 관산읍 칠관로 1272-473</div>
+            <div class="ts-cb-sub">연중 상시 · 예약제 운영</div>
+          </div>
+          <div class="ts-qr">
+            <div class="ts-qr-box">📱</div>
+            <span class="ts-qr-txt">QR<br>예약하기</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="dc-div"></div>
+
+
+
+<!-- ══ TICKER ══ -->
+<div class="ticker-wrap">
+  <div class="ticker-in">
+    <span class="ticker-lbl">📅 주요 행사</span>
+    <div class="ticker-scroll">
+      <div class="ticker-track">
+        <span class="ticker-item"><span class="ticker-dt">연중</span><span>정초·삼재·백중·동지 기도 및 부처님오신날 봉축법요</span></span>
+        <span class="ticker-item"><span class="ticker-dt">매월 첫째일요일 10:30</span><span>일요법회</span></span>
+        <span class="ticker-item"><span class="ticker-dt">7~8월 중</span><span>여름 명상 가족캠프</span></span>
+        <span class="ticker-item"><span class="ticker-dt">매월 24일</span><span>천관보살 기도법회 · 3천인등 기도</span></span>
+        <span class="ticker-item"><span class="ticker-dt">연중</span><span>정초·삼재·백중·동지 기도 및 부처님오신날 봉축법요</span></span>
+        <span class="ticker-item"><span class="ticker-dt">매월 첫째일요일 10:30</span><span>일요법회</span></span>
+        <span class="ticker-item"><span class="ticker-dt">7~8월 중</span><span>여름 명상 가족캠프</span></span>
+        <span class="ticker-item"><span class="ticker-dt">매월 24일</span><span>천관보살 기도법회 · 3천인등 기도</span></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══ EVENTS (사찰소개 위) ══ -->
+<section id="events" class="events-sec" aria-labelledby="ev-ttl">
+
+  <!-- 컬러풀 헤더 -->
+  <div class="ev-header">
+    <div class="ev-header-inner">
+      <span class="ev-en">notice &amp; events</span>
+      <h2 id="ev-ttl" class="ev-title">공지사항 · 기도 · 법회 · 행사</h2>
+      <p class="ev-desc">기도법회 및 주요 행사 일정을 안내드립니다</p>
+    </div>
+  </div>
+
+  <div class="w">
+    <!-- 탭 필터 -->
+    <div class="ev-tabs">
+      <button class="ev-tab on" onclick="filterEv(this,'all')">전체</button>
+      <button class="ev-tab" onclick="filterEv(this,'gido')">기도</button>
+      <button class="ev-tab" onclick="filterEv(this,'beophoe')">법회</button>
+      <button class="ev-tab" onclick="filterEv(this,'jeolg')">불교4대명절</button>
+      <button class="ev-tab" onclick="filterEv(this,'sangsi')">상시행사</button>
+    </div>
+
+    <div class="ev-grid">
+      <!-- 기도 -->
+      <div class="ev-card" data-cat="gido">
+        <span class="ev-date">매년 1월 (정초)</span>
+        <h3 class="ev-name">🙏 정초기도</h3>
+        <p class="ev-note">새해 소원 성취 기도 · 연중 행운 발원</p>
+      </div>
+      <div class="ev-card" data-cat="gido">
+        <span class="ev-date">음력 4월 8일</span>
+        <h3 class="ev-name">🪷 부처님 오신 날 봉축기도</h3>
+        <p class="ev-note">봉축 법요식 · 연등행렬 · 인등공양</p>
+      </div>
+      <div class="ev-card" data-cat="gido">
+        <span class="ev-date">음력 7월 15일</span>
+        <h3 class="ev-name">🍚 백중기도</h3>
+        <p class="ev-note">영가천도 · 우란분절 기도</p>
+      </div>
+      <div class="ev-card" data-cat="gido">
+        <span class="ev-date">동지 (12월)</span>
+        <h3 class="ev-name">🍲 동지기도</h3>
+        <p class="ev-note">팥죽 공양 · 액막이 공덕기도</p>
+      </div>
+      <!-- 법회 -->
+      <div class="ev-card" data-cat="beophoe">
+        <span class="ev-date">매달 초하루·보름</span>
+        <h3 class="ev-name">🌕 삭망법회</h3>
+        <p class="ev-note">⏰ 새벽 5시 30분</p>
+      </div>
+      <div class="ev-card" data-cat="beophoe">
+        <span class="ev-date">매월 첫째 일요일</span>
+        <h3 class="ev-name">☀️ 일요법회</h3>
+        <p class="ev-note">⏰ 오전 10:30</p>
+      </div>
+      <!-- 불교4대명절 -->
+      <div class="ev-card" data-cat="jeolg">
+        <span class="ev-date">음력 4월 8일</span>
+        <h3 class="ev-name">📖 부처님 오신 날</h3>
+        <p class="ev-note">불교 4대 명절 · 석가탄신일</p>
+      </div>
+      <div class="ev-card" data-cat="jeolg">
+        <span class="ev-date">음력 2월 8일</span>
+        <h3 class="ev-name">🌿 출가재일</h3>
+        <p class="ev-note">부처님 출가를 기리는 날</p>
+      </div>
+      <div class="ev-card" data-cat="jeolg">
+        <span class="ev-date">음력 12월 8일</span>
+        <h3 class="ev-name">☀️ 성도재일</h3>
+        <p class="ev-note">부처님 깨달음을 기리는 날</p>
+      </div>
+      <div class="ev-card" data-cat="jeolg">
+        <span class="ev-date">음력 2월 15일</span>
+        <h3 class="ev-name">🏛 열반재일</h3>
+        <p class="ev-note">부처님 열반을 기리는 날</p>
+      </div>
+      <!-- 상시행사 -->
+      <div class="ev-card" data-cat="sangsi">
+        <span class="ev-date">연중 상시</span>
+        <h3 class="ev-name">🏕 템플스테이 — 휴식형</h3>
+        <p class="ev-note">1박 2일 · 자유로운 산사 체험 · 예약제 운영</p>
+      </div>
+      <div class="ev-card" data-cat="sangsi">
+        <span class="ev-date">연중 상시</span>
+        <h3 class="ev-name">🏯 템플스테이 — 전통형</h3>
+        <p class="ev-note">예불·공양·명상 등 전통 의례 체험</p>
+      </div>
+      <div class="ev-card" data-cat="sangsi">
+        <span class="ev-date">단체 사전예약</span>
+        <h3 class="ev-name">👥 템플스테이 — 단체형</h3>
+        <p class="ev-note">학교·기업·단체 맞춤 프로그램 · 사전 협의</p>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="dc-div"></div>
+
+
+<!-- ══ 사찰 소개 ══ -->
+<section id="intro" class="intro-sec" aria-labelledby="intro-ttl">
+  <div class="w">
+    <span class="sec-en" style="color:var(--chung)">about the temple</span>
+    <h2 id="intro-ttl" class="sec-h2" style="font-size:clamp(2rem,4.5vw,3rem);margin-top:.3rem">
+      사찰소개
+    </h2>
+    <div class="dc-bar"><span class="b1"></span><span class="b2"></span><span class="b3"></span><span class="b4"></span></div>
+
+    <div class="intro-grid">
+      <!-- 좌: 주지스님 인사말 + 연혁 -->
+      <div>
+        <!-- 주지스님 인사말 -->
+        <div style="margin-bottom:2rem">
+          <h3 style="font-family:var(--font);font-size:1.4rem;font-weight:800;letter-spacing:.08em;color:var(--dan);margin-bottom:1rem">
+            주지스님 인사말
+          </h3>
+          <div class="greeting">
+            <p>천관산 천오백년 도량 천관사에 오신 것을 환영합니다.<br>
+            이곳은 국내 유일의 천관보살 상주처로, 복덕과 지혜로 중생을 이롭게 하시는<br>
+            천관보살의 원력이 살아 숨 쉬는 청정한 기도도량입니다.<br><br>
+            어지러운 세상 속에서 잠시 발길을 멈추고 이 도량의 고요함 안에서<br>
+            자신을 돌아보는 귀한 시간이 되시길 바랍니다.<br>
+            천관보살의 자비로운 가피로 여러분과 가정에<br>
+            소원성취와 평안이 가득하시기를 두 손 모아 발원합니다.</p>
+            <div class="greeting-sig">— 주지 연등 합장</div>
+          </div>
+        </div>
+
+        <!-- 사찰 연혁 -->
+        <div class="hist-box">
+          <h3 class="hist-ttl">연혁</h3>
+          <ul class="hist-list">
+            <li class="hist-li"><span class="hist-yr">759년 (신라 경덕왕)</span><span class="hist-ev">의조화상이 천관산 아래 창건</span></li>
+            <li class="hist-li"><span class="hist-yr">고려 시대</span><span class="hist-ev">수차 중창, 천관사라 명명</span></li>
+            <li class="hist-li"><span class="hist-yr">조선 후기</span><span class="hist-ev">임진·병자 양난으로 소실, 부분 복구</span></li>
+            <li class="hist-li"><span class="hist-yr">2018년</span><span class="hist-ev">대웅전·지장전 중창 불사 완성</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 우: 사찰 소개 (전체 높이) -->
+      <div>
+        <h3 style="font-family:var(--font);font-size:1.35rem;font-weight:800;letter-spacing:.08em;color:var(--ink);margin-bottom:.9rem">
+          천관사 소개
+        </h3>
+        <p class="desc-txt">전남 장흥 천관산 도립공원에 위치한 천관사는 천오백여년의 오랜 역사와 보물인
+삼층석탑 등 다수의 문화유적을 보유하고 있습니다. 복과 지혜로 장엄한 천관보살의
+상주처로서 대대적 중창이 이루어지고 있는 장흥의 대표 도량입니다.</p>
+        <p class="prose-txt">천관사(天冠寺)는 신라 경덕왕 18년(759)에 의조화상이 창건하였다고 전합니다.
+사찰 경내에는 <strong style="color:var(--dan)">보물 제795호 삼층석탑</strong>이 있으며,
+천관보살을 주불로 모시는 국내 유일의 도량입니다.</p>
+
+        <p class="prose-txt" style="margin-top:1.2rem">천관산(天冠山)은 전남 장흥에 위치한 도립공원으로, 기암괴석과 억새 군락으로 유명합니다.
+천관사는 그 산자락에 자리잡아 사계절 아름다운 자연환경과 함께
+고요한 수행 공간을 제공합니다.</p>
+
+        <p class="prose-txt" style="margin-top:1.2rem">특히 매월 24일 천관보살 기도법회와 삼천인등 공양을 통해
+신도들의 소원 성취를 발원하며, 연중 템플스테이를 운영하여
+도시에 지친 이들에게 쉼과 치유의 공간을 제공하고 있습니다.</p>
+
+        <div class="buildings-bar" style="margin-top:2rem">
+          <span class="buildings-inner">대웅전 · 지장전 · 삼성각(칠성·독성·산신) · 범종각 · 요사채</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="dc-div"></div>
+
+
+<!-- ══ 사찰 갤러리 ══ -->
+<section id="gallery" class="gallery-sec" aria-labelledby="gal-ttl">
+  <div class="w">
+    <span class="sec-en" style="color:var(--nok)">photo gallery</span>
+    <h2 id="gal-ttl" class="sec-h2" style="font-size:clamp(2rem,4.5vw,3rem);margin-top:.3rem">
+      사찰갤러리
+    </h2>
+    <div class="dc-bar"><span class="b3"></span><span class="b2"></span><span class="b1"></span><span class="b4"></span></div>
+
+    <!-- 1행: 대표 와이드 + 2개 -->
+    <div class="gal-row1">
+      <div class="gi gi-wide" style="height:320px">
+        <img src="https://res.cloudinary.com/db3izttcy/image/upload/q_auto,f_auto,w_900,h_520,c_fill/chun-dharmahall_tafh10"
+             alt="천관사 대웅전" loading="eager"
+             onerror="this.parentElement.style.background='#e8e0d5'">
+        <div class="gi-ov"></div>
+        <span class="gal-tag tag-dan">대웅전</span>
+        <div class="gi-cap"><p class="gc-t">대웅전</p><p class="gc-s">천관보살을 모신 본당</p></div>
+      </div>
+      <div class="gi" style="height:320px">
+        <img src="https://res.cloudinary.com/db3izttcy/image/upload/q_auto,f_auto,w_600,h_520,c_fill/chun-stars_cqgqss"
+             alt="천관사 별밤" loading="lazy"
+             onerror="this.parentElement.style.background='#e8e0d5'">
+        <div class="gi-ov"></div>
+        <span class="gal-tag tag-chung">별밤</span>
+        <div class="gi-cap"><p class="gc-t">천관산 별밤</p><p class="gc-s">청정한 밤하늘</p></div>
+      </div>
+    </div>
+
+    <!-- 2행: 3등분 -->
+    <div class="gal-row2">
+      <div class="gi" style="height:260px">
+        <img src="https://res.cloudinary.com/db3izttcy/image/upload/q_auto,f_auto,w_640,h_380,c_fill/chun-buddha_lvfppo"
+             alt="천관보살상" loading="lazy"
+             onerror="this.parentElement.style.background='#e8e0d5'">
+        <div class="gi-ov"></div>
+        <span class="gal-tag tag-hwang">불상</span>
+        <div class="gi-cap"><p class="gc-t">천관보살상</p><p class="gc-s">국내 유일 천관보살 도량</p></div>
+      </div>
+      <div class="gi" style="height:260px">
+        <img src="https://res.cloudinary.com/db3izttcy/image/upload/q_auto,f_auto,w_640,h_380,c_fill/chun-camp_eueiaj"
+             alt="여름 캠프" loading="lazy"
+             onerror="this.parentElement.style.background='#e8e0d5'">
+        <div class="gi-ov"></div>
+        <span class="gal-tag tag-nok">캠프</span>
+        <div class="gi-cap"><p class="gc-t">여름 명상 캠프</p><p class="gc-s">7~8월 가족 템플스테이</p></div>
+      </div>
+      <div class="gi" style="height:260px">
+        <img src="https://res.cloudinary.com/db3izttcy/image/upload/q_auto,f_auto,w_640,h_380,c_fill/chunwinter_c2nu46"
+             alt="천관사 겨울" loading="lazy"
+             onerror="this.parentElement.style.background='#e8e0d5'">
+        <div class="gi-ov"></div>
+        <span class="gal-tag tag-chung">설경</span>
+        <div class="gi-cap"><p class="gc-t">겨울 설경</p><p class="gc-s">천관산 설경 속 고요함</p></div>
+      </div>
+    </div>
+
+    <!-- 3행: 새로운 갤러리 사진 -->
+    <div class="gal-row2">
+      <div class="gi" style="height:260px">
+        <img src="https://res.cloudinary.com/db3izttcy/image/upload/q_auto,f_auto,w_640,h_380,c_fill/chun-mountain_peelmb"
+             alt="천관산 봉우리" loading="lazy"
+             onerror="this.parentElement.style.background='#e8e0d5'">
+        <div class="gi-ov"></div>
+        <span class="gal-tag tag-nok">산경</span>
+        <div class="gi-cap"><p class="gc-t">천관산 봉우리</p><p class="gc-s">기암괴석의 웅장함</p></div>
+      </div>
+      <div class="gi" style="height:260px">
+        <img src="https://res.cloudinary.com/db3izttcy/image/upload/q_auto,f_auto,w_640,h_380,c_fill/chun-music-festiva_xjqjjx"
+             alt="음악제 행사" loading="lazy"
+             onerror="this.parentElement.style.background='#e8e0d5'">
+        <div class="gi-ov"></div>
+        <span class="gal-tag tag-dan">행사</span>
+        <div class="gi-cap"><p class="gc-t">천관사 음악제</p><p class="gc-s">사찰문화 나눔의 장</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="dc-div"></div>
+
+
+
+
+
+
+
+<!-- ══ 인등불사 + 스마트페이 ══ -->
+<section id="indung" class="indung-sec" aria-labelledby="ind-ttl">
+  <div class="w" style="position:relative">
+
+    <!-- 헤더 -->
+    <div class="ind-hdr">
+      <span class="ind-en">offering of light</span>
+      <h2 id="ind-ttl" class="ind-title">삼천인등 모연</h2>
+      <p class="ind-sub">한 등을 밝혀 천 가지 소원을 이룹니다</p>
+    </div>
+
+    <!-- 인등 종류 -->
+    <div class="types-grid">
+      <div class="type-cell">
+        <p class="t-lbl">연간등</p>
+        <p class="t-amt">100,000원</p>
+        <p class="t-period">1년</p>
+      </div>
+      <div class="type-cell">
+        <p class="t-lbl">백일등</p>
+        <p class="t-amt">50,000원</p>
+        <p class="t-period">100일</p>
+      </div>
+      <div class="type-cell">
+        <p class="t-lbl">칠일등</p>
+        <p class="t-amt">10,000원</p>
+        <p class="t-period">7일</p>
+      </div>
+      <div class="type-cell">
+        <p class="t-lbl">삼일등</p>
+        <p class="t-amt">5,000원</p>
+        <p class="t-period">3일</p>
+      </div>
+    </div>
+
+    <!-- 계좌 + 스마트페이 -->
+    <div class="pay-wrap">
+
+      <!-- 계좌 이체 -->
+      <div class="acct-box">
+        <h3 class="acct-ttl">💳 보시 계좌</h3>
+        <p class="acct-bank">농협은행</p>
+        <p class="acct-num">351-0001-2345-03</p>
+        <p class="acct-holder">예금주 · 천관사</p>
+        <button class="copy-btn" onclick="copyAcct()">
+          📋 계좌번호 복사
+        </button>
+      </div>
+
+      <!-- 스마트페이 -->
+      <div class="pay-box">
+        <h3 class="pay-ttl">📱 간편 결제</h3>
+        <div class="pay-btns">
+          <button class="btn-kakao" onclick="openPay('kakao')">
+            <span class="ico">💛</span> 카카오페이로 동참하기
+          </button>
+          <button class="btn-naver" onclick="openPay('naver')">
+            <span class="ico">🟢</span> 네이버페이로 동참하기
+          </button>
+          <button class="btn-toss" onclick="openPay('toss')">
+            <span class="ico">💙</span> 토스로 동참하기
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 안내 메모 -->
+    <div class="pay-note">
+      💌 입금 후 <strong>010-8230-7070</strong>으로 성명·소원을 문자로 남겨주시면 기도 올려드립니다.<br>
+      카카오페이·네이버페이·토스 결제 후에도 문자로 성명과 소원을 보내주세요.
+    </div>
+  </div>
+</section>
+<div class="dc-div"></div>
+
+
+<!-- ══ 오시는 길 ══ -->
+<section id="visit" class="visit-sec" aria-labelledby="vis-ttl">
+  <div class="w">
+    <span class="sec-en" style="color:var(--nok)">directions &amp; contact</span>
+    <h2 id="vis-ttl" class="sec-h2" style="font-size:clamp(2rem,4.5vw,3rem);margin-top:.3rem">
+      오시는 길 · 연락처
+    </h2>
+    <div class="dc-bar"><span class="b3"></span><span class="b4"></span><span class="b1"></span><span class="b2"></span></div>
+
+    <div class="vis-grid">
+      <div class="addr-box">
+        <h3 class="addr-ttl">📍 주소</h3>
+        <p class="addr-full">전남 장흥군 관산읍 칠관로 1272-473</p>
+        <p class="addr-post">(우) 59351</p>
+        <a href="https://naver.me/GVEGVtKj" target="_blank" rel="noopener noreferrer" class="map-btn">
+          🗺 네이버지도에서 보기 ↗
+        </a>
+      </div>
+
+      <div class="cont-grid">
+        <a href="tel:01082307070" class="cc">
+          <span class="cc-ico">📱</span>
+          <div>
+            <p class="cc-lbl">휴대전화</p>
+            <p class="cc-val">010-8230-7070</p>
+          </div>
+        </a>
+        <a href="tel:0618672954" class="cc">
+          <span class="cc-ico">☎️</span>
+          <div>
+            <p class="cc-lbl">대표전화</p>
+            <p class="cc-val">061-867-2954</p>
+          </div>
+        </a>
+        <a href="https://blog.naver.com/chungwansa" target="_blank" rel="noopener noreferrer" class="cc">
+          <span class="cc-ico">📝</span>
+          <div>
+            <p class="cc-lbl">네이버 블로그</p>
+            <p class="cc-val">바로가기 ↗</p>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══ FOOTER ══ -->
+<footer>
+  <div class="w">
+    <div class="ft-grid">
+      <div class="ft-wide">
+        <div style="display:flex;align-items:center;gap:.7rem;margin-bottom:.8rem">
+          <span style="font-size:1.6rem">🪷</span>
+          <div>
+            <div class="ft-name">천관사 (天冠寺)</div>
+            <div class="ft-hj">天冠寺</div>
+          </div>
+        </div>
+        <div class="ft-meta">
+          <p>대한불교조계종 제21교구 송광사 말사</p>
+          <p>전남 장흥군 관산읍 칠관로 1272-473 (우) 59351</p>
+        </div>
+        <div class="ft-phones">
+          <a href="tel:01082307070" class="ft-ph">📱 010-8230-7070</a>
+          <a href="tel:0618672954"  class="ft-ph">☎️ 061-867-2954</a>
+        </div>
+      </div>
+      <div>
+        <h3 class="ft-h3">바로가기</h3>
+        <ul class="ft-ul">
+          <li class="ft-li"><a href="#events">행사안내</a></li>
+          <li class="ft-li"><a href="#intro">사찰소개</a></li>
+          <li class="ft-li"><a href="#gallery">사찰갤러리</a></li>
+          <li class="ft-li"><a href="#templestay">템플스테이</a></li>
+          <li class="ft-li"><a href="#indung">인등불사</a></li>
+          <li class="ft-li"><a href="#visit">오시는 길</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="ft-h3">관련 링크</h3>
+        <ul class="ft-ul">
+          <li class="ft-li"><a href="https://blog.naver.com/chungwansa" target="_blank">네이버 블로그 ↗</a></li>
+          <li class="ft-li"><a href="https://naver.me/GVEGVtKj" target="_blank">네이버 지도 ↗</a></li>
+
+        </ul>
+      </div>
+    </div>
+    <div class="ft-copy">
+      <p>© 2025 천관사 (天冠寺). All rights reserved.</p>
+      <p>Powered by Astro</p>
+    </div>
+  </div>
+</footer>
+
+<!-- FAB -->
+<a href="#hero" class="fab" aria-label="맨 위로">↑</a>
+
+
+<!-- 결제 모달 -->
+<div class="pay-modal-overlay" id="payModal" onclick="closeModal(event)">
+  <div class="pay-modal">
+    <button class="pm-close" onclick="closePayModal()">✕</button>
+    <h3 class="pm-title" id="pmTitle">카카오페이로 동참하기</h3>
+    <p class="pm-sub">인등 종류를 선택해주세요</p>
+    <div class="pm-amount-select">
+      <div class="pm-amt on" onclick="selAmt(this,'5000')">삼일등 · 5,000원</div>
+      <div class="pm-amt" onclick="selAmt(this,'10000')">칠일등 · 10,000원</div>
+      <div class="pm-amt" onclick="selAmt(this,'50000')">백일등 · 50,000원</div>
+      <div class="pm-amt" onclick="selAmt(this,'100000')">연간등 · 100,000원</div>
+    </div>
+    <div class="pm-pay-btns">
+      <button class="btn-kakao" id="pm-kakao" onclick="doPay('kakao')">
+        <span class="ico">💛</span> 카카오페이 결제
+      </button>
+      <button class="btn-naver" id="pm-naver" onclick="doPay('naver')" style="display:none">
+        <span class="ico">🟢</span> 네이버페이 결제
+      </button>
+      <button class="btn-toss" id="pm-toss" onclick="doPay('toss')" style="display:none">
+        <span class="ico">💙</span> 토스 결제
+      </button>
+    </div>
+    <p style="font-family:var(--font);font-size:.72rem;color:var(--ink-3);margin-top:1rem;line-height:1.9;letter-spacing:.04em">
+      결제 후 <strong>010-8230-7070</strong>으로 성명·소원을 문자로 보내주세요
+    </p>
+  </div>
+</div>
+
+
+<script>
+/* ── 모바일 메뉴 ── */
+function toggleMob(){document.getElementById('mob').classList.toggle('open')}
+function closeMob(){document.getElementById('mob').classList.remove('open')}
+
+/* ── 스크롤 NAV 활성 ── */
+const secs=['events','intro','gallery','templestay','indung','visit'];
+const navAs=document.querySelectorAll('.nav-a');
+const obs=new IntersectionObserver(es=>{
+  es.forEach(e=>{
+    if(e.isIntersecting)
+      navAs.forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+e.target.id));
+  });
+},{rootMargin:'-40% 0px -55% 0px'});
+secs.forEach(id=>{const el=document.getElementById(id);if(el)obs.observe(el)});
+
+/* ── 스크롤 NAV 그림자 ── */
+window.addEventListener('scroll',()=>{
+  const n=document.getElementById('nav');
+  n.style.boxShadow=window.scrollY>80
+    ?'0 4px 28px rgba(200,55,45,.18)'
+    :'0 2px 20px rgba(200,55,45,.12)';
+},{passive:true});
+
+/* ── 이벤트 탭 필터 ── */
+function filterEv(btn,cat){
+  document.querySelectorAll('.ev-tab').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  document.querySelectorAll('.ev-card').forEach(c=>{
+    c.style.display=(cat==='all'||c.dataset.cat===cat)?'':'none';
+  });
+}
+
+/* ── 계좌번호 복사 ── */
+function copyAcct(){
+  navigator.clipboard.writeText('3510001234503')
+    .then(()=>alert('✅ 계좌번호가 복사되었습니다!\n\n농협 351-0001-2345-03 (천관사)'))
+    .catch(()=>alert('농협 351-0001-2345-03 (예금주: 천관사)'));
+}
+
+/* ── 결제 모달 ── */
+let curPay='kakao';
+let curAmt='5000';
+function openPay(type){
+  curPay=type;
+  document.getElementById('pmTitle').textContent={
+    kakao:'카카오페이로 동참하기',
+    naver:'네이버페이로 동참하기',
+    toss:'토스로 동참하기'
+  }[type];
+  ['pm-kakao','pm-naver','pm-toss'].forEach(id=>{
+    document.getElementById(id).style.display='none';
+  });
+  document.getElementById('pm-'+type).style.display='flex';
+  document.getElementById('payModal').classList.add('open');
+}
+function closePayModal(){document.getElementById('payModal').classList.remove('open')}
+function closeModal(e){if(e.target===document.getElementById('payModal'))closePayModal()}
+function selAmt(el,amt){
+  curAmt=amt;
+  document.querySelectorAll('.pm-amt').forEach(a=>a.classList.remove('on'));
+  el.classList.add('on');
+}
+function doPay(type){
+  const labels={kakao:'카카오페이',naver:'네이버페이',toss:'토스'};
+  const amtLabels={'5000':'5,000원 (삼일등)','10000':'10,000원 (칠일등)',
+    '50000':'50,000원 (백일등)','100000':'100,000원 (연간등)'};
+  alert(`✨ ${labels[type]} 결제 연동 예정\n\n선택 금액: ${amtLabels[curAmt]}\n\n실제 서비스 시 PG사 SDK 연동이 필요합니다.\n지금은 계좌이체를 이용해 주세요.\n\n농협 351-0001-2345-03 (천관사)\n문의: 010-8230-7070`);
+  closePayModal();
+}
+</script>
+
+</body>
+</html>
+
