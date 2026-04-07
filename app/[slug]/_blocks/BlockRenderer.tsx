@@ -21,7 +21,9 @@ import StatsBlock            from './StatsBlock'
 import HistoryTimelineBlock  from './HistoryTimelineBlock'
 import QABlock               from './QABlock'
 import TemplestayBlock       from './TemplestayBlock'
+import BorimsaTemplestayBlock from './templestay/borimsa/TemplestayBlock'
 import OfferingBlock         from './OfferingBlock'
+import BorimsaOfferingBlock  from './offering/borimsa/OfferingBlock'
 import QuoteBannerBlock      from './QuoteBannerBlock'
 
 interface Props {
@@ -184,11 +186,17 @@ export default function BlockRenderer({ blockType, config, temple, content, dail
   }
 
   // SEC13-* 템플스테이
+  if (blockType.startsWith('SEC13-') && temple.code === 'borimsa') {
+    return <BorimsaTemplestayBlock temple={temple} config={config} />
+  }
   if (blockType.startsWith('SEC13-')) {
     return <TemplestayBlock temple={temple} config={config} />
   }
 
   // SEC08-* 인등불사·기도 동참
+  if (blockType.startsWith('SEC08-') && temple.code === 'borimsa') {
+    return <BorimsaOfferingBlock temple={temple} config={config} />
+  }
   if (blockType.startsWith('SEC08-')) {
     return <OfferingBlock temple={temple} config={config} />
   }
