@@ -23,11 +23,7 @@ export default function LocationBlock({ temple, config }: Props) {
         <span className="bt-section-label">Visit</span>
         <h2 className="bt-section-title">오시는 길</h2>
 
-        <div className="bt-visit-layout">
-          {/* 지도 플레이스홀더 */}
-          <div className="bt-visit-map" />
-
-          {/* 정보 */}
+        <div style={{ maxWidth: 540, margin: '32px auto 0' }}>
           <div className="bt-visit-info">
             {address && (
               <dl>
@@ -62,7 +58,7 @@ export default function LocationBlock({ temple, config }: Props) {
               </dl>
             )}
 
-            <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
+            <div style={{ display: 'flex', gap: 12, marginTop: 16 }}>
               <a
                 href={naverMapUrl}
                 target="_blank"

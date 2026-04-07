@@ -73,6 +73,9 @@ export default function TemplestayBlock({ temple, config }: Props) {
           <p style={{ marginTop: 12, fontSize: '.8rem', color: 'var(--color-gold)' }}>
             한국불교문화사업단 공식 예약 사이트 (templestay.com)
           </p>
+          <p style={{ marginTop: 8, fontSize: '13px', color: '#666' }}>
+            예약 문의: 061-864-2055
+          </p>
         </div>
       </div>
     </section>
