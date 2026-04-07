@@ -4,10 +4,17 @@
 import { useEffect, useRef } from 'react'
 
 export interface LanternParadeHeroProps {
-  mainTitle?:     string   // 기본 "부처님 오신 날"
-  subtitle?:      string   // 기본 "서울 종로 연등축제 · 불기 2570년"
-  lanternCount?:  number   // 15–60, 기본 35
-  glowIntensity?: number   // 1–5, 기본 3
+  mainTitle?:       string   // 기본 "부처님 오신 날"
+  subtitle?:        string   // 기본 "서울 종로 연등축제 · 불기 2570년"
+  lanternCount?:    number   // 15–60, 기본 35
+  glowIntensity?:   number   // 1–5, 기본 3
+  // 사찰 전용 오버레이 (설정 시 mainTitle/subtitle 대신 표시)
+  templeName?:      string
+  templeNameHanja?: string
+  badge?:           string
+  taglines?:        string[]
+  ctaPrimary?:      { text: string; href: string }
+  ctaSecondary?:    { text: string; href: string }
 }
 
 const GOLD = '#C9A84C'
@@ -409,6 +416,12 @@ export default function LanternParadeHeroBlock({
   subtitle      = '서울 종로 연등축제 · 불기 2570년',
   lanternCount  = 35,
   glowIntensity = 3,
+  templeName,
+  templeNameHanja,
+  badge,
+  taglines,
+  ctaPrimary,
+  ctaSecondary,
 }: LanternParadeHeroProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
@@ -494,57 +507,76 @@ export default function LanternParadeHeroBlock({
         />
 
         {/* 텍스트 오버레이 */}
-        <div
-          style={{
-            position:      'absolute',
-            top:           '5%',
-            left:          '50%',
-            transform:     'translateX(-50%)',
-            zIndex:        2,
-            textAlign:     'center',
-            pointerEvents: 'none',
-            whiteSpace:    'nowrap',
-          }}
-        >
-          <p
+        {templeName ? (
+          /* ── 사찰명 풀 레이아웃 (templeName 설정 시) ── */
+          <div
             style={{
-              fontSize:      'clamp(0.62rem, 1.4vw, 0.86rem)',
-              letterSpacing: '0.22em',
-              color:         `${GOLD}cc`,
-              marginBottom:  '0.35rem',
-              fontWeight:    600,
-              animation:     'ph-sub 1.2s ease-out 0.6s both',
+              position:   'absolute',
+              top:        '50%',
+              left:       '50%',
+              transform:  'translate(-50%, -50%)',
+              zIndex:     2,
+              textAlign:  'center',
+              width:      '90%',
+              maxWidth:   '640px',
             }}
           >
-            ● 불기 2570년
-          </p>
-          <h1
+            <p style={{ fontSize: 'clamp(0.62rem,1.4vw,0.86rem)', letterSpacing: '0.22em', color: `${GOLD}cc`, marginBottom: '0.5rem', fontWeight: 600, animation: 'ph-sub 1.2s ease-out 0.6s both', pointerEvents: 'none' }}>
+              {badge ?? '● 불기 2570년'}
+            </p>
+            <h1 style={{ fontSize: 'clamp(2.6rem,8vw,5.2rem)', fontWeight: 800, color: GOLD, letterSpacing: '0.08em', lineHeight: 1.0, textShadow: `0 0 28px ${GOLD}70,0 0 72px ${GOLD}28,0 2px 12px rgba(0,0,0,0.95)`, fontFamily: '"Noto Serif KR","Nanum Myeongjo",serif', animation: 'ph-in 1.2s ease-out 0.2s both', pointerEvents: 'none' }}>
+              {templeName}
+            </h1>
+            {templeNameHanja && (
+              <p style={{ fontSize: 'clamp(0.9rem,2vw,1.2rem)', color: `${GOLD}99`, letterSpacing: '0.28em', marginTop: '0.3rem', fontFamily: '"Noto Serif KR",serif', animation: 'ph-sub 1.2s ease-out 0.5s both', pointerEvents: 'none' }}>
+                {templeNameHanja}
+              </p>
+            )}
+            {taglines && taglines.map((line, i) => (
+              <p key={i} style={{ fontSize: 'clamp(0.78rem,1.6vw,1rem)', color: 'rgba(255,255,255,0.72)', letterSpacing: '0.05em', marginTop: i === 0 ? '1rem' : '0.3rem', textShadow: '0 1px 6px rgba(0,0,0,0.88)', animation: `ph-sub 1.2s ease-out ${0.8 + i * 0.15}s both`, pointerEvents: 'none' }}>
+                {line}
+              </p>
+            ))}
+            {(ctaPrimary || ctaSecondary) && (
+              <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap', marginTop: '2rem' }}>
+                {ctaPrimary && (
+                  <a href={ctaPrimary.href} style={{ display: 'inline-block', padding: '12px 28px', background: GOLD, color: '#1a0a00', fontWeight: 700, fontSize: 'clamp(0.8rem,1.4vw,0.95rem)', borderRadius: '6px', textDecoration: 'none', letterSpacing: '0.04em', animation: 'ph-sub 1.2s ease-out 1.1s both', boxShadow: `0 4px 16px ${GOLD}55` }}>
+                    {ctaPrimary.text}
+                  </a>
+                )}
+                {ctaSecondary && (
+                  <a href={ctaSecondary.href} style={{ display: 'inline-block', padding: '12px 28px', background: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.88)', fontWeight: 600, fontSize: 'clamp(0.8rem,1.4vw,0.95rem)', borderRadius: '6px', textDecoration: 'none', letterSpacing: '0.04em', border: '1px solid rgba(255,255,255,0.28)', animation: 'ph-sub 1.2s ease-out 1.25s both' }}>
+                    {ctaSecondary.text}
+                  </a>
+                )}
+              </div>
+            )}
+          </div>
+        ) : (
+          /* ── 기본 레이아웃 (mainTitle/subtitle) ── */
+          <div
             style={{
-              fontSize:      'clamp(2.4rem, 7.5vw, 4.8rem)',
-              fontWeight:    800,
-              color:         GOLD,
-              letterSpacing: '0.08em',
-              lineHeight:    1.0,
-              textShadow:    `0 0 28px ${GOLD}70, 0 0 72px ${GOLD}28, 0 2px 12px rgba(0,0,0,0.95)`,
-              fontFamily:    '"Noto Serif KR","Nanum Myeongjo",serif',
-              animation:     'ph-in 1.2s ease-out 0.2s both',
+              position:      'absolute',
+              top:           '5%',
+              left:          '50%',
+              transform:     'translateX(-50%)',
+              zIndex:        2,
+              textAlign:     'center',
+              pointerEvents: 'none',
+              whiteSpace:    'nowrap',
             }}
           >
-            {mainTitle}
-          </h1>
-          <p
-            style={{
-              fontSize:      'clamp(0.76rem, 1.8vw, 1.04rem)',
-              color:         'rgba(255,255,255,0.68)',
-              letterSpacing: '0.08em',
-              marginTop:     '0.5rem',
-              textShadow:    '0 1px 6px rgba(0,0,0,0.88)',
-              animation:     'ph-sub 1.2s ease-out 0.9s both',
-            }}
-          >
-            {subtitle}
-          </p>
-        </div>
+            <p style={{ fontSize: 'clamp(0.62rem,1.4vw,0.86rem)', letterSpacing: '0.22em', color: `${GOLD}cc`, marginBottom: '0.35rem', fontWeight: 600, animation: 'ph-sub 1.2s ease-out 0.6s both' }}>
+              ● 불기 2570년
+            </p>
+            <h1 style={{ fontSize: 'clamp(2.4rem,7.5vw,4.8rem)', fontWeight: 800, color: GOLD, letterSpacing: '0.08em', lineHeight: 1.0, textShadow: `0 0 28px ${GOLD}70,0 0 72px ${GOLD}28,0 2px 12px rgba(0,0,0,0.95)`, fontFamily: '"Noto Serif KR","Nanum Myeongjo",serif', animation: 'ph-in 1.2s ease-out 0.2s both' }}>
+              {mainTitle}
+            </h1>
+            <p style={{ fontSize: 'clamp(0.76rem,1.8vw,1.04rem)', color: 'rgba(255,255,255,0.68)', letterSpacing: '0.08em', marginTop: '0.5rem', textShadow: '0 1px 6px rgba(0,0,0,0.88)', animation: 'ph-sub 1.2s ease-out 0.9s both' }}>
+              {subtitle}
+            </p>
+          </div>
+        )}
       </section>
     </>
   )

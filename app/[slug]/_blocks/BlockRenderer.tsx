@@ -123,9 +123,15 @@ export default function BlockRenderer({ blockType, config, temple, content, dail
     return (
       <StandardParadeHero
         mainTitle={      (cfg.mainTitle      as string) ?? '부처님 오신 날'}
-        subtitle={       (cfg.subtitle       as string) ?? `${temple.name} 연등행렬 · 불기 2569년`}
+        subtitle={       (cfg.subtitle       as string) ?? `${temple.name} 연등행렬 · 불기 2570년`}
         lanternCount={   (cfg.lanternCount   as number) ?? 35}
         glowIntensity={  (cfg.glowIntensity  as number) ?? 3}
+        templeName={     (cfg.templeName     as string | undefined)}
+        templeNameHanja={(cfg.templeNameHanja as string | undefined)}
+        badge={          (cfg.badge          as string | undefined)}
+        taglines={       (cfg.taglines       as string[] | undefined)}
+        ctaPrimary={     (cfg.ctaPrimary     as { text: string; href: string } | undefined)}
+        ctaSecondary={   (cfg.ctaSecondary   as { text: string; href: string } | undefined)}
       />
     )
   }
