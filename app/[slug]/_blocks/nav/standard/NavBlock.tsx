@@ -25,39 +25,9 @@ export default function NavBlock({ temple, menus = DEFAULT_MENUS }: NavBlockProp
   const accent = temple.primaryColor ?? '#8B2500'
 
   const SNS_ITEMS = [
-    {
-      label: '카카오톡',
-      href:  temple.kakao ?? '#',
-      bg:    '#FEE500',
-      color: '#3C1E1E',
-      icon: (
-        <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-          <ellipse cx="11" cy="10" rx="9" ry="7.5" fill="#3C1E1E" opacity="0.85"/>
-          <path d="M7 8.5c-.3.6-.3 1.3 0 1.9.4.8 1.2 1.4 2.1 1.7l-.4 1.6 1.8-1.1c.3 0 .6.1.9.1 2.5 0 4.5-1.6 4.5-3.5S13.4 5.7 11 5.7 6.5 7.3 6.5 9.2c0 .5.2 1 .5 1.4z" fill="#FEE500"/>
-        </svg>
-      ),
-    },
-    {
-      label: '유튜브',
-      href:  temple.youtube ?? '#',
-      bg:    '#FF0000',
-      color: '#ffffff',
-      icon: (
-        <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-          <rect x="2" y="5" width="18" height="12" rx="3" fill="#fff" opacity="0.9"/>
-          <polygon points="9,8 15,11 9,14" fill="#FF0000"/>
-        </svg>
-      ),
-    },
-    {
-      label: '네이버 블로그',
-      href:  temple.blog ?? '#',
-      bg:    '#03C75A',
-      color: '#ffffff',
-      icon: (
-        <span style={{ fontWeight: 900, fontSize: '18px', lineHeight: 1 }}>N</span>
-      ),
-    },
+    { label: '카카오톡',    href: temple.kakao   ?? '#', bg: '#FEE500', color: '#3C1E1E', iconKey: 'kakao'   },
+    { label: '유튜브',      href: temple.youtube ?? '#', bg: '#FF0000', color: '#ffffff', iconKey: 'youtube' },
+    { label: '네이버 블로그', href: temple.blog    ?? '#', bg: '#03C75A', color: '#ffffff', iconKey: 'naver'   },
   ]
 
   return (
@@ -189,7 +159,21 @@ export default function NavBlock({ temple, menus = DEFAULT_MENUS }: NavBlockProp
                   boxShadow:      '0 2px 8px rgba(0,0,0,0.10)',
                 }}
               >
-                {s.icon}
+                {s.iconKey === 'kakao' && (
+                  <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+                    <ellipse cx="11" cy="10" rx="9" ry="7.5" fill="#3C1E1E" opacity="0.85"/>
+                    <path d="M7 8.5c-.3.6-.3 1.3 0 1.9.4.8 1.2 1.4 2.1 1.7l-.4 1.6 1.8-1.1c.3 0 .6.1.9.1 2.5 0 4.5-1.6 4.5-3.5S13.4 5.7 11 5.7 6.5 7.3 6.5 9.2c0 .5.2 1 .5 1.4z" fill="#FEE500"/>
+                  </svg>
+                )}
+                {s.iconKey === 'youtube' && (
+                  <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+                    <rect x="2" y="5" width="18" height="12" rx="3" fill="#fff" opacity="0.9"/>
+                    <polygon points="9,8 15,11 9,14" fill="#FF0000"/>
+                  </svg>
+                )}
+                {s.iconKey === 'naver' && (
+                  <span style={{ fontWeight: 900, fontSize: '18px', lineHeight: 1 }}>N</span>
+                )}
                 {s.label}
               </a>
             ))}
