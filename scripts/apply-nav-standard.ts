@@ -2,10 +2,13 @@
 // order:0 고정, isVisible:true
 // 이미 N-01 있으면 update, 없으면 create
 import { PrismaClient } from '@prisma/client'
+import { EXCLUDED_SLUGS } from './constants'
 const db = new PrismaClient()
 
 async function applyNavStandard() {
-  const temples = await db.temple.findMany()
+  const temples = await db.temple.findMany({
+    where: { code: { notIn: EXCLUDED_SLUGS } },
+  })
   let created = 0, updated = 0
 
   for (const temple of temples) {

@@ -2,10 +2,13 @@
 // - H-10 블록 → isVisible:false, order:99
 // - 기존 숨겨진 원래 히어로 블록 → isVisible:true, order:1 복원
 import { PrismaClient } from '@prisma/client'
+import { EXCLUDED_SLUGS } from './constants'
 const prisma = new PrismaClient()
 
 async function restoreFestival() {
-  const temples = await prisma.temple.findMany()
+  const temples = await prisma.temple.findMany({
+    where: { code: { notIn: EXCLUDED_SLUGS } },
+  })
   let count = 0
 
   for (const temple of temples) {

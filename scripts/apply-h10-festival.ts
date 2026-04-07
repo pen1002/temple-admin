@@ -2,10 +2,13 @@
 // - 기존 order:1 히어로 블록 → isVisible:false (삭제 금지)
 // - H-10 없으면 create, 있으면 order:1 + isVisible:true
 import { PrismaClient } from '@prisma/client'
+import { EXCLUDED_SLUGS } from './constants'
 const prisma = new PrismaClient()
 
 async function applyFestival() {
-  const temples = await prisma.temple.findMany()
+  const temples = await prisma.temple.findMany({
+    where: { code: { notIn: EXCLUDED_SLUGS } },
+  })
   let count = 0
 
   for (const temple of temples) {
