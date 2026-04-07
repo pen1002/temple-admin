@@ -9,6 +9,8 @@ import StandardLanternHero from '@/app/[slug]/_blocks/hero/standard/LanternHeroB
 import BorimsaCandleHero from '@/app/[slug]/_blocks/hero/borimsa/CandleHeroBlock'
 // @ts-ignore
 import BorimsaParadeHero from '@/app/[slug]/_blocks/hero/borimsa/LanternParadeHeroBlock'
+// @ts-ignore
+import H11BonchukHaroo from '@/app/[slug]/_blocks/hero/standard/H11BonchukHarooBlock'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore — [slug] 디렉토리명에 대괄호 포함
 import HeroBlock, { CombinedHero, LanternHero, ParticleHero, ImageHero } from '@/app/[slug]/_blocks/HeroBlock'
@@ -188,7 +190,7 @@ function Placeholder({ code, name: nameProp, desc: descProp, catColor, catBg, ca
 // ── 지원 코드 목록 ───────────────────────────────────────────────────────────
 const REAL_BLOCKS: Record<string, boolean> = {
   'H-01':true,'H-02':true,'H-03':true,'H-04':true,'H-05':true,
-  'H-06':true,'H-07':true,'H-08':true,'H-09':true,'H-10':true,
+  'H-06':true,'H-07':true,'H-08':true,'H-09':true,'H-10':true,'H-11':true,
   'D-01':true,
   'L-01':true,'L-02':true,'L-03':true,'L-04':true,'L-05':true,'L-06':true,'L-07':true,
   'E-01':true,'E-02':true,'E-03':true,'E-04':true,'E-05':true,'E-06':true,
@@ -226,6 +228,7 @@ export default async function BlockPreviewPage(
   if (code === 'H-08') return <div style={{ margin:0, padding:0, overflow:'hidden' }}><BorimsaCandleHero temple={T_BORIMSA} /></div>
   if (code === 'H-09') return <Placeholder code={code} name="계절 테마형" desc="봄·여름·가을·겨울 자동 전환" catColor="#1B3A6B" catBg="#f0f4ff" catIcon="🏯" />
   if (code === 'H-10') return <div style={{ margin:0, padding:0, overflow:'hidden' }}><BorimsaParadeHero temple={T_BORIMSA} /></div>
+  if (code === 'H-11') return <div style={{ margin:0, padding:0, overflow:'hidden' }}><H11BonchukHaroo /></div>
 
   // ── D-01 법문 ─────────────────────────────────────────────────────────────
   if (code === 'D-01') {

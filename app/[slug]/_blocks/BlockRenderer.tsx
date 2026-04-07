@@ -9,6 +9,7 @@ import BorimsaCandleHero from './hero/borimsa/CandleHeroBlock'
 import StandardCandleHero from './hero/standard/CandleHeroBlock'
 import BorimsaParadeHero from './hero/borimsa/LanternParadeHeroBlock'
 import StandardParadeHero from './hero/standard/LanternParadeHeroBlock'
+import H11BonchukHaroo from './hero/standard/H11BonchukHarooBlock'
 import DharmaBlock  from './DharmaBlock'
 import NoticeBlock  from './NoticeBlock'
 import EventBlock   from './EventBlock'
@@ -132,6 +133,20 @@ export default function BlockRenderer({ blockType, config, temple, content, dail
         taglines={       (cfg.taglines       as string[] | undefined)}
         ctaPrimary={     (cfg.ctaPrimary     as { text: string; href: string } | undefined)}
         ctaSecondary={   (cfg.ctaSecondary   as { text: string; href: string } | undefined)}
+      />
+    )
+  }
+
+  // H-11: 봉축의 하루 — 6장면 그리드 히어로
+  if (blockType === 'H-11') {
+    const cfg = config as Record<string, unknown>
+    return (
+      <H11BonchukHaroo
+        templeName={     (cfg.templeName      as string | undefined)}
+        templeSubtitle={ (cfg.templeSubtitle  as string | undefined)}
+        badgeText={      (cfg.badgeText       as string | undefined)}
+        ctaText={        (cfg.ctaText         as string | undefined)}
+        ctaHref={        (cfg.ctaHref         as string | undefined)}
       />
     )
   }
