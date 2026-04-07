@@ -48,8 +48,7 @@ export default function AbbotGreetingBlock({ temple, config }: Props) {
             ))}
 
             <blockquote>
-              나무 비로자나불.
-              <cite>— 주지 {abbotName}</cite>
+              <cite style={{ display: 'block', textAlign: 'right' }}>주지 {abbotName}</cite>
             </blockquote>
 
             <dl className="bt-about-info">

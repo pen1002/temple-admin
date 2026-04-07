@@ -39,7 +39,7 @@ export default function FooterBlock({ temple }: { temple: TempleData }) {
           <h4>관련 링크</h4>
           <a href="https://www.templestay.com" target="_blank" rel="noopener noreferrer">템플스테이</a>
           <a href="https://www.jogye.or.kr" target="_blank" rel="noopener noreferrer">조계종</a>
-          <a href={`/admin/${temple.code}`} style={{ opacity: 0.3 }}>관리자</a>
+          <a href="https://temple-admin-zeta.vercel.app/admin/borimsa" target="_blank" rel="noopener noreferrer" style={{ opacity: 0.3 }}>사찰관리자</a>
         </div>
       </div>
 
