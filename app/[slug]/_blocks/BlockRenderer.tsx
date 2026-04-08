@@ -27,6 +27,11 @@ import BorimsaTemplestayBlock from './templestay/borimsa/TemplestayBlock'
 import OfferingBlock          from './OfferingBlock'
 import BorimsaOfferingBlock   from './offering/borimsa/OfferingBlock'
 import QuoteBannerBlock       from './QuoteBannerBlock'
+import CeremonyBlock          from './ceremony/CeremonyBlock'
+import PrayerBlock            from './prayer/PrayerBlock'
+import EventBannerBlock       from './event/EventBlock'
+import TSBlock                from './templestay/TSBlock'
+import ArchiveBlock           from './archive/ArchiveBlock'
 
 interface Props {
   blockType:    string
@@ -232,6 +237,31 @@ export default function BlockRenderer({ blockType, config, temple, content, dail
   // QB-01 인용구 배너
   if (blockType === 'QB-01') {
     return <QuoteBannerBlock temple={temple} config={config} />
+  }
+
+  // BH-01~09: 법회 시리즈
+  if (blockType.startsWith('BH-')) {
+    return <CeremonyBlock blockType={blockType} temple={temple} config={config} />
+  }
+
+  // PR-01~12: 기도·불공 시리즈
+  if (blockType.startsWith('PR-')) {
+    return <PrayerBlock blockType={blockType} temple={temple} config={config} />
+  }
+
+  // EV-01~03: 행사 배너 시리즈
+  if (blockType.startsWith('EV-')) {
+    return <EventBannerBlock blockType={blockType} temple={temple} config={config} />
+  }
+
+  // TS-01~03: 템플스테이 카드 시리즈
+  if (blockType.startsWith('TS-')) {
+    return <TSBlock blockType={blockType} temple={temple} config={config} />
+  }
+
+  // DR-01~09: 사찰자료관 시리즈
+  if (blockType.startsWith('DR-')) {
+    return <ArchiveBlock blockType={blockType} temple={temple} config={config} />
   }
 
   // 미구현 블록 타입 — 조용히 스킵
