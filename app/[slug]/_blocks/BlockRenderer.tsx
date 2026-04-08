@@ -2,6 +2,7 @@ import type { TempleData, TemplateContent } from './types'
 import type { DailyWisdomData } from '@/lib/getDailyWisdom'
 import DailyWisdomBlock from './wisdom/DailyWisdomBlock'
 import NavBlock      from './nav/standard/NavBlock'
+import NoticeSwipeBlock from './notice/NoticeSwipeBlock'
 import HeroBlock    from './HeroBlock'
 import LanternHeroBlock from './hero/borimsa/LanternHeroBlock'
 import StandardLanternHero from './hero/standard/LanternHeroBlock'
@@ -54,8 +55,13 @@ export default function BlockRenderer({ blockType, config, temple, content, dail
     return <DailyWisdomBlock wisdom={dailyWisdom ?? null} temple={temple} />
   }
 
-  // N-01: GNB 네비게이션
-  if (blockType === 'N-01') {
+  // NS-01: 공지스와이프형
+  if (blockType === 'NS-01') {
+    return <NoticeSwipeBlock content={content} temple={temple} config={config} />
+  }
+
+  // GNB-01 / N-01(하위호환): GNB 네비게이션
+  if (blockType === 'GNB-01' || blockType === 'N-01') {
     return (
       <NavBlock
         temple={{
