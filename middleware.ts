@@ -61,5 +61,5 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   // _next 전체, api, favicon 제외 → 서브도메인 요청 포함
-  matcher: ['/((?!_next|api|favicon\\.ico|.*\\.html).*)'],
+  matcher: ['/((?!_next|api|favicon\\.ico).*)'],
 }

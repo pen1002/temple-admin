@@ -22,14 +22,10 @@ import StatsBlock            from './StatsBlock'
 import HistoryTimelineBlock  from './HistoryTimelineBlock'
 import QABlock               from './QABlock'
 import TemplestayBlock       from './TemplestayBlock'
-import BorimsaTemplestayBlock   from './templestay/borimsa/TemplestayBlock'
-import ChunkwansaTemplestayBlock from './templestay/chunkwansa/TemplestayBlock'
-import OfferingBlock             from './OfferingBlock'
-import BorimsaOfferingBlock      from './offering/borimsa/OfferingBlock'
-import ChunkwansaOfferingBlock   from './offering/chunkwansa/OfferingBlock'
-import ChunkwansaNatureCards     from './nature/chunkwansa/NatureCardsBlock'
-import ChunkwansaHeritageBlock   from './heritage/chunkwansa/HeritageBlock'
-import QuoteBannerBlock          from './QuoteBannerBlock'
+import BorimsaTemplestayBlock from './templestay/borimsa/TemplestayBlock'
+import OfferingBlock          from './OfferingBlock'
+import BorimsaOfferingBlock   from './offering/borimsa/OfferingBlock'
+import QuoteBannerBlock       from './QuoteBannerBlock'
 
 interface Props {
   blockType:    string
@@ -191,9 +187,6 @@ export default function BlockRenderer({ blockType, config, temple, content, dail
   }
 
   // SEC05-04 국보·보물 Heritage
-  if (blockType === 'SEC05-04' && temple.code === 'chunkwansa') {
-    return <ChunkwansaHeritageBlock temple={temple} config={config} />
-  }
   if (blockType === 'SEC05-04') {
     return <HeritageBlock temple={temple} config={config} />
   }
@@ -217,9 +210,6 @@ export default function BlockRenderer({ blockType, config, temple, content, dail
   if (blockType.startsWith('SEC13-') && temple.code === 'borimsa') {
     return <BorimsaTemplestayBlock temple={temple} config={config} />
   }
-  if (blockType.startsWith('SEC13-') && temple.code === 'chunkwansa') {
-    return <ChunkwansaTemplestayBlock temple={temple} config={config} />
-  }
   if (blockType.startsWith('SEC13-')) {
     return <TemplestayBlock temple={temple} config={config} />
   }
@@ -228,17 +218,10 @@ export default function BlockRenderer({ blockType, config, temple, content, dail
   if (blockType.startsWith('SEC08-') && temple.code === 'borimsa') {
     return <BorimsaOfferingBlock temple={temple} config={config} />
   }
-  if (blockType.startsWith('SEC08-') && temple.code === 'chunkwansa') {
-    return <ChunkwansaOfferingBlock temple={temple} config={config} />
-  }
   if (blockType.startsWith('SEC08-')) {
     return <OfferingBlock temple={temple} config={config} />
   }
 
-  // NATURE-01: 천관사 자연3종카드
-  if (blockType === 'NATURE-01' && temple.code === 'chunkwansa') {
-    return <ChunkwansaNatureCards temple={temple} config={config} />
-  }
 
   // QB-01 인용구 배너
   if (blockType === 'QB-01') {
