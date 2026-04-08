@@ -31,7 +31,7 @@ const TEMPLE_THEMES = [
 
 export default function AddTempleForm() {
   const router = useRouter()
-  const [selectedBlocks, setSelectedBlocks] = useState<string[]>(['H-01', 'D-01', 'I-01', 'V-01'])
+  const [selectedBlocks, setSelectedBlocks] = useState<string[]>(['H-05'])
   const [themeColor, setThemeColor] = useState('golden-lotus')
   const [pageTemplate, setPageTemplate] = useState('standard')
 
@@ -103,7 +103,7 @@ export default function AddTempleForm() {
 
   const resetForm = () => {
     setResult(null)
-    setSelectedBlocks(['H-01', 'D-01', 'I-01', 'V-01'])
+    setSelectedBlocks(['H-05'])
     setThemeColor('golden-lotus')
     setPageTemplate('standard')
     setForm({ code:'', name:'', nameEn:'', description:'', address:'', phone:'', denomination:'대한불교 조계종', abbotName:'', primaryColor:'#8B5E3C', secondaryColor:'#D4A017', tier:'2', pin:'' })
