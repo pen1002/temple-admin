@@ -16,8 +16,8 @@ const WISHES_DEFAULT = [
   '사업 번창과 가정 화목을 발원합니다',
 ]
 
-const COLS = 50
-const MAX = 1000
+const COLS = 55
+const MAX = 3000
 
 export default function H12IndungHero({ config }: Props) {
   const slug = (config?.templeSlug as string) || 'cheongwansa'
@@ -54,7 +54,7 @@ export default function H12IndungHero({ config }: Props) {
   const [copied, setCopied] = useState(false)
 
   const ROWS = Math.ceil(MAX / COLS)
-  const CANVAS_H = Math.max(480, ROWS * 22 + 40)
+  const CANVAS_H = Math.max(600, ROWS * 18 + 40)
 
   const fetchDonors = useCallback(async () => {
     try {
@@ -107,17 +107,20 @@ export default function H12IndungHero({ config }: Props) {
       octx.fillStyle = '#000'
       octx.fillRect(0, 0, COLS, ROWS)
       octx.fillStyle = '#fff'
-      const fontSize = Math.floor(ROWS * 0.70)
-      octx.font = `bold ${fontSize}px 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif`
+      const fontSize = Math.floor(ROWS * 0.80)
+      octx.font = `900 ${fontSize}px 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif`
       octx.textAlign = 'center'
       octx.textBaseline = 'middle'
       octx.fillText(tName, COLS / 2, ROWS / 2)
+      octx.fillText(tName, COLS / 2 + 0.3, ROWS / 2)
+      octx.fillText(tName, COLS / 2, ROWS / 2 + 0.3)
+      const threshold = 40
       const imgData = octx.getImageData(0, 0, COLS, ROWS).data
       const mask: boolean[] = []
       for (let i = 0; i < COLS * ROWS; i++) {
-        mask.push(imgData[i * 4] > 60)
+        mask.push(imgData[i * 4] > threshold)
       }
-      console.log('textMask isText count:', mask.filter(Boolean).length)
+      console.log('isText count:', mask.filter(Boolean).length, '/', COLS * ROWS, '=', Math.round(mask.filter(Boolean).length / COLS / ROWS * 100) + '%')
       slotsRef.current.forEach((s, i) => {
         s.isText = mask[i] || false
       })
@@ -166,7 +169,7 @@ export default function H12IndungHero({ config }: Props) {
         const py = (s.by + Math.sin(t * s.speed * 0.2 + s.phase) * 0.001) * H
 
         const textWave = s.isText
-          ? 0.5 + 0.5 * Math.sin(t * 1.2 + s.bx * 18)
+          ? 0.5 + 0.5 * Math.sin(t * 0.9 + s.bx * 22)
           : 0
 
         if (!isLit) {
@@ -187,7 +190,7 @@ export default function H12IndungHero({ config }: Props) {
         const br = Math.min(1, flicker + textBoost + highlightBoost)
 
         if (!isDonor) {
-          const dimBr = s.isText ? (0.18 + 0.18 * textWave) : 0.02
+          const dimBr = s.isText ? (0.22 + 0.22 * textWave) : 0.015
           ctx.beginPath()
           ctx.arc(px, py, r * 0.32, 0, Math.PI * 2)
           ctx.fillStyle = `rgba(180,160,100,${dimBr})`
@@ -198,17 +201,17 @@ export default function H12IndungHero({ config }: Props) {
         const glowR = r * (s.isText ? 3.5 : 2.6) * (1 + highlightBoost)
         const glow = ctx.createRadialGradient(px, py, 0, px, py, glowR)
         const glowAlpha = s.isText
-          ? (0.55 + textBoost * 0.45) * br
-          : 0.28 * br
-        glow.addColorStop(0, `hsla(${s.hue},95%,82%,${glowAlpha})`)
+          ? Math.min(1, (0.65 + textBoost * 0.55) * br)
+          : 0.25 * br
+        glow.addColorStop(0, `hsla(${s.hue},100%,88%,${glowAlpha})`)
         glow.addColorStop(1, `hsla(${s.hue},80%,50%,0)`)
         ctx.fillStyle = glow
         ctx.beginPath(); ctx.arc(px, py, glowR, 0, Math.PI * 2); ctx.fill()
 
         const bodyR = r * (
           s.isText
-            ? (1.15 + textWave * 0.35 + highlightBoost * 0.5)
-            : (1 + highlightBoost * 0.5)
+            ? (1.2 + textWave * 0.5 + highlightBoost * 0.5)
+            : (0.95 + highlightBoost * 0.5)
         )
         ctx.save(); ctx.translate(px, py); ctx.scale(1, 1.5)
         const bg = ctx.createRadialGradient(0, -bodyR * 0.15, 0, 0, 0, bodyR)
@@ -266,7 +269,7 @@ export default function H12IndungHero({ config }: Props) {
         ctx.fillStyle = `rgba(255,235,150,${0.7 + 0.3 * Math.sin(t * 2)})`
         ctx.textAlign = 'center'
         ctx.shadowColor = 'rgba(255,180,50,0.9)'; ctx.shadowBlur = 14 * dpr
-        ctx.fillText(`${phase}차 1,000등 원만성취`, W / 2, H * 0.05)
+        ctx.fillText(`삼천인등 원만성취`, W / 2, H * 0.05)
         ctx.restore()
       }
 
@@ -414,7 +417,7 @@ export default function H12IndungHero({ config }: Props) {
 
       <div style={{ textAlign: 'center', padding: '32px 20px 12px' }}>
         <p style={{ color: 'rgba(255,200,80,0.45)', fontSize: 12, letterSpacing: 4, marginBottom: 8 }}>
-          {phase}차 인등불사 · 1구 30,000원 · 1년 점등
+          삼천인등불사 · 1구 30,000원 · 1년 점등
         </p>
         <h1 style={{ color: 'rgba(255,235,150,0.95)', fontSize: 26, fontWeight: 500, marginBottom: 14, letterSpacing: 3 }}>
           {tName} 삼천인등

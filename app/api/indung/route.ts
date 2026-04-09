@@ -53,7 +53,7 @@ export async function GET(req: NextRequest) {
       },
       select: { id: true, name: true, wish: true, lantern_count: true, bank_confirmed: true, created_at: true, phase: true },
       orderBy: { created_at: 'asc' },
-      take: 1000,
+      take: 3000,
     })
     return NextResponse.json(donors.map(d => ({ ...d, id: d.id.toString() })))
   } catch (e: unknown) {
