@@ -11,6 +11,7 @@ import StandardCandleHero from './hero/standard/CandleHeroBlock'
 import BorimsaParadeHero from './hero/borimsa/LanternParadeHeroBlock'
 import StandardParadeHero from './hero/standard/LanternParadeHeroBlock'
 import H11BonchukHaroo from './hero/standard/H11BonchukHarooBlock'
+import L01IndungBlock from './indung/L01IndungBlock'
 import DharmaBlock  from './DharmaBlock'
 import NoticeBlock  from './NoticeBlock'
 import EventBlock   from './EventBlock'
@@ -188,6 +189,18 @@ export default function BlockRenderer({ blockType, config, temple, content, dail
 
   if (blockType === 'I-01') {
     return <NoticeBlock content={content} temple={temple} />
+  }
+
+  // L-01: 인등불사 (천관사 1차)
+  if (blockType === 'L-01') {
+    return (
+      <L01IndungBlock
+        config={config}
+        templeSlug={(config.templeSlug as string) || temple.code}
+        templeName={(config.templeName as string) || temple.name}
+        currentPhase={(config.currentPhase as number) || 1}
+      />
+    )
   }
 
   // SEC03-* 법회·행사 → EventBlock으로 렌더링

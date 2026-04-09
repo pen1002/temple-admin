@@ -115,3 +115,17 @@ model BlockCatalog {
   @@index([blockType])
   @@index([siteId])
 }
+
+model IndungDonor {
+  id             BigInt   @id @default(autoincrement())
+  temple_slug    String   @default("cheongwansa")
+  name           String
+  wish           String?
+  amount         Int      @default(10000)
+  bank_confirmed Boolean  @default(false)
+  lantern_count  Int      @default(1)
+  phase          Int      @default(1)
+  created_at     DateTime @default(now())
+
+  @@map("indung_donors")
+}

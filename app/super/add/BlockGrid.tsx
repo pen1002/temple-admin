@@ -4,7 +4,7 @@ import { useState } from 'react'
 // ── 타입 ──────────────────────────────────────────────────────────────────────
 interface BlockItem { code: string; name: string; desc: string; tags?: string[]; previewImageUrl?: string }
 // 확정 탭 순서: 히어로 / 법회 / 기도·불공 / 행사 / 템플스테이 / 결제수단 / 사찰자료관
-type CatKey = 'H' | 'BH' | 'PR' | 'EV' | 'TS' | 'C' | 'DR'
+type CatKey = 'H' | 'BH' | 'PR' | 'EV' | 'TS' | 'L' | 'C' | 'DR'
 
 // ── 카테고리 정의 (2026.04.08 전면 개편 확정) ────────────────────────────────
 const CATEGORIES: { key: CatKey; icon: string; label: string; color: string }[] = [
@@ -13,6 +13,7 @@ const CATEGORIES: { key: CatKey; icon: string; label: string; color: string }[] 
   { key: 'PR', icon: '🙏',  label: '기도·불공',   color: '#8B0000' },
   { key: 'EV', icon: '🎋',  label: '행사',         color: '#2D5016' },
   { key: 'TS', icon: '🏕️', label: '템플스테이',   color: '#2C5F4A' },
+  { key: 'L',  icon: '🕯',  label: '인등불사',     color: '#8B5A00' },
   { key: 'C',  icon: '💳',  label: '결제수단',     color: '#4A4A4A' },
   { key: 'DR', icon: '📖',  label: '사찰자료관',   color: '#5B2D8E' },
 ]
@@ -81,6 +82,9 @@ export const BLOCK_CATALOG: Record<CatKey, BlockItem[]> = {
     { code: 'C-05', name: '신용카드 결제',        desc: 'PG사 연동 카드결제',                                 tags: ['신용카드', 'PG', '결제'] },
   ],
   // ── 사찰자료관 (인포그래픽+Q&A 통합 신설 DR-01~09) ──────────────────────────
+  L: [
+    { code: 'L-01', name: '인등불사 — 1차 1,000등 점화형', desc: '캔버스 인등 격자 + 신청·발원문·진척바 (천관사 1차)', tags: ['인등', '점화', 'Supabase', '천관사'] },
+  ],
   DR: [
     { code: 'DR-01', name: 'AI 오디오 오버뷰',   desc: '사찰 정보를 AI가 음성으로 해설하는 오디오 콘텐츠',   tags: ['AI', '오디오', 'NotebookLM'] },
     { code: 'DR-02', name: '슬라이드 자료',       desc: '법회·행사·교육용 프레젠테이션 슬라이드 자료',        tags: ['슬라이드', '프레젠테이션', '교육'] },
