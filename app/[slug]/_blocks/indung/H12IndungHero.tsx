@@ -442,7 +442,7 @@ export default function H12IndungHero({ config }: Props) {
             pointerEvents: 'none', zIndex: 20, minWidth: 148,
           }}>
             <div style={{ color: 'rgba(255,235,150,0.95)', fontSize: 14, fontWeight: 700, marginBottom: 3 }}>
-              {tooltip.name} 보살
+              {tooltip.name} 불자님
             </div>
             <div style={{ color: 'rgba(255,200,80,0.6)', fontSize: 11, lineHeight: 1.5 }}>
               {(tooltip.wish || '').slice(0, 26)}{(tooltip.wish?.length || 0) > 26 ? '…' : ''}
@@ -457,7 +457,7 @@ export default function H12IndungHero({ config }: Props) {
               onClick={e => e.stopPropagation()}>
               <div style={{ fontSize: 34, marginBottom: 8 }}>🕯</div>
               <div style={{ fontSize: 20, fontWeight: 700, color: 'rgba(255,235,150,0.95)', letterSpacing: 2, marginBottom: 4 }}>
-                {selected.name} 보살
+                {selected.name} 불자님
               </div>
               <div style={{ fontSize: 11, color: 'rgba(255,200,80,0.4)', marginBottom: 6 }}>
                 {new Date(selected.created_at).toLocaleDateString('ko-KR')} · {phase}차

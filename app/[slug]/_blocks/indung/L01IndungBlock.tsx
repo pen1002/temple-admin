@@ -218,7 +218,7 @@ export default function L01IndungBlock({
             <div style={{ background: '#1a0d2e', border: '1px solid rgba(255,200,80,0.4)', borderRadius: 12, padding: '24px 28px', maxWidth: 280, textAlign: 'center' }}
               onClick={e => e.stopPropagation()}>
               <div style={{ fontSize: 32, marginBottom: 8 }}>🕯</div>
-              <div style={{ fontSize: 20, fontWeight: 700, color: 'rgba(255,235,150,0.95)', marginBottom: 4, letterSpacing: 2 }}>{selectedDonor.name} 보살</div>
+              <div style={{ fontSize: 20, fontWeight: 700, color: 'rgba(255,235,150,0.95)', marginBottom: 4, letterSpacing: 2 }}>{selectedDonor.name} 불자님</div>
               <div style={{ fontSize: 11, color: 'rgba(255,200,80,0.4)', marginBottom: 14 }}>
                 {new Date(selectedDonor.created_at).toLocaleDateString('ko-KR')} 점등 · {phase}차
               </div>
