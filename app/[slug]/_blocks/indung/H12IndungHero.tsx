@@ -85,24 +85,7 @@ export default function H12IndungHero({ config }: Props) {
     const CW = (1 - PX * 2) / COLS
     const CH = (1 - PY * 2) / ROWS
 
-    // 텍스트 마스크 생성 — useEffect 안에서 (브라우저 보장)
-    const offscreen = document.createElement('canvas')
-    offscreen.width = COLS
-    offscreen.height = ROWS
-    const octx = offscreen.getContext('2d')!
-    octx.fillStyle = '#000'
-    octx.fillRect(0, 0, COLS, ROWS)
-    octx.fillStyle = '#fff'
-    octx.font = `bold ${Math.floor(ROWS * 0.52)}px 'Apple SD Gothic Neo', serif`
-    octx.textAlign = 'center'
-    octx.textBaseline = 'middle'
-    octx.fillText(tName, COLS / 2, ROWS / 2)
-    const imgData = octx.getImageData(0, 0, COLS, ROWS).data
-    const textMask: boolean[] = []
-    for (let i = 0; i < COLS * ROWS; i++) {
-      textMask.push(imgData[i * 4] > 100)
-    }
-
+    // 슬롯 1차 초기화 (isText는 폰트 로드 후 재배정)
     slotsRef.current = Array.from({ length: MAX }, (_, i) => ({
       bx: PX + (i % COLS) * CW + CW * 0.5,
       by: PY + Math.floor(i / COLS) * CH + CH * 0.5,
@@ -112,8 +95,33 @@ export default function H12IndungHero({ config }: Props) {
       swayAmp: (Math.random() - 0.5) * 0.002,
       swayFreq: 0.3 + Math.random() * 0.5,
       litAt: 0,
-      isText: textMask[i] || false,
+      isText: false,
     }))
+
+    // 폰트 로딩 보장 후 텍스트 마스크 생성
+    document.fonts.ready.then(() => {
+      const offscreen = document.createElement('canvas')
+      offscreen.width = COLS
+      offscreen.height = ROWS
+      const octx = offscreen.getContext('2d')!
+      octx.fillStyle = '#000'
+      octx.fillRect(0, 0, COLS, ROWS)
+      octx.fillStyle = '#fff'
+      const fontSize = Math.floor(ROWS * 0.70)
+      octx.font = `bold ${fontSize}px 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif`
+      octx.textAlign = 'center'
+      octx.textBaseline = 'middle'
+      octx.fillText(tName, COLS / 2, ROWS / 2)
+      const imgData = octx.getImageData(0, 0, COLS, ROWS).data
+      const mask: boolean[] = []
+      for (let i = 0; i < COLS * ROWS; i++) {
+        mask.push(imgData[i * 4] > 60)
+      }
+      console.log('textMask isText count:', mask.filter(Boolean).length)
+      slotsRef.current.forEach((s, i) => {
+        s.isText = mask[i] || false
+      })
+    })
     litCountRef.current = 0
 
     const LIT_PER_FRAME = 3
@@ -158,7 +166,7 @@ export default function H12IndungHero({ config }: Props) {
         const py = (s.by + Math.sin(t * s.speed * 0.2 + s.phase) * 0.001) * H
 
         const textWave = s.isText
-          ? 0.5 + 0.5 * Math.sin(t * 1.8 + s.bx * 12)
+          ? 0.5 + 0.5 * Math.sin(t * 1.2 + s.bx * 18)
           : 0
 
         if (!isLit) {
@@ -179,7 +187,7 @@ export default function H12IndungHero({ config }: Props) {
         const br = Math.min(1, flicker + textBoost + highlightBoost)
 
         if (!isDonor) {
-          const dimBr = s.isText ? (0.12 + 0.1 * textWave) : 0.03
+          const dimBr = s.isText ? (0.18 + 0.18 * textWave) : 0.02
           ctx.beginPath()
           ctx.arc(px, py, r * 0.32, 0, Math.PI * 2)
           ctx.fillStyle = `rgba(180,160,100,${dimBr})`
@@ -189,12 +197,19 @@ export default function H12IndungHero({ config }: Props) {
 
         const glowR = r * (s.isText ? 3.5 : 2.6) * (1 + highlightBoost)
         const glow = ctx.createRadialGradient(px, py, 0, px, py, glowR)
-        glow.addColorStop(0, `hsla(${s.hue},95%,78%,${(0.32 + textBoost * 0.35) * br})`)
+        const glowAlpha = s.isText
+          ? (0.55 + textBoost * 0.45) * br
+          : 0.28 * br
+        glow.addColorStop(0, `hsla(${s.hue},95%,82%,${glowAlpha})`)
         glow.addColorStop(1, `hsla(${s.hue},80%,50%,0)`)
         ctx.fillStyle = glow
         ctx.beginPath(); ctx.arc(px, py, glowR, 0, Math.PI * 2); ctx.fill()
 
-        const bodyR = r * (1 + textBoost * 0.3 + highlightBoost * 0.5)
+        const bodyR = r * (
+          s.isText
+            ? (1.15 + textWave * 0.35 + highlightBoost * 0.5)
+            : (1 + highlightBoost * 0.5)
+        )
         ctx.save(); ctx.translate(px, py); ctx.scale(1, 1.5)
         const bg = ctx.createRadialGradient(0, -bodyR * 0.15, 0, 0, 0, bodyR)
         bg.addColorStop(0, `hsla(${s.hue + 15},100%,94%,${br})`)
