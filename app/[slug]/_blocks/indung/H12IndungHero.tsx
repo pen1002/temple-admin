@@ -29,7 +29,6 @@ interface Slot {
   phase: number; speed: number; hue: number
   swayAmp: number; swayFreq: number
   litAt: number
-  donorIdx: number
 }
 
 export default function H12IndungHero({ config }: Props) {
@@ -101,7 +100,6 @@ export default function H12IndungHero({ config }: Props) {
       swayAmp: (Math.random() - 0.5) * 0.002,
       swayFreq: 0.3 + Math.random() * 0.5,
       litAt: 0,
-      donorIdx: -1,
     }))
     litCountRef.current = 0
 
@@ -127,8 +125,8 @@ export default function H12IndungHero({ config }: Props) {
       for (let i = prevLit; i < nextLit; i++) {
         const s = slotsRef.current[i]
         s.litAt = t
-        s.donorIdx = i < cur.length ? i : -1
-        if (s.donorIdx >= 0 && i % 8 === 0) {
+        // donorIdx 고정 배정 제거 — 매 프레임 동적 판단
+        if (i < cur.length && i % 8 === 0) {
           particlesRef.current.push({
             x: s.bx, y: s.by,
             vy: -(0.0006 + Math.random() * 0.0005),
@@ -145,7 +143,7 @@ export default function H12IndungHero({ config }: Props) {
       for (let i = 0; i < MAX; i++) {
         const s = slotsRef.current[i]
         const isLit = s.litAt > 0
-        const isDonor = s.donorIdx >= 0
+        const isDonor = i < cur.length
         const px = (s.bx + Math.sin(t * s.swayFreq + s.phase) * s.swayAmp) * W
         const py = (s.by + Math.sin(t * s.speed * 0.2 + s.phase) * 0.001) * H
 
@@ -198,7 +196,7 @@ export default function H12IndungHero({ config }: Props) {
           ctx.font = `${Math.max(7, r * 0.82)}px 'Apple SD Gothic Neo',sans-serif`
           ctx.fillStyle = `hsla(30,50%,18%,${br * 0.8})`
           ctx.textAlign = 'center'; ctx.textBaseline = 'middle'
-          ctx.fillText(cur[s.donorIdx].name.slice(0, 2), px, py)
+          ctx.fillText(cur[i].name.slice(0, 2), px, py)
           ctx.restore()
         }
       }
@@ -243,12 +241,14 @@ export default function H12IndungHero({ config }: Props) {
     const PX = 0.015
     const CW = (1 - PX * 2) / COLS
     let best = -1, bestD = 99
-    for (let i = 0; i < litCountRef.current; i++) {
+    const len = donorsRef.current.length
+    const cap = Math.min(litCountRef.current, len)
+    for (let i = 0; i < cap; i++) {
       const s = slotsRef.current[i]
-      if (!s || s.donorIdx < 0) continue
+      if (!s) continue
       const dx = s.bx - mx / cw, dy = s.by - my / ch
       const d = Math.sqrt(dx * dx + dy * dy)
-      if (d < bestD && d < CW * 1.8) { bestD = d; best = s.donorIdx }
+      if (d < bestD && d < CW * 1.8) { bestD = d; best = i }
     }
     return best
   }
@@ -261,18 +261,19 @@ export default function H12IndungHero({ config }: Props) {
     const batchRadius = CW * 3
     const cur = donorsRef.current
     const added: string[] = []
-    for (let i = 0; i < litCountRef.current; i++) {
+    const cap = Math.min(litCountRef.current, cur.length)
+    for (let i = 0; i < cap; i++) {
       const s = slotsRef.current[i]
-      if (!s || s.donorIdx < 0) continue
+      if (!s) continue
       const dx = s.bx - mx / cw, dy = s.by - my / ch
       if (Math.sqrt(dx * dx + dy * dy) < batchRadius && added.length < 5) {
         particlesRef.current.push({
           x: s.bx, y: s.by - 0.02,
           vy: -(0.0008 + Math.random() * 0.0006),
           life: 1,
-          name: cur[s.donorIdx].name,
+          name: cur[i].name,
         })
-        added.push(cur[s.donorIdx].name)
+        added.push(cur[i].name)
       }
     }
   }
