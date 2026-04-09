@@ -13,7 +13,10 @@ interface Props {
 
 export default function AbbotGreetingBlock({ temple, config }: Props) {
   const abbotName = (config.abbotName as string) ?? temple.abbotName ?? '정응 스님'
+  const hideAbbotCite = config.hideAbbotCite === true
+  const sectionTitle = (config.sectionTitle as string) ?? '가지산 품 안에서 천년을 이어온 선종의 성지'
   const imageUrl = (config.imageUrl as string) ??
+    temple.heroImageUrl ??
     'https://res.cloudinary.com/db3izttcy/image/upload/brs-dharmahall_jggvn9'
 
   const paragraphs: string[] = Array.isArray(config.aboutExtra)
@@ -38,7 +41,7 @@ export default function AbbotGreetingBlock({ temple, config }: Props) {
     <section id="intro" className="bt-section">
       <div className="bt-section-inner">
         <span className="bt-section-label">About Temple</span>
-        <h2 className="bt-section-title">가지산 품 안에서 천년을 이어온 선종의 성지</h2>
+        <h2 className="bt-section-title">{sectionTitle}</h2>
 
         <div className="bt-about-layout">
           {/* 텍스트 */}
@@ -47,9 +50,16 @@ export default function AbbotGreetingBlock({ temple, config }: Props) {
               <p key={i}>{p}</p>
             ))}
 
-            <blockquote>
-              <cite style={{ display: 'block', textAlign: 'right' }}>주지 {abbotName}</cite>
-            </blockquote>
+            {!hideAbbotCite && (
+              <blockquote>
+                <cite style={{ display: 'block', textAlign: 'right' }}>주지 {abbotName}</cite>
+              </blockquote>
+            )}
+            {hideAbbotCite && (
+              <blockquote>
+                <cite style={{ display: 'block', textAlign: 'right' }}>{temple.name} 사부대중 일동</cite>
+              </blockquote>
+            )}
 
             <dl className="bt-about-info">
               {infoItems.filter(i => i.value).map(({ label, value }) => (
