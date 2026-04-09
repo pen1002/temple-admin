@@ -44,13 +44,21 @@ export default function TickerBlock({ content, temple, config }: Props) {
 
   const doubled = [...items, ...items]
 
+  // 사찰별 색상 분기 (2026.04.09 확정판) — borimsa는 기존 다크골드 유지
+  const isHaeinsa  = temple.code === 'haeinsa'
+  const bg         = isHaeinsa ? '#0a1a0a'              : '#0a0800'
+  const labelColor = isHaeinsa ? '#4ade80'              : '#c9a84c'
+  const itemColor  = isHaeinsa ? '#d1fae5'              : '#f0dfa0'
+  const divider    = isHaeinsa ? 'rgba(74,222,128,0.3)' : 'rgba(201,168,76,0.3)'
+  const sepColor   = isHaeinsa ? '#4ade80'              : '#c9a84c'
+
   return (
     <section
       aria-label="공지 티커"
       style={{
-        background:    '#0a0800',
+        background:    bg,
         overflow:      'hidden',
-        height:        '44px',
+        height:        '56px',
         display:       'flex',
         alignItems:    'center',
         whiteSpace:    'nowrap',
@@ -59,9 +67,9 @@ export default function TickerBlock({ content, temple, config }: Props) {
       }}
     >
       <style>{`
-        @keyframes bt-ticker-22s {
-          from { transform: translateX(0); }
-          to   { transform: translateX(-50%); }
+        @keyframes bt-ticker-44s {
+          0%   { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
         }
       `}</style>
 
@@ -69,11 +77,11 @@ export default function TickerBlock({ content, temple, config }: Props) {
       <div style={{
         flexShrink:   0,
         padding:      '0 14px',
-        fontSize:     '.7rem',
+        fontSize:     '.85rem',
         fontWeight:   700,
-        color:        '#c9a84c',
+        color:        labelColor,
         letterSpacing:'.06em',
-        borderRight:  '1px solid rgba(201,168,76,0.3)',
+        borderRight:  `1px solid ${divider}`,
         height:       '100%',
         display:      'flex',
         alignItems:   'center',
@@ -85,20 +93,20 @@ export default function TickerBlock({ content, temple, config }: Props) {
       <div style={{ flex: 1, overflow: 'hidden' }}>
         <div style={{
           display:   'inline-flex',
-          animation: 'bt-ticker-22s 22s linear infinite',
+          animation: 'bt-ticker-44s 44s linear infinite',
         }}>
           {doubled.map((item, i) => (
             <span
               key={i}
               style={{
-                fontSize:      '.78rem',
-                color:         '#f0dfa0',
+                fontSize:      '.92rem',
+                color:         itemColor,
                 letterSpacing: '.03em',
                 whiteSpace:    'nowrap',
               }}
             >
               {item}
-              <span style={{ margin: '0 20px', color: '#c9a84c', opacity: 0.6 }}>✦</span>
+              <span style={{ margin: '0 20px', color: sepColor, opacity: 0.6 }}>✦</span>
             </span>
           ))}
         </div>

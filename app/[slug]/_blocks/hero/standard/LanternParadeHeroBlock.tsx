@@ -508,45 +508,48 @@ export default function LanternParadeHeroBlock({
 
         {/* 텍스트 오버레이 */}
         {templeName ? (
-          /* ── α안: 하단 그라데이션 오버레이 (2026.04.09 대표님 승인) ── */
+          /* ── 그라데이션 제거 + 텍스트 하단 정렬 (2026.04.09 확정판) ── */
           <div
             style={{
-              position:   'absolute',
-              left:       0,
-              right:      0,
-              bottom:     0,
-              zIndex:     2,
-              textAlign:  'center',
-              padding:    'clamp(24px, 4vw, 40px) clamp(20px, 4vw, 40px) clamp(20px, 3vw, 32px)',
-              background: 'linear-gradient(0deg, rgba(2,2,10,0.96) 0%, rgba(2,2,10,0.85) 40%, rgba(2,2,10,0.30) 70%, rgba(2,2,10,0) 100%)',
+              position:      'absolute',
+              left:          0,
+              right:         0,
+              bottom:        0,
+              zIndex:        3,
+              display:       'flex',
+              flexDirection: 'column',
+              alignItems:    'center',
+              textAlign:     'center',
+              padding:       'clamp(0px,0vw,0px) clamp(20px,4vw,40px) clamp(28px,3vw,40px)',
+              background:    'transparent',
               pointerEvents: 'none',
             }}
           >
-            <p style={{ fontSize: 'clamp(11px,1.4vw,13px)', letterSpacing: '0.12em', color: '#c9a84c', margin: 0, marginBottom: '0.6rem', fontWeight: 600, animation: 'ph-sub 1.2s ease-out 0.6s both' }}>
-              {badge ?? '● 불기 2570년'}
-            </p>
-            <h1 style={{ fontSize: 'clamp(36px,8vw,80px)', fontWeight: 700, color: '#ffffff', letterSpacing: '0.14em', lineHeight: 1.0, margin: 0, textShadow: '0 2px 20px rgba(0,0,0,0.9)', fontFamily: '"Noto Serif KR","Nanum Myeongjo",serif', animation: 'ph-in 1.2s ease-out 0.2s both' }}>
+            <span style={{ fontSize: '10px', color: '#c9a84c', letterSpacing: '0.12em', background: 'rgba(201,168,76,0.15)', padding: '3px 14px', borderRadius: '20px', marginBottom: '8px', animation: 'ph-sub 1.2s ease-out 0.6s both' }}>
+              {badge ?? '대한불교조계종 법보종찰'}
+            </span>
+            <h1 style={{ fontSize: 'clamp(40px,8vw,80px)', fontWeight: 700, color: '#ffffff', letterSpacing: '0.14em', lineHeight: 1, margin: 0, marginBottom: '5px', textShadow: '0 2px 20px rgba(0,0,0,0.9)', fontFamily: '"Noto Serif KR","Nanum Myeongjo",serif', animation: 'ph-in 1.2s ease-out 0.2s both' }}>
               {templeName}
             </h1>
             {templeNameHanja && (
-              <p style={{ fontSize: 'clamp(16px,2vw,22px)', color: 'rgba(201,168,76,0.85)', letterSpacing: '0.25em', margin: 0, marginTop: '0.4rem', fontFamily: '"Noto Serif KR",serif', animation: 'ph-sub 1.2s ease-out 0.5s both' }}>
+              <p style={{ fontSize: 'clamp(14px,2.5vw,22px)', color: 'rgba(201,168,76,0.85)', letterSpacing: '0.25em', margin: 0, marginBottom: '10px', fontFamily: '"Noto Serif KR",serif', animation: 'ph-sub 1.2s ease-out 0.5s both' }}>
                 {templeNameHanja}
               </p>
             )}
             {taglines && taglines.map((line, i) => (
-              <p key={i} style={{ fontSize: i === 0 ? 'clamp(14px,1.6vw,16px)' : 'clamp(12px,1.4vw,14px)', color: i === 0 ? 'rgba(240,223,160,0.9)' : 'rgba(240,223,160,0.85)', letterSpacing: '0.05em', margin: 0, marginTop: i === 0 ? '0.8rem' : '0.3rem', animation: `ph-sub 1.2s ease-out ${0.8 + i * 0.15}s both` }}>
+              <p key={i} style={{ fontSize: i === 0 ? 'clamp(11px,1.8vw,15px)' : 'clamp(10px,1.5vw,13px)', color: i === 0 ? 'rgba(240,223,160,0.9)' : 'rgba(240,223,160,0.75)', letterSpacing: '0.05em', margin: 0, marginBottom: i === (taglines.length - 1) ? '18px' : '4px', textShadow: '0 1px 6px rgba(0,0,0,0.85)', animation: `ph-sub 1.2s ease-out ${0.8 + i * 0.15}s both` }}>
                 {line}
               </p>
             ))}
             {(ctaPrimary || ctaSecondary) && (
-              <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap', marginTop: '1.25rem', pointerEvents: 'auto' }}>
+              <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap', pointerEvents: 'auto' }}>
                 {ctaPrimary && (
-                  <a href={ctaPrimary.href} style={{ display: 'inline-block', padding: 'clamp(10px,1vw,12px) clamp(20px,2vw,28px)', background: '#c9a84c', color: '#1a1200', fontWeight: 600, fontSize: 'clamp(0.82rem,1.4vw,0.95rem)', borderRadius: '8px', textDecoration: 'none', letterSpacing: '0.04em', animation: 'ph-sub 1.2s ease-out 1.1s both' }}>
+                  <a href={ctaPrimary.href} style={{ display: 'inline-block', padding: '11px 22px', background: '#c9a84c', color: '#1a1200', fontWeight: 600, fontSize: '13px', borderRadius: '8px', textDecoration: 'none', letterSpacing: '0.04em', animation: 'ph-sub 1.2s ease-out 1.1s both' }}>
                     {ctaPrimary.text}
                   </a>
                 )}
                 {ctaSecondary && (
-                  <a href={ctaSecondary.href} style={{ display: 'inline-block', padding: 'clamp(10px,1vw,12px) clamp(20px,2vw,28px)', background: 'rgba(255,255,255,0.12)', color: '#ffffff', fontWeight: 600, fontSize: 'clamp(0.82rem,1.4vw,0.95rem)', borderRadius: '8px', textDecoration: 'none', letterSpacing: '0.04em', border: '0.5px solid rgba(255,255,255,0.3)', animation: 'ph-sub 1.2s ease-out 1.25s both' }}>
+                  <a href={ctaSecondary.href} style={{ display: 'inline-block', padding: '11px 22px', background: 'rgba(0,0,0,0.35)', color: '#ffffff', fontWeight: 600, fontSize: '13px', borderRadius: '8px', textDecoration: 'none', letterSpacing: '0.04em', border: '0.5px solid rgba(255,255,255,0.35)', animation: 'ph-sub 1.2s ease-out 1.25s both' }}>
                     {ctaSecondary.text}
                   </a>
                 )}
