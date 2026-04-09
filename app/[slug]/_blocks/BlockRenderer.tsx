@@ -72,6 +72,8 @@ export default function BlockRenderer({ blockType, config, temple, content, dail
         temple={{
           name:         temple.name,
           primaryColor: temple.primaryColor,
+          address:      temple.address ?? undefined,
+          phone:        temple.phone ?? undefined,
           kakao:        (config.kakao   as string | undefined),
           blog:         (config.blog    as string | undefined),
           youtube:      (config.youtube as string | undefined),
@@ -132,18 +134,28 @@ export default function BlockRenderer({ blockType, config, temple, content, dail
   // H-10 표준: config props 주입 → temple 기본값 fallback
   if (blockType === 'H-10') {
     const cfg = config as Record<string, unknown>
+    // 해인사 H-10 α안 기본값 (2026.04.09 대표님 승인)
+    const isHaeinsa = temple.code === 'haeinsa'
+    const haeinsaDefaults = isHaeinsa ? {
+      templeName:      '해인사',
+      templeNameHanja: '海印寺',
+      badge:           '대한불교조계종 법보종찰',
+      taglines:        ['팔만대장경의 지혜가 빛나는 도량', '유네스코 세계문화유산 · 802년 창건'],
+      ctaPrimary:      { text: '오늘의 말씀 보기', href: '#dharma' },
+      ctaSecondary:    { text: '오시는 길',       href: '#location' },
+    } : {}
     return (
       <StandardParadeHero
         mainTitle={      (cfg.mainTitle      as string) ?? '부처님 오신 날'}
         subtitle={       (cfg.subtitle       as string) ?? `${temple.name} 연등행렬 · 불기 2570년`}
         lanternCount={   (cfg.lanternCount   as number) ?? 35}
         glowIntensity={  (cfg.glowIntensity  as number) ?? 3}
-        templeName={     (cfg.templeName     as string | undefined)}
-        templeNameHanja={(cfg.templeNameHanja as string | undefined)}
-        badge={          (cfg.badge          as string | undefined)}
-        taglines={       (cfg.taglines       as string[] | undefined)}
-        ctaPrimary={     (cfg.ctaPrimary     as { text: string; href: string } | undefined)}
-        ctaSecondary={   (cfg.ctaSecondary   as { text: string; href: string } | undefined)}
+        templeName={     (cfg.templeName     as string | undefined) ?? haeinsaDefaults.templeName}
+        templeNameHanja={(cfg.templeNameHanja as string | undefined) ?? haeinsaDefaults.templeNameHanja}
+        badge={          (cfg.badge          as string | undefined) ?? haeinsaDefaults.badge}
+        taglines={       (cfg.taglines       as string[] | undefined) ?? haeinsaDefaults.taglines}
+        ctaPrimary={     (cfg.ctaPrimary     as { text: string; href: string } | undefined) ?? haeinsaDefaults.ctaPrimary}
+        ctaSecondary={   (cfg.ctaSecondary   as { text: string; href: string } | undefined) ?? haeinsaDefaults.ctaSecondary}
       />
     )
   }
