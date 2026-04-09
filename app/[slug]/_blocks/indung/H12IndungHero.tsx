@@ -1,5 +1,4 @@
 'use client'
-// H-12 deploy bump 2026-04-09 a70d600+1
 import { useEffect, useState, useRef, useCallback } from 'react'
 
 interface Donor {
@@ -16,19 +15,29 @@ const WISHES_DEFAULT = [
   '부처님 법 안에서 늘 평화롭기를 발원합니다',
   '사업 번창과 가정 화목을 발원합니다',
 ]
+
 const COLS = 50
 const MAX = 1000
-const PRICE_PER = 30000
 
-interface Particle {
-  x: number; y: number; vy: number; life: number; name: string
-}
-
-interface Slot {
-  bx: number; by: number
-  phase: number; speed: number; hue: number
-  swayAmp: number; swayFreq: number
-  litAt: number
+// '천관사' 글자 픽셀 마스크 생성 (오프스크린 캔버스)
+function buildTextMask(cols: number, rows: number, label: string): boolean[] {
+  const offscreen = document.createElement('canvas')
+  offscreen.width = cols
+  offscreen.height = rows
+  const ctx = offscreen.getContext('2d')!
+  ctx.fillStyle = '#000'
+  ctx.fillRect(0, 0, cols, rows)
+  ctx.fillStyle = '#fff'
+  ctx.font = `bold ${Math.floor(rows * 0.55)}px 'Apple SD Gothic Neo', serif`
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'middle'
+  ctx.fillText(label, cols / 2, rows / 2)
+  const data = ctx.getImageData(0, 0, cols, rows).data
+  const mask: boolean[] = []
+  for (let i = 0; i < cols * rows; i++) {
+    mask.push(data[i * 4] > 128)
+  }
+  return mask
 }
 
 export default function H12IndungHero({ config }: Props) {
@@ -38,29 +47,35 @@ export default function H12IndungHero({ config }: Props) {
 
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
+  const sectionRef = useRef<HTMLElement>(null)
   const animRef = useRef<number | undefined>(undefined)
   const tickRef = useRef(0)
-  const slotsRef = useRef<Slot[]>([])
+  const slotsRef = useRef<{
+    bx: number; by: number
+    phase: number; speed: number; hue: number
+    swayAmp: number; swayFreq: number
+    litAt: number; isText: boolean
+  }[]>([])
   const donorsRef = useRef<Donor[]>([])
-  const particlesRef = useRef<Particle[]>([])
+  const particlesRef = useRef<{ x: number; y: number; vy: number; life: number; name: string }[]>([])
   const litCountRef = useRef(0)
   const isDraggingRef = useRef(false)
   const lastParticleRef = useRef(0)
+  const myLanternIdxRef = useRef<number>(-1)
+  const myLanternHighlightRef = useRef(0)
 
   const [donors, setDonors] = useState<Donor[]>([])
-  const [tooltip, setTooltip] = useState<{x:number;y:number;name:string;wish:string}|null>(null)
-  const [selected, setSelected] = useState<Donor|null>(null)
-  const [, setLitCount] = useState(0)
+  const [tooltip, setTooltip] = useState<{ x: number; y: number; name: string; wish: string } | null>(null)
+  const [selected, setSelected] = useState<Donor | null>(null)
+  const [showForm, setShowForm] = useState(true)
+  const [submitted, setSubmitted] = useState(false)
   const [name, setName] = useState('')
   const [wish, setWish] = useState('')
-  const [lanternCount, setLanternCount] = useState(1)
-  const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [copied, setCopied] = useState<'nh'|'post'|null>(null)
+  const [copied, setCopied] = useState(false)
 
   const ROWS = Math.ceil(MAX / COLS)
-  const CANVAS_H = ROWS * 22 + 40
-  const totalAmount = lanternCount * PRICE_PER
+  const CANVAS_H = Math.max(480, ROWS * 22 + 40)
 
   const fetchDonors = useCallback(async () => {
     try {
@@ -87,9 +102,11 @@ export default function H12IndungHero({ config }: Props) {
     canvas.style.width = W_CSS + 'px'
     canvas.style.height = CANVAS_H + 'px'
 
-    const PX = 0.015, PY = 0.02
+    const PX = 0.015, PY = 0.03
     const CW = (1 - PX * 2) / COLS
     const CH = (1 - PY * 2) / ROWS
+
+    const textMask = buildTextMask(COLS, ROWS, tName)
 
     slotsRef.current = Array.from({ length: MAX }, (_, i) => ({
       bx: PX + (i % COLS) * CW + CW * 0.5,
@@ -100,10 +117,11 @@ export default function H12IndungHero({ config }: Props) {
       swayAmp: (Math.random() - 0.5) * 0.002,
       swayFreq: 0.3 + Math.random() * 0.5,
       litAt: 0,
+      isText: textMask[i] || false,
     }))
     litCountRef.current = 0
 
-    const LIT_PER_FRAME = 4
+    const LIT_PER_FRAME = 3
 
     const draw = (ts: number) => {
       tickRef.current = ts * 0.001
@@ -113,31 +131,28 @@ export default function H12IndungHero({ config }: Props) {
 
       const sky = ctx.createLinearGradient(0, 0, 0, H)
       sky.addColorStop(0, '#03010a')
-      sky.addColorStop(1, '#120620')
+      sky.addColorStop(1, '#0d0420')
       ctx.fillStyle = sky
       ctx.fillRect(0, 0, W, H)
 
-      const r = Math.min(CW * W, CH * H) * 0.4
+      const r = Math.min(CW * W, CH * H) * 0.38
       const cur = donorsRef.current
 
-      const prevLit = litCountRef.current
-      const nextLit = Math.min(prevLit + LIT_PER_FRAME, MAX)
-      for (let i = prevLit; i < nextLit; i++) {
-        const s = slotsRef.current[i]
-        s.litAt = t
-        // donorIdx 고정 배정 제거 — 매 프레임 동적 판단
-        if (i < cur.length && i % 8 === 0) {
-          particlesRef.current.push({
-            x: s.bx, y: s.by,
-            vy: -(0.0006 + Math.random() * 0.0005),
-            life: 1,
-            name: cur[i].name,
-          })
+      if (litCountRef.current < MAX) {
+        const next = Math.min(litCountRef.current + LIT_PER_FRAME, MAX)
+        for (let i = litCountRef.current; i < next; i++) {
+          slotsRef.current[i].litAt = t
+          if (i < cur.length && i % 10 === 0) {
+            particlesRef.current.push({
+              x: slotsRef.current[i].bx,
+              y: slotsRef.current[i].by,
+              vy: -(0.0007 + Math.random() * 0.0005),
+              life: 1,
+              name: cur[i].name,
+            })
+          }
         }
-      }
-      if (nextLit !== prevLit) {
-        litCountRef.current = nextLit
-        setLitCount(nextLit)
+        litCountRef.current = next
       }
 
       for (let i = 0; i < MAX; i++) {
@@ -147,85 +162,101 @@ export default function H12IndungHero({ config }: Props) {
         const px = (s.bx + Math.sin(t * s.swayFreq + s.phase) * s.swayAmp) * W
         const py = (s.by + Math.sin(t * s.speed * 0.2 + s.phase) * 0.001) * H
 
+        const textWave = s.isText
+          ? 0.5 + 0.5 * Math.sin(t * 1.8 + s.bx * 12)
+          : 0
+
         if (!isLit) {
           ctx.beginPath()
-          ctx.arc(px, py, r * 0.25, 0, Math.PI * 2)
+          ctx.arc(px, py, r * 0.22, 0, Math.PI * 2)
           ctx.fillStyle = 'rgba(255,200,80,0.04)'
           ctx.fill()
           continue
         }
 
-        const age = t - s.litAt
-        const fadeIn = Math.min(1, age * 3)
+        const myHighlight = i === myLanternIdxRef.current
+          ? Math.max(0, 1 - (t - myLanternHighlightRef.current) * 0.5)
+          : 0
+
+        const flicker = 0.78 + 0.22 * Math.sin(t * 8.5 + s.phase)
+        const textBoost = s.isText ? 0.4 + 0.6 * textWave : 0
+        const highlightBoost = myHighlight * 0.8
+        const br = Math.min(1, flicker + textBoost + highlightBoost)
 
         if (!isDonor) {
+          const dimBr = s.isText ? (0.06 + 0.06 * textWave) : 0.05
           ctx.beginPath()
-          ctx.arc(px, py, r * 0.35, 0, Math.PI * 2)
-          ctx.fillStyle = `rgba(180,160,100,${0.08 * fadeIn})`
+          ctx.arc(px, py, r * 0.32, 0, Math.PI * 2)
+          ctx.fillStyle = `rgba(180,160,100,${dimBr})`
           ctx.fill()
           continue
         }
 
-        const flicker = 0.82 + 0.18 * Math.sin(t * 8.5 + s.phase)
-        const br = flicker * fadeIn
-
-        const glow = ctx.createRadialGradient(px, py, 0, px, py, r * 2.8)
-        glow.addColorStop(0, `hsla(${s.hue},95%,78%,${0.28 * br})`)
+        const glowR = r * (s.isText ? 3.5 : 2.6) * (1 + highlightBoost)
+        const glow = ctx.createRadialGradient(px, py, 0, px, py, glowR)
+        glow.addColorStop(0, `hsla(${s.hue},95%,78%,${(0.28 + textBoost * 0.2) * br})`)
         glow.addColorStop(1, `hsla(${s.hue},80%,50%,0)`)
         ctx.fillStyle = glow
-        ctx.beginPath(); ctx.arc(px, py, r * 2.8, 0, Math.PI * 2); ctx.fill()
+        ctx.beginPath(); ctx.arc(px, py, glowR, 0, Math.PI * 2); ctx.fill()
 
+        const bodyR = r * (1 + textBoost * 0.3 + highlightBoost * 0.5)
         ctx.save(); ctx.translate(px, py); ctx.scale(1, 1.5)
-        const bg = ctx.createRadialGradient(0, -r * 0.15, 0, 0, 0, r)
-        bg.addColorStop(0, `hsla(${s.hue+15},100%,93%,${br})`)
-        bg.addColorStop(0.5, `hsla(${s.hue},88%,62%,${br})`)
-        bg.addColorStop(1, `hsla(${s.hue-12},78%,32%,${br})`)
+        const bg = ctx.createRadialGradient(0, -bodyR * 0.15, 0, 0, 0, bodyR)
+        bg.addColorStop(0, `hsla(${s.hue + 15},100%,94%,${br})`)
+        bg.addColorStop(0.5, `hsla(${s.hue},88%,64%,${br})`)
+        bg.addColorStop(1, `hsla(${s.hue - 12},78%,32%,${br})`)
         ctx.fillStyle = bg
-        ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2); ctx.fill()
+        ctx.beginPath(); ctx.arc(0, 0, bodyR, 0, Math.PI * 2); ctx.fill()
         ctx.restore()
 
-        ctx.strokeStyle = `hsla(${s.hue},75%,68%,${br * 0.45})`
+        ctx.strokeStyle = `hsla(${s.hue},75%,68%,${br * 0.4})`
         ctx.lineWidth = 0.6
         ctx.beginPath()
-        ctx.moveTo(px, py + r * 1.55)
-        ctx.lineTo(px, py + r * 2.3)
+        ctx.moveTo(px, py + bodyR * 1.55)
+        ctx.lineTo(px, py + bodyR * 2.3)
         ctx.stroke()
 
-        if (r > 5) {
+        if (bodyR > 4) {
           ctx.save()
-          ctx.font = `${Math.max(7, r * 0.82)}px 'Apple SD Gothic Neo',sans-serif`
+          ctx.font = `${Math.max(7, bodyR * 0.82)}px 'Apple SD Gothic Neo',sans-serif`
           ctx.fillStyle = `hsla(30,50%,18%,${br * 0.8})`
           ctx.textAlign = 'center'; ctx.textBaseline = 'middle'
           ctx.fillText(cur[i].name.slice(0, 2), px, py)
           ctx.restore()
+        }
+
+        if (myHighlight > 0.1) {
+          ctx.beginPath()
+          ctx.arc(px, py, bodyR * 2.2, 0, Math.PI * 2)
+          ctx.strokeStyle = `rgba(255,235,150,${myHighlight * 0.8})`
+          ctx.lineWidth = 1.5
+          ctx.stroke()
         }
       }
 
       const parts = particlesRef.current
       for (let i = parts.length - 1; i >= 0; i--) {
         const p = parts[i]
-        p.y += p.vy
-        p.life -= 0.013
+        p.y += p.vy; p.life -= 0.012
         if (p.life <= 0) { parts.splice(i, 1); continue }
         ctx.save()
         ctx.font = `bold ${Math.max(10, r * 0.85)}px 'Apple SD Gothic Neo',sans-serif`
-        ctx.fillStyle = `rgba(255,225,130,${p.life * 0.95})`
-        ctx.shadowColor = 'rgba(255,180,50,0.8)'
-        ctx.shadowBlur = 8 * dpr
+        ctx.fillStyle = `rgba(255,225,130,${p.life * 0.9})`
+        ctx.shadowColor = 'rgba(255,180,50,0.8)'; ctx.shadowBlur = 8 * dpr
         ctx.textAlign = 'center'
         ctx.fillText(p.name, p.x * W, p.y * H)
         ctx.restore()
       }
 
-      if (litCountRef.current >= MAX && cur.length >= MAX) {
+      if (cur.length >= MAX) {
         ctx.fillStyle = `rgba(255,200,80,${0.04 + 0.03 * Math.sin(t * 3)})`
         ctx.fillRect(0, 0, W, H)
         ctx.save()
-        ctx.font = `bold ${Math.round(20 * dpr)}px 'Apple SD Gothic Neo',sans-serif`
+        ctx.font = `bold ${Math.round(18 * dpr)}px 'Apple SD Gothic Neo',sans-serif`
         ctx.fillStyle = `rgba(255,235,150,${0.7 + 0.3 * Math.sin(t * 2)})`
         ctx.textAlign = 'center'
         ctx.shadowColor = 'rgba(255,180,50,0.9)'; ctx.shadowBlur = 14 * dpr
-        ctx.fillText(`${phase}차 1,000등 원만성취`, W / 2, H * 0.06)
+        ctx.fillText(`${phase}차 1,000등 원만성취`, W / 2, H * 0.05)
         ctx.restore()
       }
 
@@ -233,16 +264,15 @@ export default function H12IndungHero({ config }: Props) {
     }
     animRef.current = requestAnimationFrame(draw)
     return () => { if (animRef.current !== undefined) cancelAnimationFrame(animRef.current) }
-  }, [ROWS, CANVAS_H, phase])
+  }, [ROWS, CANVAS_H, phase, tName])
 
   useEffect(() => { donorsRef.current = donors }, [donors])
 
-  const getSlotAt = (mx: number, my: number, cw: number, ch: number) => {
+  const getSlotIdx = (mx: number, my: number, cw: number, ch: number) => {
     const PX = 0.015
     const CW = (1 - PX * 2) / COLS
     let best = -1, bestD = 99
-    const len = donorsRef.current.length
-    const cap = Math.min(litCountRef.current, len)
+    const cap = Math.min(litCountRef.current, donorsRef.current.length)
     for (let i = 0; i < cap; i++) {
       const s = slotsRef.current[i]
       if (!s) continue
@@ -253,27 +283,23 @@ export default function H12IndungHero({ config }: Props) {
     return best
   }
 
-  const spawnDragParticles = (mx: number, my: number, cw: number, ch: number) => {
-    if (tickRef.current - lastParticleRef.current < 0.08) return
+  const spawnDrag = (mx: number, my: number, cw: number, ch: number) => {
+    if (tickRef.current - lastParticleRef.current < 0.1) return
     lastParticleRef.current = tickRef.current
-    const PX = 0.015
-    const CW = (1 - PX * 2) / COLS
-    const batchRadius = CW * 3
+    const PX = 0.015, CW = (1 - PX * 2) / COLS
     const cur = donorsRef.current
-    const added: string[] = []
+    let added = 0
     const cap = Math.min(litCountRef.current, cur.length)
     for (let i = 0; i < cap; i++) {
       const s = slotsRef.current[i]
-      if (!s) continue
       const dx = s.bx - mx / cw, dy = s.by - my / ch
-      if (Math.sqrt(dx * dx + dy * dy) < batchRadius && added.length < 5) {
+      if (Math.sqrt(dx * dx + dy * dy) < CW * 3 && added < 4) {
         particlesRef.current.push({
-          x: s.bx, y: s.by - 0.02,
-          vy: -(0.0008 + Math.random() * 0.0006),
-          life: 1,
-          name: cur[i].name,
+          x: s.bx, y: s.by - 0.015,
+          vy: -(0.0008 + Math.random() * 0.0005),
+          life: 1, name: cur[i].name,
         })
-        added.push(cur[i].name)
+        added++
       }
     }
   }
@@ -281,12 +307,8 @@ export default function H12IndungHero({ config }: Props) {
   const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const rect = canvasRef.current!.getBoundingClientRect()
     const mx = e.clientX - rect.left, my = e.clientY - rect.top
-    if (isDraggingRef.current) {
-      spawnDragParticles(mx, my, rect.width, rect.height)
-      setTooltip(null)
-      return
-    }
-    const idx = getSlotAt(mx, my, rect.width, rect.height)
+    if (isDraggingRef.current) { spawnDrag(mx, my, rect.width, rect.height); setTooltip(null); return }
+    const idx = getSlotIdx(mx, my, rect.width, rect.height)
     if (idx >= 0) {
       const d = donorsRef.current[idx]
       setTooltip({ x: mx, y: my, name: d.name, wish: d.wish })
@@ -296,34 +318,29 @@ export default function H12IndungHero({ config }: Props) {
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
     isDraggingRef.current = true
     const rect = canvasRef.current!.getBoundingClientRect()
-    spawnDragParticles(e.clientX - rect.left, e.clientY - rect.top, rect.width, rect.height)
+    spawnDrag(e.clientX - rect.left, e.clientY - rect.top, rect.width, rect.height)
   }
 
   const handleMouseUp = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (!isDraggingRef.current) return
     isDraggingRef.current = false
     const rect = canvasRef.current!.getBoundingClientRect()
-    const idx = getSlotAt(e.clientX - rect.left, e.clientY - rect.top, rect.width, rect.height)
-    if (idx >= 0) {
-      setSelected(donorsRef.current[idx])
-      setTooltip(null)
-    }
+    const idx = getSlotIdx(e.clientX - rect.left, e.clientY - rect.top, rect.width, rect.height)
+    if (idx >= 0) { setSelected(donorsRef.current[idx]); setTooltip(null) }
   }
 
   const handleTouchStart = (e: React.TouchEvent<HTMLCanvasElement>) => {
     isDraggingRef.current = true
     const rect = canvasRef.current!.getBoundingClientRect()
     const t = e.touches[0]
-    spawnDragParticles(t.clientX - rect.left, t.clientY - rect.top, rect.width, rect.height)
+    spawnDrag(t.clientX - rect.left, t.clientY - rect.top, rect.width, rect.height)
   }
 
   const handleTouchMove = (e: React.TouchEvent<HTMLCanvasElement>) => {
     const rect = canvasRef.current!.getBoundingClientRect()
     const t = e.touches[0]
-    spawnDragParticles(t.clientX - rect.left, t.clientY - rect.top, rect.width, rect.height)
+    spawnDrag(t.clientX - rect.left, t.clientY - rect.top, rect.width, rect.height)
   }
-
-  const handleTouchEnd = () => { isDraggingRef.current = false; setTooltip(null) }
 
   const handleSubmit = async () => {
     if (!name.trim()) return
@@ -333,21 +350,34 @@ export default function H12IndungHero({ config }: Props) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          temple_slug: slug, name: name.trim(),
+          temple_slug: slug,
+          name: name.trim(),
           wish: wish.trim() || WISHES_DEFAULT[donors.length % WISHES_DEFAULT.length],
-          lantern_count: lanternCount, phase,
+          lantern_count: 1,
+          phase,
         }),
       })
       await fetchDonors()
+      myLanternIdxRef.current = donorsRef.current.length - 1
+      myLanternHighlightRef.current = tickRef.current
       setSubmitted(true)
     } catch {}
     setLoading(false)
   }
 
-  const copyText = (text: string, key: 'nh'|'post') => {
-    navigator.clipboard.writeText(text).then(() => {
-      setCopied(key); setTimeout(() => setCopied(null), 2000)
-    })
+  const handleConfirm = () => {
+    setSubmitted(false)
+    setShowForm(false)
+    setName(''); setWish('')
+    myLanternHighlightRef.current = tickRef.current
+    setTimeout(() => {
+      containerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }, 100)
+  }
+
+  const handleAddMore = () => {
+    setSubmitted(false)
+    setName(''); setWish('')
   }
 
   const shareKakao = () => {
@@ -370,77 +400,77 @@ export default function H12IndungHero({ config }: Props) {
   const contW = containerRef.current?.offsetWidth || 600
 
   return (
-    <section style={{ background: '#030108', paddingBottom: 56, ...sf }}>
+    <section ref={sectionRef} style={{ background: '#030108', paddingBottom: 48, ...sf }}>
 
-      <div style={{ textAlign: 'center', padding: '36px 20px 16px' }}>
+      <div style={{ textAlign: 'center', padding: '32px 20px 12px' }}>
         <p style={{ color: 'rgba(255,200,80,0.45)', fontSize: 12, letterSpacing: 4, marginBottom: 8 }}>
           {phase}차 인등불사 · 1구 30,000원 · 1년 점등
         </p>
-        <h1 style={{ color: 'rgba(255,235,150,0.95)', fontSize: 28, fontWeight: 500, marginBottom: 16, letterSpacing: 3 }}>
+        <h1 style={{ color: 'rgba(255,235,150,0.95)', fontSize: 26, fontWeight: 500, marginBottom: 14, letterSpacing: 3 }}>
           {tName} 삼천인등
         </h1>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, maxWidth: 520, margin: '0 auto 6px' }}>
-          <span style={{ color: 'rgba(255,200,80,0.7)', fontSize: 13, minWidth: 90, textAlign: 'right' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, maxWidth: 500, margin: '0 auto 4px' }}>
+          <span style={{ color: 'rgba(255,200,80,0.7)', fontSize: 13, minWidth: 80, textAlign: 'right' }}>
             {donors.length.toLocaleString()} / {MAX.toLocaleString()}
           </span>
-          <div style={{ flex: 1, height: 8, background: 'rgba(255,200,80,0.1)', borderRadius: 4, overflow: 'hidden' }}>
-            <div style={{ height: '100%', width: `${pct}%`, background: 'linear-gradient(90deg,rgba(255,150,30,0.7),rgba(255,220,80,0.8))', borderRadius: 4, transition: 'width 0.8s' }} />
+          <div style={{ flex: 1, height: 7, background: 'rgba(255,200,80,0.1)', borderRadius: 4, overflow: 'hidden' }}>
+            <div style={{ height: '100%', width: `${pct}%`, background: 'linear-gradient(90deg,rgba(255,140,30,0.7),rgba(255,220,80,0.85))', borderRadius: 4, transition: 'width 0.8s' }} />
           </div>
-          <span style={{ color: 'rgba(255,200,80,0.7)', fontSize: 13, minWidth: 36 }}>{pct}%</span>
+          <span style={{ color: 'rgba(255,200,80,0.7)', fontSize: 13, minWidth: 32 }}>{pct}%</span>
         </div>
-        <p style={{ color: 'rgba(255,200,80,0.3)', fontSize: 11 }}>
-          마우스를 클릭하고 드래그하면 동참자 이름이 피어오릅니다
+        <p style={{ color: 'rgba(255,200,80,0.28)', fontSize: 11, marginTop: 4 }}>
+          마우스를 클릭·드래그하면 동참자 이름이 피어오릅니다
         </p>
       </div>
 
-      <div ref={containerRef} style={{ position: 'relative', width: '100%', maxWidth: 960, margin: '0 auto' }}>
+      <div ref={containerRef} style={{ position: 'relative', width: '100%', maxWidth: 980, margin: '0 auto' }}>
         <canvas
           ref={canvasRef}
-          style={{ display: 'block', cursor: isDraggingRef.current ? 'grabbing' : 'grab' }}
+          style={{ display: 'block', cursor: 'grab' }}
           onMouseMove={handleMouseMove}
           onMouseDown={handleMouseDown}
           onMouseUp={handleMouseUp}
           onMouseLeave={() => { isDraggingRef.current = false; setTooltip(null) }}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
+          onTouchEnd={() => { isDraggingRef.current = false; setTooltip(null) }}
         />
 
-        {tooltip && !isDraggingRef.current && (
+        {tooltip && (
           <div style={{
             position: 'absolute',
             left: Math.min(tooltip.x + 14, contW - 170),
-            top: Math.max(tooltip.y - 60, 8),
-            background: 'rgba(15,6,30,0.97)',
+            top: Math.max(tooltip.y - 62, 8),
+            background: 'rgba(12,4,28,0.97)',
             border: '1px solid rgba(255,200,80,0.45)',
-            borderRadius: 8, padding: '9px 15px',
-            pointerEvents: 'none', zIndex: 20, minWidth: 150,
+            borderRadius: 8, padding: '9px 14px',
+            pointerEvents: 'none', zIndex: 20, minWidth: 148,
           }}>
             <div style={{ color: 'rgba(255,235,150,0.95)', fontSize: 14, fontWeight: 700, marginBottom: 3 }}>
               {tooltip.name} 보살
             </div>
             <div style={{ color: 'rgba(255,200,80,0.6)', fontSize: 11, lineHeight: 1.5 }}>
-              {tooltip.wish?.slice(0, 26)}{(tooltip.wish?.length || 0) > 26 ? '…' : ''}
+              {(tooltip.wish || '').slice(0, 26)}{(tooltip.wish?.length || 0) > 26 ? '…' : ''}
             </div>
           </div>
         )}
 
         {selected && (
-          <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.72)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 30 }}
+          <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 30 }}
             onClick={() => setSelected(null)}>
-            <div style={{ background: '#1a0d2e', border: '1px solid rgba(255,200,80,0.4)', borderRadius: 14, padding: '28px 32px', maxWidth: 300, width: '88%', textAlign: 'center' }}
+            <div style={{ background: '#1a0d2e', border: '1px solid rgba(255,200,80,0.4)', borderRadius: 14, padding: '26px 30px', maxWidth: 290, width: '88%', textAlign: 'center' }}
               onClick={e => e.stopPropagation()}>
-              <div style={{ fontSize: 36, marginBottom: 10 }}>🕯</div>
-              <div style={{ fontSize: 21, fontWeight: 700, color: 'rgba(255,235,150,0.95)', letterSpacing: 2, marginBottom: 4 }}>
+              <div style={{ fontSize: 34, marginBottom: 8 }}>🕯</div>
+              <div style={{ fontSize: 20, fontWeight: 700, color: 'rgba(255,235,150,0.95)', letterSpacing: 2, marginBottom: 4 }}>
                 {selected.name} 보살
               </div>
               <div style={{ fontSize: 11, color: 'rgba(255,200,80,0.4)', marginBottom: 6 }}>
                 {new Date(selected.created_at).toLocaleDateString('ko-KR')} · {phase}차
               </div>
-              <div style={{ fontSize: 13, color: 'rgba(255,220,140,0.85)', lineHeight: 1.95, borderTop: '1px solid rgba(255,200,80,0.15)', paddingTop: 13, wordBreak: 'keep-all' }}>
+              <div style={{ fontSize: 13, color: 'rgba(255,220,140,0.85)', lineHeight: 1.9, borderTop: '1px solid rgba(255,200,80,0.15)', paddingTop: 12, wordBreak: 'keep-all' }}>
                 {selected.wish}
               </div>
-              <button onClick={() => setSelected(null)} style={{ marginTop: 18, background: 'rgba(255,180,50,0.15)', border: '1px solid rgba(255,180,50,0.4)', color: 'rgba(255,220,100,0.9)', borderRadius: 6, padding: '8px 24px', cursor: 'pointer', fontSize: 13 }}>
+              <button onClick={() => setSelected(null)} style={{ marginTop: 16, background: 'rgba(255,180,50,0.15)', border: '1px solid rgba(255,180,50,0.4)', color: 'rgba(255,220,100,0.9)', borderRadius: 6, padding: '7px 22px', cursor: 'pointer', fontSize: 13 }}>
                 닫기
               </button>
             </div>
@@ -448,78 +478,63 @@ export default function H12IndungHero({ config }: Props) {
         )}
       </div>
 
-      <div style={{ maxWidth: 480, margin: '32px auto 0', padding: '0 20px' }}>
-        {!submitted ? (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <div style={{ maxWidth: 460, margin: '28px auto 0', padding: '0 20px' }}>
+        {!showForm ? (
+          <div style={{ textAlign: 'center' }}>
+            <button onClick={() => setShowForm(true)}
+              style={{ background: 'rgba(255,180,50,0.15)', border: '1px solid rgba(255,180,50,0.4)', color: 'rgba(255,220,100,0.9)', borderRadius: 8, padding: '11px 28px', fontSize: 14, cursor: 'pointer' }}>
+              인등 신청하기
+            </button>
+          </div>
+        ) : !submitted ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 11 }}>
             <input value={name} onChange={e => setName(e.target.value)}
               placeholder="성함을 입력하세요" style={inp} />
             <textarea value={wish} onChange={e => setWish(e.target.value)}
               placeholder="발원문 (예: 가족 모두 건강하기를...)" rows={3}
               style={{ ...inp, resize: 'none' }} />
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 8 }}>
-              {Array.from({ length: 10 }, (_, i) => i + 1).map(n => (
-                <button key={n} onClick={() => setLanternCount(n)}
-                  style={{
-                    padding: '10px 0', borderRadius: 8, fontSize: 13, cursor: 'pointer',
-                    border: lanternCount===n ? '2px solid rgba(255,200,80,0.85)' : '1px solid rgba(255,200,80,0.2)',
-                    background: lanternCount===n ? 'rgba(255,180,50,0.25)' : 'rgba(255,255,255,0.04)',
-                    color: lanternCount===n ? 'rgba(255,235,150,0.95)' : 'rgba(255,200,80,0.55)',
-                    fontWeight: lanternCount===n ? 700 : 400,
-                  }}>
-                  {n}구
-                </button>
-              ))}
+            <div style={{ textAlign: 'center', padding: '6px 0' }}>
+              <span style={{ color: 'rgba(255,200,80,0.5)', fontSize: 13 }}>인등 1구 </span>
+              <span style={{ color: 'rgba(255,235,150,0.95)', fontSize: 22, fontWeight: 700 }}>30,000원</span>
             </div>
 
-            <div style={{ textAlign: 'center', padding: '8px 0' }}>
-              <span style={{ color: 'rgba(255,200,80,0.5)', fontSize: 13 }}>합계 </span>
-              <span style={{ color: 'rgba(255,235,150,0.95)', fontSize: 24, fontWeight: 700 }}>
-                {totalAmount.toLocaleString()}원
-              </span>
-              <span style={{ color: 'rgba(255,200,80,0.4)', fontSize: 12, marginLeft: 6 }}>
-                ({lanternCount}구 × 30,000원)
-              </span>
-            </div>
-
-            <div style={{ background: 'rgba(255,200,80,0.05)', border: '1px solid rgba(255,200,80,0.15)', borderRadius: 8, padding: '14px 16px', fontSize: 13, color: 'rgba(255,200,80,0.75)', lineHeight: 2.3 }}>
+            <div style={{ background: 'rgba(255,200,80,0.05)', border: '1px solid rgba(255,200,80,0.14)', borderRadius: 8, padding: '13px 15px', fontSize: 13, color: 'rgba(255,200,80,0.75)', lineHeight: 2.2 }}>
               농협 351-0950-2778-43 천관사
-              <button onClick={() => copyText('351-0950-2778-43','nh')}
-                style={{ marginLeft: 8, background: 'rgba(255,180,50,0.15)', border: '1px solid rgba(255,180,50,0.35)', color: 'rgba(255,210,80,0.9)', borderRadius: 4, padding: '2px 9px', fontSize: 11, cursor: 'pointer' }}>
-                {copied==='nh' ? '복사됨' : '복사'}
-              </button><br/>
-              우체국 500678-01-001511 천관사
-              <button onClick={() => copyText('500678-01-001511','post')}
-                style={{ marginLeft: 8, background: 'rgba(255,180,50,0.15)', border: '1px solid rgba(255,180,50,0.35)', color: 'rgba(255,210,80,0.9)', borderRadius: 4, padding: '2px 9px', fontSize: 11, cursor: 'pointer' }}>
-                {copied==='post' ? '복사됨' : '복사'}
-              </button><br/>
-              <span style={{ fontSize: 11, color: 'rgba(255,200,80,0.38)' }}>
-                입금자명을 신청자 성함과 동일하게 입금해 주세요.
-              </span>
+              <button onClick={() => { navigator.clipboard.writeText('351-0950-2778-43'); setCopied(true); setTimeout(() => setCopied(false), 2000) }}
+                style={{ marginLeft: 8, background: 'rgba(255,180,50,0.15)', border: '1px solid rgba(255,180,50,0.35)', color: 'rgba(255,210,80,0.9)', borderRadius: 4, padding: '2px 8px', fontSize: 11, cursor: 'pointer' }}>
+                {copied ? '복사됨' : '복사'}
+              </button><br />
+              우체국 500678-01-001511 천관사<br />
+              <span style={{ fontSize: 11, color: 'rgba(255,200,80,0.38)' }}>입금자명을 신청자 성함과 동일하게 입금해 주세요.</span>
             </div>
 
             <button onClick={handleSubmit} disabled={loading || !name.trim()}
-              style={{ background: loading ? 'rgba(60,40,20,0.3)' : 'rgba(255,180,50,0.22)', border: '1px solid rgba(255,180,50,0.55)', color: 'rgba(255,220,100,0.95)', borderRadius: 8, padding: 15, fontSize: 15, cursor: loading ? 'default' : 'pointer', fontWeight: 500 }}>
-              {loading ? '접수 중...' : `인등 ${lanternCount}구 신청하기 — ${totalAmount.toLocaleString()}원`}
+              style={{ background: loading ? 'rgba(60,40,20,0.3)' : 'rgba(255,180,50,0.22)', border: '1px solid rgba(255,180,50,0.55)', color: 'rgba(255,220,100,0.95)', borderRadius: 8, padding: 14, fontSize: 15, cursor: loading ? 'default' : 'pointer', fontWeight: 500 }}>
+              {loading ? '접수 중...' : '인등 신청하기 — 30,000원'}
             </button>
           </div>
         ) : (
-          <div style={{ textAlign: 'center', padding: '24px 0' }}>
-            <div style={{ fontSize: 46, marginBottom: 14 }}>🕯</div>
-            <p style={{ color: 'rgba(255,235,150,0.95)', fontSize: 17, fontWeight: 500, marginBottom: 10, lineHeight: 1.95, wordBreak: 'keep-all' }}>
-              당신의 소원이 인등공양을 통해<br/>성취되기를 기도합니다.
+          <div style={{ textAlign: 'center', padding: '20px 0' }}>
+            <div style={{ fontSize: 42, marginBottom: 12 }}>🕯</div>
+            <p style={{ color: 'rgba(255,235,150,0.95)', fontSize: 16, fontWeight: 500, marginBottom: 8, lineHeight: 1.9, wordBreak: 'keep-all' }}>
+              당신의 소원이 인등공양을 통해<br />성취되기를 기도합니다.
             </p>
-            <p style={{ color: 'rgba(255,200,80,0.5)', fontSize: 13, marginBottom: 26, lineHeight: 1.85 }}>
-              입금 확인 후 {tName} 법당에<br/>인등 {lanternCount}구가 점등됩니다.
+            <p style={{ color: 'rgba(255,200,80,0.5)', fontSize: 13, marginBottom: 22, lineHeight: 1.8 }}>
+              입금 확인 후 {tName} 법당에<br />인등이 점등됩니다.
             </p>
-            <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
               <button onClick={shareKakao}
-                style={{ background: '#FEE500', border: 'none', color: '#3A1D1D', borderRadius: 8, padding: '12px 26px', fontSize: 14, cursor: 'pointer', fontWeight: 700 }}>
+                style={{ background: '#FEE500', border: 'none', color: '#3A1D1D', borderRadius: 8, padding: '11px 20px', fontSize: 13, cursor: 'pointer', fontWeight: 700 }}>
                 카카오톡 공유
               </button>
-              <button onClick={() => { setSubmitted(false); setName(''); setWish(''); setLanternCount(1) }}
-                style={{ background: 'rgba(255,180,50,0.15)', border: '1px solid rgba(255,180,50,0.4)', color: 'rgba(255,220,100,0.9)', borderRadius: 8, padding: '12px 26px', fontSize: 14, cursor: 'pointer' }}>
+              <button onClick={handleAddMore}
+                style={{ background: 'rgba(255,180,50,0.15)', border: '1px solid rgba(255,180,50,0.4)', color: 'rgba(255,220,100,0.9)', borderRadius: 8, padding: '11px 20px', fontSize: 13, cursor: 'pointer' }}>
                 추가 신청
+              </button>
+              <button onClick={handleConfirm}
+                style={{ background: 'rgba(100,200,150,0.15)', border: '1px solid rgba(100,200,150,0.4)', color: 'rgba(150,255,200,0.9)', borderRadius: 8, padding: '11px 20px', fontSize: 13, cursor: 'pointer' }}>
+                동참 확인 🕯
               </button>
             </div>
           </div>
