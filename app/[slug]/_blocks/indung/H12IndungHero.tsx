@@ -98,31 +98,54 @@ export default function H12IndungHero({ config }: Props) {
       isText: false,
     }))
 
-    // 폰트 로딩 보장 후 텍스트 마스크 생성
+    // 폰트 로딩 보장 후 텍스트 마스크 생성 (3배 캔버스 다운샘플링)
     document.fonts.ready.then(() => {
+      const MASK_W = COLS * 3
+      const MASK_H = ROWS * 3
       const offscreen = document.createElement('canvas')
-      offscreen.width = COLS
-      offscreen.height = ROWS
+      offscreen.width = MASK_W
+      offscreen.height = MASK_H
       const octx = offscreen.getContext('2d')!
-      octx.fillStyle = '#000'
-      octx.fillRect(0, 0, COLS, ROWS)
-      octx.fillStyle = '#fff'
-      const fontSize = Math.floor(ROWS * 0.80)
-      octx.font = `900 ${fontSize}px 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif`
+
+      octx.fillStyle = '#000000'
+      octx.fillRect(0, 0, MASK_W, MASK_H)
+
+      const fontSize = Math.floor(MASK_H * 0.65)
+      octx.font = `900 ${fontSize}px 'Apple SD Gothic Neo','Malgun Gothic',sans-serif`
       octx.textAlign = 'center'
       octx.textBaseline = 'middle'
-      octx.fillText(tName, COLS / 2, ROWS / 2)
-      octx.fillText(tName, COLS / 2 + 0.3, ROWS / 2)
-      octx.fillText(tName, COLS / 2, ROWS / 2 + 0.3)
-      const threshold = 40
-      const imgData = octx.getImageData(0, 0, COLS, ROWS).data
-      const mask: boolean[] = []
-      for (let i = 0; i < COLS * ROWS; i++) {
-        mask.push(imgData[i * 4] > threshold)
+      octx.fillStyle = '#ffffff'
+
+      const measured = octx.measureText(tName)
+      const textW = measured.width
+      let finalFontSize = fontSize
+      if (textW > MASK_W * 0.85) {
+        finalFontSize = Math.floor(fontSize * (MASK_W * 0.85 / textW))
+        octx.font = `900 ${finalFontSize}px 'Apple SD Gothic Neo','Malgun Gothic',sans-serif`
       }
-      console.log('isText count:', mask.filter(Boolean).length, '/', COLS * ROWS, '=', Math.round(mask.filter(Boolean).length / COLS / ROWS * 100) + '%')
+
+      octx.fillText(tName, MASK_W / 2, MASK_H / 2)
+      octx.fillText(tName, MASK_W / 2 + 0.5, MASK_H / 2)
+      octx.fillText(tName, MASK_W / 2, MASK_H / 2 + 0.5)
+
+      const imgData = octx.getImageData(0, 0, MASK_W, MASK_H).data
+
+      const mask: boolean[] = new Array(COLS * ROWS).fill(false)
+      for (let row = 0; row < ROWS; row++) {
+        for (let col = 0; col < COLS; col++) {
+          const slotIdx = row * COLS + col
+          const px = Math.floor((col + 0.5) * (MASK_W / COLS))
+          const py = Math.floor((row + 0.5) * (MASK_H / ROWS))
+          const pixelIdx = (py * MASK_W + px) * 4
+          mask[slotIdx] = imgData[pixelIdx] > 30
+        }
+      }
+
+      const trueCount = mask.filter(Boolean).length
+      console.log(`천관사 마스크: ${trueCount}/${COLS * ROWS} = ${Math.round(trueCount / COLS / ROWS * 100)}%`)
+
       slotsRef.current.forEach((s, i) => {
-        s.isText = mask[i] || false
+        s.isText = mask[i] ?? false
       })
     })
     litCountRef.current = 0
