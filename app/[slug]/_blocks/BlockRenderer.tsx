@@ -197,6 +197,39 @@ export default function BlockRenderer({ blockType, config, temple, content, dail
     return <NoticeBlock content={content} temple={temple} />
   }
 
+  // B-01 짬짜미 부처님말씀
+  if (blockType === 'B-01') {
+    return <DharmaBlock dharma={content.dharma} temple={temple} />
+  }
+
+  // AB-01 주지스님 인사말
+  if (blockType === 'AB-01') {
+    return <AbbotGreetingBlock temple={temple} config={config} />
+  }
+
+  // ST-01 Stats Bar
+  if (blockType === 'ST-01') {
+    return <StatsBlock temple={temple} config={config} />
+  }
+
+  // TL-01 역사타임라인
+  if (blockType === 'TL-01') {
+    return <HistoryTimelineBlock temple={temple} config={config} />
+  }
+
+  // HT-01 Heritage 국보보물
+  if (blockType === 'HT-01') {
+    return <HeritageBlock temple={temple} config={config} />
+  }
+
+  // DO-01 오시는 길
+  if (blockType === 'DO-01') {
+    return <LocationBlock temple={temple} config={config} />
+  }
+
+  // F-01 하단 푸터 (page.tsx FooterBlock과 중복 방지)
+  if (blockType === 'F-01') return null
+
   // L-01: 인등불사 (천관사 1차)
   if (blockType === 'L-01') {
     return (
