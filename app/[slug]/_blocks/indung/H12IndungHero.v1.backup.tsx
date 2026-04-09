@@ -19,18 +19,6 @@ const COLS = 50
 const MAX = 1000
 const PRICE_PER = 30000
 
-interface Particle {
-  x: number; y: number; vy: number; life: number; name: string
-}
-
-interface Slot {
-  bx: number; by: number
-  phase: number; speed: number; hue: number
-  swayAmp: number; swayFreq: number
-  litAt: number
-  donorIdx: number
-}
-
 export default function H12IndungHero({ config }: Props) {
   const slug = (config?.templeSlug as string) || 'cheongwansa'
   const tName = (config?.templeName as string) || '천관사'
@@ -39,18 +27,15 @@ export default function H12IndungHero({ config }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const animRef = useRef<number | undefined>(undefined)
-  const tickRef = useRef(0)
-  const slotsRef = useRef<Slot[]>([])
+  const slotsRef = useRef<{
+    bx:number; by:number; phase:number; speed:number
+    hue:number; swayAmp:number; swayFreq:number
+  }[]>([])
   const donorsRef = useRef<Donor[]>([])
-  const particlesRef = useRef<Particle[]>([])
-  const litCountRef = useRef(0)
-  const isDraggingRef = useRef(false)
-  const lastParticleRef = useRef(0)
 
   const [donors, setDonors] = useState<Donor[]>([])
-  const [tooltip, setTooltip] = useState<{x:number;y:number;name:string;wish:string}|null>(null)
+  const [tooltip, setTooltip] = useState<{x:number;y:number;donor:Donor}|null>(null)
   const [selected, setSelected] = useState<Donor|null>(null)
-  const [, setLitCount] = useState(0)
   const [name, setName] = useState('')
   const [wish, setWish] = useState('')
   const [lanternCount, setLanternCount] = useState(1)
@@ -99,134 +84,75 @@ export default function H12IndungHero({ config }: Props) {
       hue: 26 + Math.random() * 28,
       swayAmp: (Math.random() - 0.5) * 0.002,
       swayFreq: 0.3 + Math.random() * 0.5,
-      litAt: 0,
-      donorIdx: -1,
     }))
-    litCountRef.current = 0
-
-    const LIT_PER_FRAME = 4
 
     const draw = (ts: number) => {
-      tickRef.current = ts * 0.001
-      const t = tickRef.current
+      const t = ts * 0.001
       const W = canvas.width, H = canvas.height
       ctx.clearRect(0, 0, W, H)
-
-      const sky = ctx.createLinearGradient(0, 0, 0, H)
-      sky.addColorStop(0, '#03010a')
-      sky.addColorStop(1, '#120620')
-      ctx.fillStyle = sky
+      ctx.fillStyle = '#030108'
       ctx.fillRect(0, 0, W, H)
 
-      const r = Math.min(CW * W, CH * H) * 0.4
+      const r = Math.min(CW * W, CH * H) * 0.38
       const cur = donorsRef.current
-
-      const prevLit = litCountRef.current
-      const nextLit = Math.min(prevLit + LIT_PER_FRAME, MAX)
-      for (let i = prevLit; i < nextLit; i++) {
-        const s = slotsRef.current[i]
-        s.litAt = t
-        s.donorIdx = i < cur.length ? i : -1
-        if (s.donorIdx >= 0 && i % 8 === 0) {
-          particlesRef.current.push({
-            x: s.bx, y: s.by,
-            vy: -(0.0006 + Math.random() * 0.0005),
-            life: 1,
-            name: cur[i].name,
-          })
-        }
-      }
-      if (nextLit !== prevLit) {
-        litCountRef.current = nextLit
-        setLitCount(nextLit)
-      }
 
       for (let i = 0; i < MAX; i++) {
         const s = slotsRef.current[i]
-        const isLit = s.litAt > 0
-        const isDonor = s.donorIdx >= 0
+        if (!s) continue
+        const isLit = i < cur.length
         const px = (s.bx + Math.sin(t * s.swayFreq + s.phase) * s.swayAmp) * W
         const py = (s.by + Math.sin(t * s.speed * 0.2 + s.phase) * 0.001) * H
 
         if (!isLit) {
           ctx.beginPath()
-          ctx.arc(px, py, r * 0.25, 0, Math.PI * 2)
-          ctx.fillStyle = 'rgba(255,200,80,0.04)'
+          ctx.arc(px, py, r * 0.3, 0, Math.PI * 2)
+          ctx.fillStyle = 'rgba(255,200,80,0.05)'
           ctx.fill()
           continue
         }
 
-        const age = t - s.litAt
-        const fadeIn = Math.min(1, age * 3)
-
-        if (!isDonor) {
-          ctx.beginPath()
-          ctx.arc(px, py, r * 0.35, 0, Math.PI * 2)
-          ctx.fillStyle = `rgba(180,160,100,${0.08 * fadeIn})`
-          ctx.fill()
-          continue
-        }
-
-        const flicker = 0.82 + 0.18 * Math.sin(t * 8.5 + s.phase)
-        const br = flicker * fadeIn
-
+        const br = 0.82 + 0.18 * Math.sin(t * 8.5 + s.phase)
         const glow = ctx.createRadialGradient(px, py, 0, px, py, r * 2.8)
-        glow.addColorStop(0, `hsla(${s.hue},95%,78%,${0.28 * br})`)
+        glow.addColorStop(0, `hsla(${s.hue},95%,78%,${0.25*br})`)
         glow.addColorStop(1, `hsla(${s.hue},80%,50%,0)`)
         ctx.fillStyle = glow
-        ctx.beginPath(); ctx.arc(px, py, r * 2.8, 0, Math.PI * 2); ctx.fill()
+        ctx.beginPath(); ctx.arc(px, py, r*2.8, 0, Math.PI*2); ctx.fill()
 
         ctx.save(); ctx.translate(px, py); ctx.scale(1, 1.5)
-        const bg = ctx.createRadialGradient(0, -r * 0.15, 0, 0, 0, r)
+        const bg = ctx.createRadialGradient(0, -r*0.15, 0, 0, 0, r)
         bg.addColorStop(0, `hsla(${s.hue+15},100%,93%,${br})`)
         bg.addColorStop(0.5, `hsla(${s.hue},88%,62%,${br})`)
         bg.addColorStop(1, `hsla(${s.hue-12},78%,32%,${br})`)
         ctx.fillStyle = bg
-        ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2); ctx.fill()
+        ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI*2); ctx.fill()
         ctx.restore()
 
-        ctx.strokeStyle = `hsla(${s.hue},75%,68%,${br * 0.45})`
+        ctx.strokeStyle = `hsla(${s.hue},75%,68%,${br*0.45})`
         ctx.lineWidth = 0.6
         ctx.beginPath()
-        ctx.moveTo(px, py + r * 1.55)
-        ctx.lineTo(px, py + r * 2.3)
+        ctx.moveTo(px, py + r*1.55)
+        ctx.lineTo(px, py + r*2.3)
         ctx.stroke()
 
         if (r > 5) {
           ctx.save()
-          ctx.font = `${Math.max(7, r * 0.82)}px 'Apple SD Gothic Neo',sans-serif`
-          ctx.fillStyle = `hsla(30,50%,18%,${br * 0.8})`
+          ctx.font = `${Math.max(7, r*0.82)}px 'Apple SD Gothic Neo',sans-serif`
+          ctx.fillStyle = `hsla(30,50%,18%,${br*0.8})`
           ctx.textAlign = 'center'; ctx.textBaseline = 'middle'
-          ctx.fillText(cur[s.donorIdx].name.slice(0, 2), px, py)
+          ctx.fillText(cur[i].name.slice(0, 2), px, py)
           ctx.restore()
         }
       }
 
-      const parts = particlesRef.current
-      for (let i = parts.length - 1; i >= 0; i--) {
-        const p = parts[i]
-        p.y += p.vy
-        p.life -= 0.013
-        if (p.life <= 0) { parts.splice(i, 1); continue }
-        ctx.save()
-        ctx.font = `bold ${Math.max(10, r * 0.85)}px 'Apple SD Gothic Neo',sans-serif`
-        ctx.fillStyle = `rgba(255,225,130,${p.life * 0.95})`
-        ctx.shadowColor = 'rgba(255,180,50,0.8)'
-        ctx.shadowBlur = 8 * dpr
-        ctx.textAlign = 'center'
-        ctx.fillText(p.name, p.x * W, p.y * H)
-        ctx.restore()
-      }
-
-      if (litCountRef.current >= MAX && cur.length >= MAX) {
-        ctx.fillStyle = `rgba(255,200,80,${0.04 + 0.03 * Math.sin(t * 3)})`
+      if (cur.length >= MAX) {
+        ctx.fillStyle = `rgba(255,200,80,${0.04+0.03*Math.sin(t*3)})`
         ctx.fillRect(0, 0, W, H)
         ctx.save()
-        ctx.font = `bold ${Math.round(20 * dpr)}px 'Apple SD Gothic Neo',sans-serif`
-        ctx.fillStyle = `rgba(255,235,150,${0.7 + 0.3 * Math.sin(t * 2)})`
+        ctx.font = `bold ${Math.round(20*dpr)}px 'Apple SD Gothic Neo',sans-serif`
+        ctx.fillStyle = `rgba(255,235,150,${0.7+0.3*Math.sin(t*2)})`
         ctx.textAlign = 'center'
-        ctx.shadowColor = 'rgba(255,180,50,0.9)'; ctx.shadowBlur = 14 * dpr
-        ctx.fillText(`${phase}차 1,000등 원만성취`, W / 2, H * 0.06)
+        ctx.shadowColor = 'rgba(255,180,50,0.9)'; ctx.shadowBlur = 14*dpr
+        ctx.fillText(`${phase}차 1,000등 원만성취`, W/2, H*0.06)
         ctx.restore()
       }
 
@@ -238,90 +164,41 @@ export default function H12IndungHero({ config }: Props) {
 
   useEffect(() => { donorsRef.current = donors }, [donors])
 
-  const getSlotAt = (mx: number, my: number, cw: number, ch: number) => {
-    const PX = 0.015
-    const CW = (1 - PX * 2) / COLS
+  const getSlotIdx = (mx: number, my: number, cw: number, ch: number) => {
+    const PX = 0.015, PY = 0.02
+    const CW = (1 - PX*2) / COLS
     let best = -1, bestD = 99
-    for (let i = 0; i < litCountRef.current; i++) {
+    for (let i = 0; i < donorsRef.current.length; i++) {
       const s = slotsRef.current[i]
-      if (!s || s.donorIdx < 0) continue
-      const dx = s.bx - mx / cw, dy = s.by - my / ch
-      const d = Math.sqrt(dx * dx + dy * dy)
-      if (d < bestD && d < CW * 1.8) { bestD = d; best = s.donorIdx }
+      if (!s) continue
+      const dx = s.bx - mx/cw, dy = s.by - my/ch
+      const d = Math.sqrt(dx*dx + dy*dy)
+      if (d < bestD && d < CW*1.5) { bestD = d; best = i }
     }
     return best
-  }
-
-  const spawnDragParticles = (mx: number, my: number, cw: number, ch: number) => {
-    if (tickRef.current - lastParticleRef.current < 0.08) return
-    lastParticleRef.current = tickRef.current
-    const PX = 0.015
-    const CW = (1 - PX * 2) / COLS
-    const batchRadius = CW * 3
-    const cur = donorsRef.current
-    const added: string[] = []
-    for (let i = 0; i < litCountRef.current; i++) {
-      const s = slotsRef.current[i]
-      if (!s || s.donorIdx < 0) continue
-      const dx = s.bx - mx / cw, dy = s.by - my / ch
-      if (Math.sqrt(dx * dx + dy * dy) < batchRadius && added.length < 5) {
-        particlesRef.current.push({
-          x: s.bx, y: s.by - 0.02,
-          vy: -(0.0008 + Math.random() * 0.0006),
-          life: 1,
-          name: cur[s.donorIdx].name,
-        })
-        added.push(cur[s.donorIdx].name)
-      }
-    }
   }
 
   const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const rect = canvasRef.current!.getBoundingClientRect()
     const mx = e.clientX - rect.left, my = e.clientY - rect.top
-    if (isDraggingRef.current) {
-      spawnDragParticles(mx, my, rect.width, rect.height)
-      setTooltip(null)
-      return
-    }
-    const idx = getSlotAt(mx, my, rect.width, rect.height)
-    if (idx >= 0) {
-      const d = donorsRef.current[idx]
-      setTooltip({ x: mx, y: my, name: d.name, wish: d.wish })
-    } else setTooltip(null)
+    const idx = getSlotIdx(mx, my, rect.width, rect.height)
+    if (idx >= 0) setTooltip({ x: mx, y: my, donor: donorsRef.current[idx] })
+    else setTooltip(null)
   }
 
-  const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    isDraggingRef.current = true
+  const handleClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const rect = canvasRef.current!.getBoundingClientRect()
-    spawnDragParticles(e.clientX - rect.left, e.clientY - rect.top, rect.width, rect.height)
-  }
-
-  const handleMouseUp = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (!isDraggingRef.current) return
-    isDraggingRef.current = false
-    const rect = canvasRef.current!.getBoundingClientRect()
-    const idx = getSlotAt(e.clientX - rect.left, e.clientY - rect.top, rect.width, rect.height)
-    if (idx >= 0) {
-      setSelected(donorsRef.current[idx])
-      setTooltip(null)
-    }
-  }
-
-  const handleTouchStart = (e: React.TouchEvent<HTMLCanvasElement>) => {
-    isDraggingRef.current = true
-    const rect = canvasRef.current!.getBoundingClientRect()
-    const t = e.touches[0]
-    spawnDragParticles(t.clientX - rect.left, t.clientY - rect.top, rect.width, rect.height)
+    const idx = getSlotIdx(e.clientX-rect.left, e.clientY-rect.top, rect.width, rect.height)
+    if (idx >= 0) { setSelected(donorsRef.current[idx]); setTooltip(null) }
   }
 
   const handleTouchMove = (e: React.TouchEvent<HTMLCanvasElement>) => {
     const rect = canvasRef.current!.getBoundingClientRect()
     const t = e.touches[0]
-    spawnDragParticles(t.clientX - rect.left, t.clientY - rect.top, rect.width, rect.height)
+    const idx = getSlotIdx(t.clientX-rect.left, t.clientY-rect.top, rect.width, rect.height)
+    if (idx >= 0) setTooltip({ x: t.clientX-rect.left, y: t.clientY-rect.top, donor: donorsRef.current[idx] })
+    else setTooltip(null)
   }
-
-  const handleTouchEnd = () => { isDraggingRef.current = false; setTooltip(null) }
 
   const handleSubmit = async () => {
     if (!name.trim()) return
@@ -331,9 +208,11 @@ export default function H12IndungHero({ config }: Props) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          temple_slug: slug, name: name.trim(),
+          temple_slug: slug,
+          name: name.trim(),
           wish: wish.trim() || WISHES_DEFAULT[donors.length % WISHES_DEFAULT.length],
-          lantern_count: lanternCount, phase,
+          lantern_count: lanternCount,
+          phase,
         }),
       })
       await fetchDonors()
@@ -387,24 +266,22 @@ export default function H12IndungHero({ config }: Props) {
           <span style={{ color: 'rgba(255,200,80,0.7)', fontSize: 13, minWidth: 36 }}>{pct}%</span>
         </div>
         <p style={{ color: 'rgba(255,200,80,0.3)', fontSize: 11 }}>
-          마우스를 클릭하고 드래그하면 동참자 이름이 피어오릅니다
+          인등 위에 마우스를 올리면 동참자 이름이 나타납니다 · 클릭하면 발원문을 볼 수 있습니다
         </p>
       </div>
 
       <div ref={containerRef} style={{ position: 'relative', width: '100%', maxWidth: 960, margin: '0 auto' }}>
         <canvas
           ref={canvasRef}
-          style={{ display: 'block', cursor: isDraggingRef.current ? 'grabbing' : 'grab' }}
+          style={{ display: 'block', cursor: 'pointer' }}
           onMouseMove={handleMouseMove}
-          onMouseDown={handleMouseDown}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={() => { isDraggingRef.current = false; setTooltip(null) }}
-          onTouchStart={handleTouchStart}
+          onMouseLeave={() => setTooltip(null)}
+          onClick={handleClick}
           onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
+          onTouchEnd={() => setTooltip(null)}
         />
 
-        {tooltip && !isDraggingRef.current && (
+        {tooltip && (
           <div style={{
             position: 'absolute',
             left: Math.min(tooltip.x + 14, contW - 170),
@@ -415,10 +292,13 @@ export default function H12IndungHero({ config }: Props) {
             pointerEvents: 'none', zIndex: 20, minWidth: 150,
           }}>
             <div style={{ color: 'rgba(255,235,150,0.95)', fontSize: 14, fontWeight: 700, marginBottom: 3 }}>
-              {tooltip.name} 보살
+              {tooltip.donor.name} 보살
             </div>
             <div style={{ color: 'rgba(255,200,80,0.6)', fontSize: 11, lineHeight: 1.5 }}>
-              {tooltip.wish?.slice(0, 26)}{(tooltip.wish?.length || 0) > 26 ? '…' : ''}
+              {(tooltip.donor.wish||'').slice(0,26)}{(tooltip.donor.wish?.length||0)>26?'…':''}
+            </div>
+            <div style={{ color: 'rgba(255,200,80,0.35)', fontSize: 10, marginTop: 3 }}>
+              인등 {tooltip.donor.lantern_count}구
             </div>
           </div>
         )}
@@ -433,7 +313,7 @@ export default function H12IndungHero({ config }: Props) {
                 {selected.name} 보살
               </div>
               <div style={{ fontSize: 11, color: 'rgba(255,200,80,0.4)', marginBottom: 6 }}>
-                {new Date(selected.created_at).toLocaleDateString('ko-KR')} · {phase}차
+                {new Date(selected.created_at).toLocaleDateString('ko-KR')} · {phase}차 · 인등 {selected.lantern_count}구
               </div>
               <div style={{ fontSize: 13, color: 'rgba(255,220,140,0.85)', lineHeight: 1.95, borderTop: '1px solid rgba(255,200,80,0.15)', paddingTop: 13, wordBreak: 'keep-all' }}>
                 {selected.wish}
