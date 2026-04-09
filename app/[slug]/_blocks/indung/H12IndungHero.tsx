@@ -19,8 +19,8 @@ const WISHES_DEFAULT = [
 const COLS = 55
 const MAX = 3000
 
-// '천관사' 55×55 격자 비트맵 마스크 (모듈 레벨 즉시 실행)
-// 440×440 오프스크린 캔버스 → 8×8 블록 평균 다운샘플링
+// 3줄 텍스트 마스크: 天冠寺 / 삼천인등 / 원력불사
+// 440×440 캔버스 → 8×8 블록 평균 → 55×55 다운샘플링
 const TEXT_MASK_RAW: boolean[] = (() => {
   const W = 55, H = 55
   const mask: boolean[] = new Array(W * H).fill(false)
@@ -34,18 +34,25 @@ const TEXT_MASK_RAW: boolean[] = (() => {
   cx.fillRect(0, 0, cv.width, cv.height)
   cx.fillStyle = '#fff'
 
-  const fs = Math.floor(cv.height * 0.60)
-  cx.font = `900 ${fs}px 'Apple SD Gothic Neo','Malgun Gothic',sans-serif`
-  cx.textAlign = 'center'
-  cx.textBaseline = 'middle'
+  const lines = ['天冠寺', '삼천인등', '원력불사']
+  const lineH = cv.height / 3
+  const topPad = lineH * 0.08
 
-  const tw = cx.measureText('천관사').width
-  if (tw > cv.width * 0.88) {
-    const scale = (cv.width * 0.88) / tw
-    cx.font = `900 ${Math.floor(fs * scale)}px 'Apple SD Gothic Neo','Malgun Gothic',sans-serif`
-  }
-
-  cx.fillText('천관사', cv.width / 2, cv.height / 2)
+  lines.forEach((line, idx) => {
+    const centerY = lineH * idx + lineH / 2 + topPad
+    let fontSize = Math.floor(lineH * 0.62)
+    cx.font = `900 ${fontSize}px 'Apple SD Gothic Neo','Malgun Gothic',sans-serif`
+    const tw = cx.measureText(line).width
+    if (tw > cv.width * 0.88) {
+      fontSize = Math.floor(fontSize * (cv.width * 0.88 / tw))
+      cx.font = `900 ${fontSize}px 'Apple SD Gothic Neo','Malgun Gothic',sans-serif`
+    }
+    cx.textAlign = 'center'
+    cx.textBaseline = 'middle'
+    cx.fillText(line, cv.width / 2, centerY)
+    cx.fillText(line, cv.width / 2 + 0.6, centerY)
+    cx.fillText(line, cv.width / 2, centerY + 0.6)
+  })
 
   const imgData = cx.getImageData(0, 0, cv.width, cv.height).data
   for (let row = 0; row < H; row++) {
@@ -58,9 +65,11 @@ const TEXT_MASK_RAW: boolean[] = (() => {
           sum += imgData[(py * cv.width + px) * 4]
         }
       }
-      mask[row * W + col] = (sum / 64) > 60
+      mask[row * W + col] = (sum / 64) > 55
     }
   }
+  const cnt = mask.filter(Boolean).length
+  console.log(`天冠寺 3줄 마스크: ${cnt}/${W * H} = ${Math.round(cnt / W / H * 100)}%`)
   return mask
 })()
 
@@ -190,7 +199,7 @@ export default function H12IndungHero({ config }: Props) {
         const py = (s.by + Math.sin(t * s.speed * 0.2 + s.phase) * 0.001) * H
 
         const textWave = s.isText
-          ? 0.5 + 0.5 * Math.sin(t * 0.9 + s.bx * 22)
+          ? 0.5 + 0.5 * Math.sin(t * 0.85 + s.bx * 20 + s.by * 8)
           : 0
 
         if (!isLit) {
@@ -438,7 +447,7 @@ export default function H12IndungHero({ config }: Props) {
 
       <div style={{ textAlign: 'center', padding: '32px 20px 12px' }}>
         <p style={{ color: 'rgba(255,200,80,0.45)', fontSize: 12, letterSpacing: 4, marginBottom: 8 }}>
-          삼천인등불사 · 1구 30,000원 · 1년 점등
+          天冠寺 삼천인등 원력불사 · 1구 30,000원 · 1년 점등
         </p>
         <h1 style={{ color: 'rgba(255,235,150,0.95)', fontSize: 26, fontWeight: 500, marginBottom: 14, letterSpacing: 3 }}>
           {tName} 삼천인등
