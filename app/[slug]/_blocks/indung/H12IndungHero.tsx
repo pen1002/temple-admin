@@ -19,6 +19,51 @@ const WISHES_DEFAULT = [
 const COLS = 55
 const MAX = 3000
 
+// '천관사' 55×55 격자 비트맵 마스크 (모듈 레벨 즉시 실행)
+// 440×440 오프스크린 캔버스 → 8×8 블록 평균 다운샘플링
+const TEXT_MASK_RAW: boolean[] = (() => {
+  const W = 55, H = 55
+  const mask: boolean[] = new Array(W * H).fill(false)
+  if (typeof document === 'undefined') return mask
+
+  const cv = document.createElement('canvas')
+  cv.width = W * 8
+  cv.height = H * 8
+  const cx = cv.getContext('2d')!
+  cx.fillStyle = '#000'
+  cx.fillRect(0, 0, cv.width, cv.height)
+  cx.fillStyle = '#fff'
+
+  const fs = Math.floor(cv.height * 0.60)
+  cx.font = `900 ${fs}px 'Apple SD Gothic Neo','Malgun Gothic',sans-serif`
+  cx.textAlign = 'center'
+  cx.textBaseline = 'middle'
+
+  const tw = cx.measureText('천관사').width
+  if (tw > cv.width * 0.88) {
+    const scale = (cv.width * 0.88) / tw
+    cx.font = `900 ${Math.floor(fs * scale)}px 'Apple SD Gothic Neo','Malgun Gothic',sans-serif`
+  }
+
+  cx.fillText('천관사', cv.width / 2, cv.height / 2)
+
+  const imgData = cx.getImageData(0, 0, cv.width, cv.height).data
+  for (let row = 0; row < H; row++) {
+    for (let col = 0; col < W; col++) {
+      let sum = 0
+      for (let dy = 0; dy < 8; dy++) {
+        for (let dx = 0; dx < 8; dx++) {
+          const px = col * 8 + dx
+          const py = row * 8 + dy
+          sum += imgData[(py * cv.width + px) * 4]
+        }
+      }
+      mask[row * W + col] = (sum / 64) > 60
+    }
+  }
+  return mask
+})()
+
 export default function H12IndungHero({ config }: Props) {
   const slug = (config?.templeSlug as string) || 'cheongwansa'
   const tName = (config?.templeName as string) || '천관사'
@@ -85,7 +130,6 @@ export default function H12IndungHero({ config }: Props) {
     const CW = (1 - PX * 2) / COLS
     const CH = (1 - PY * 2) / ROWS
 
-    // 슬롯 1차 초기화 (isText는 폰트 로드 후 재배정)
     slotsRef.current = Array.from({ length: MAX }, (_, i) => ({
       bx: PX + (i % COLS) * CW + CW * 0.5,
       by: PY + Math.floor(i / COLS) * CH + CH * 0.5,
@@ -95,59 +139,13 @@ export default function H12IndungHero({ config }: Props) {
       swayAmp: (Math.random() - 0.5) * 0.002,
       swayFreq: 0.3 + Math.random() * 0.5,
       litAt: 0,
-      isText: false,
+      isText: TEXT_MASK_RAW[i] ?? false,
     }))
 
-    // 폰트 로딩 보장 후 텍스트 마스크 생성 (3배 캔버스 다운샘플링)
-    document.fonts.ready.then(() => {
-      const MASK_W = COLS * 3
-      const MASK_H = ROWS * 3
-      const offscreen = document.createElement('canvas')
-      offscreen.width = MASK_W
-      offscreen.height = MASK_H
-      const octx = offscreen.getContext('2d')!
-
-      octx.fillStyle = '#000000'
-      octx.fillRect(0, 0, MASK_W, MASK_H)
-
-      const fontSize = Math.floor(MASK_H * 0.65)
-      octx.font = `900 ${fontSize}px 'Apple SD Gothic Neo','Malgun Gothic',sans-serif`
-      octx.textAlign = 'center'
-      octx.textBaseline = 'middle'
-      octx.fillStyle = '#ffffff'
-
-      const measured = octx.measureText(tName)
-      const textW = measured.width
-      let finalFontSize = fontSize
-      if (textW > MASK_W * 0.85) {
-        finalFontSize = Math.floor(fontSize * (MASK_W * 0.85 / textW))
-        octx.font = `900 ${finalFontSize}px 'Apple SD Gothic Neo','Malgun Gothic',sans-serif`
-      }
-
-      octx.fillText(tName, MASK_W / 2, MASK_H / 2)
-      octx.fillText(tName, MASK_W / 2 + 0.5, MASK_H / 2)
-      octx.fillText(tName, MASK_W / 2, MASK_H / 2 + 0.5)
-
-      const imgData = octx.getImageData(0, 0, MASK_W, MASK_H).data
-
-      const mask: boolean[] = new Array(COLS * ROWS).fill(false)
-      for (let row = 0; row < ROWS; row++) {
-        for (let col = 0; col < COLS; col++) {
-          const slotIdx = row * COLS + col
-          const px = Math.floor((col + 0.5) * (MASK_W / COLS))
-          const py = Math.floor((row + 0.5) * (MASK_H / ROWS))
-          const pixelIdx = (py * MASK_W + px) * 4
-          mask[slotIdx] = imgData[pixelIdx] > 30
-        }
-      }
-
-      const trueCount = mask.filter(Boolean).length
-      console.log(`천관사 마스크: ${trueCount}/${COLS * ROWS} = ${Math.round(trueCount / COLS / ROWS * 100)}%`)
-
-      slotsRef.current.forEach((s, i) => {
-        s.isText = mask[i] ?? false
-      })
-    })
+    if (typeof window !== 'undefined') {
+      const cnt = TEXT_MASK_RAW.filter(Boolean).length
+      console.log(`천관사 마스크: ${cnt}/${COLS * ROWS} = ${Math.round(cnt / COLS / ROWS * 100)}%`)
+    }
     litCountRef.current = 0
 
     const LIT_PER_FRAME = 3
