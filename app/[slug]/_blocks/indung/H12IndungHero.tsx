@@ -19,27 +19,6 @@ const WISHES_DEFAULT = [
 const COLS = 50
 const MAX = 1000
 
-// '천관사' 글자 픽셀 마스크 생성 (오프스크린 캔버스)
-function buildTextMask(cols: number, rows: number, label: string): boolean[] {
-  const offscreen = document.createElement('canvas')
-  offscreen.width = cols
-  offscreen.height = rows
-  const ctx = offscreen.getContext('2d')!
-  ctx.fillStyle = '#000'
-  ctx.fillRect(0, 0, cols, rows)
-  ctx.fillStyle = '#fff'
-  ctx.font = `bold ${Math.floor(rows * 0.55)}px 'Apple SD Gothic Neo', serif`
-  ctx.textAlign = 'center'
-  ctx.textBaseline = 'middle'
-  ctx.fillText(label, cols / 2, rows / 2)
-  const data = ctx.getImageData(0, 0, cols, rows).data
-  const mask: boolean[] = []
-  for (let i = 0; i < cols * rows; i++) {
-    mask.push(data[i * 4] > 128)
-  }
-  return mask
-}
-
 export default function H12IndungHero({ config }: Props) {
   const slug = (config?.templeSlug as string) || 'cheongwansa'
   const tName = (config?.templeName as string) || '천관사'
@@ -106,7 +85,23 @@ export default function H12IndungHero({ config }: Props) {
     const CW = (1 - PX * 2) / COLS
     const CH = (1 - PY * 2) / ROWS
 
-    const textMask = buildTextMask(COLS, ROWS, tName)
+    // 텍스트 마스크 생성 — useEffect 안에서 (브라우저 보장)
+    const offscreen = document.createElement('canvas')
+    offscreen.width = COLS
+    offscreen.height = ROWS
+    const octx = offscreen.getContext('2d')!
+    octx.fillStyle = '#000'
+    octx.fillRect(0, 0, COLS, ROWS)
+    octx.fillStyle = '#fff'
+    octx.font = `bold ${Math.floor(ROWS * 0.52)}px 'Apple SD Gothic Neo', serif`
+    octx.textAlign = 'center'
+    octx.textBaseline = 'middle'
+    octx.fillText(tName, COLS / 2, ROWS / 2)
+    const imgData = octx.getImageData(0, 0, COLS, ROWS).data
+    const textMask: boolean[] = []
+    for (let i = 0; i < COLS * ROWS; i++) {
+      textMask.push(imgData[i * 4] > 100)
+    }
 
     slotsRef.current = Array.from({ length: MAX }, (_, i) => ({
       bx: PX + (i % COLS) * CW + CW * 0.5,
@@ -184,7 +179,7 @@ export default function H12IndungHero({ config }: Props) {
         const br = Math.min(1, flicker + textBoost + highlightBoost)
 
         if (!isDonor) {
-          const dimBr = s.isText ? (0.06 + 0.06 * textWave) : 0.05
+          const dimBr = s.isText ? (0.12 + 0.1 * textWave) : 0.03
           ctx.beginPath()
           ctx.arc(px, py, r * 0.32, 0, Math.PI * 2)
           ctx.fillStyle = `rgba(180,160,100,${dimBr})`
@@ -194,7 +189,7 @@ export default function H12IndungHero({ config }: Props) {
 
         const glowR = r * (s.isText ? 3.5 : 2.6) * (1 + highlightBoost)
         const glow = ctx.createRadialGradient(px, py, 0, px, py, glowR)
-        glow.addColorStop(0, `hsla(${s.hue},95%,78%,${(0.28 + textBoost * 0.2) * br})`)
+        glow.addColorStop(0, `hsla(${s.hue},95%,78%,${(0.32 + textBoost * 0.35) * br})`)
         glow.addColorStop(1, `hsla(${s.hue},80%,50%,0)`)
         ctx.fillStyle = glow
         ctx.beginPath(); ctx.arc(px, py, glowR, 0, Math.PI * 2); ctx.fill()
@@ -367,7 +362,7 @@ export default function H12IndungHero({ config }: Props) {
 
   const handleConfirm = () => {
     setSubmitted(false)
-    setShowForm(false)
+    setShowForm(true)
     setName(''); setWish('')
     myLanternHighlightRef.current = tickRef.current
     setTimeout(() => {
@@ -479,14 +474,7 @@ export default function H12IndungHero({ config }: Props) {
       </div>
 
       <div style={{ maxWidth: 460, margin: '28px auto 0', padding: '0 20px' }}>
-        {!showForm ? (
-          <div style={{ textAlign: 'center' }}>
-            <button onClick={() => setShowForm(true)}
-              style={{ background: 'rgba(255,180,50,0.15)', border: '1px solid rgba(255,180,50,0.4)', color: 'rgba(255,220,100,0.9)', borderRadius: 8, padding: '11px 28px', fontSize: 14, cursor: 'pointer' }}>
-              인등 신청하기
-            </button>
-          </div>
-        ) : !submitted ? (
+        {!submitted ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 11 }}>
             <input value={name} onChange={e => setName(e.target.value)}
               placeholder="성함을 입력하세요" style={inp} />
