@@ -266,13 +266,13 @@ export default function L01IndungBlock({
             </p>
             <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
               <button onClick={() => {
-                const shareUrl = typeof window !== 'undefined' ? window.location.href : ''
-                const shareText = `${tName} 인등불사에 동참했습니다.\n함께 소원을 빌어요.\n\n${shareUrl}`
-                navigator.clipboard.writeText(shareText).then(() => {
+                const url = typeof window !== 'undefined' ? window.location.href : ''
+                const text = `${tName} 인등불사 ${phase}차에 동참했습니다.\n함께 소원을 빌어요 🕯\n\n${url}`
+                navigator.clipboard.writeText(text).then(() =>
                   alert('링크가 복사되었습니다.\n카카오톡에 붙여넣기하여 공유해 주세요.')
-                })
+                )
               }} style={{ background: '#FEE500', border: 'none', color: '#3A1D1D', borderRadius: 8, padding: '10px 22px', fontSize: 13, cursor: 'pointer', fontWeight: 500 }}>
-                링크 복사 후 카톡 공유
+                카카오톡 공유
               </button>
               <button onClick={() => { setSubmitted(false); setName(''); setWish('') }}
                 style={{ background: 'rgba(255,180,50,0.15)', border: '1px solid rgba(255,180,50,0.4)', color: 'rgba(255,220,100,0.9)', borderRadius: 8, padding: '10px 22px', fontSize: 13, cursor: 'pointer' }}>

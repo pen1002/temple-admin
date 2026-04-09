@@ -12,6 +12,7 @@ import BorimsaParadeHero from './hero/borimsa/LanternParadeHeroBlock'
 import StandardParadeHero from './hero/standard/LanternParadeHeroBlock'
 import H11BonchukHaroo from './hero/standard/H11BonchukHarooBlock'
 import L01IndungBlock from './indung/L01IndungBlock'
+import H12IndungHero from './indung/H12IndungHero'
 import DharmaBlock  from './DharmaBlock'
 import NoticeBlock  from './NoticeBlock'
 import EventBlock   from './EventBlock'
@@ -189,6 +190,11 @@ export default function BlockRenderer({ blockType, config, temple, content, dail
 
   if (blockType === 'I-01') {
     return <NoticeBlock content={content} temple={temple} />
+  }
+
+  // H-12: 삼천인등 히어로 (천관사)
+  if (blockType === 'H-12') {
+    return <H12IndungHero config={config} />
   }
 
   // L-01: 인등불사 (천관사 1차)
