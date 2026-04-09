@@ -176,6 +176,11 @@ export default function BlockRenderer({ blockType, config, temple, content, dail
     )
   }
 
+  // H-12: 삼천인등 히어로 (천관사) — startsWith('H-') 캐치올보다 먼저!
+  if (blockType === 'H-12') {
+    return <H12IndungHero config={config} />
+  }
+
   if (blockType.startsWith('H-')) {
     return <HeroBlock blockType={blockType} temple={temple} config={config} content={content} />
   }
@@ -190,11 +195,6 @@ export default function BlockRenderer({ blockType, config, temple, content, dail
 
   if (blockType === 'I-01') {
     return <NoticeBlock content={content} temple={temple} />
-  }
-
-  // H-12: 삼천인등 히어로 (천관사)
-  if (blockType === 'H-12') {
-    return <H12IndungHero config={config} />
   }
 
   // L-01: 인등불사 (천관사 1차)
