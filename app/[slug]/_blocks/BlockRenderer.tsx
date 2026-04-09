@@ -197,9 +197,10 @@ export default function BlockRenderer({ blockType, config, temple, content, dail
     return <NoticeBlock content={content} temple={temple} />
   }
 
-  // B-01 짬짜미 부처님말씀 → DailyWisdomBlock 재활용
+  // B-01 짬짜미 부처님말씀 → DailyWisdomBlock 재활용 (null 안전)
   if (blockType === 'B-01') {
-    return <DailyWisdomBlock wisdom={dailyWisdom ?? null} temple={temple} />
+    if (!dailyWisdom) return null
+    return <DailyWisdomBlock wisdom={dailyWisdom} temple={temple} />
   }
 
   // AB-01 주지스님 인사말
