@@ -331,7 +331,7 @@ export default function CheopaIlYeongDeungHeroBlock({ config }: Props) {
     <section ref={sectionRef} style={{ background: '#020209', paddingBottom: 48, ...sf }}>
       <div style={{ textAlign: 'center', padding: '32px 20px 12px' }}>
         <span style={{ display: 'inline-block', fontSize: 11, color: '#c9a84c', letterSpacing: '0.1em', border: '0.5px solid rgba(201,168,76,0.4)', padding: '3px 14px', borderRadius: 20, marginBottom: 10 }}>
-          {currentRound}차 연등 점등 불사
+          봉 부처님오신날 축
         </span>
         <h1 style={{ color: 'rgba(255,235,150,0.95)', fontSize: 26, fontWeight: 500, marginBottom: 14, letterSpacing: 3 }}>{tName} 연등공양</h1>
         <div style={{ maxWidth: 420, margin: '0 auto 6px' }}>
@@ -394,19 +394,17 @@ export default function CheopaIlYeongDeungHeroBlock({ config }: Props) {
             <input value={name} onChange={e => setName(e.target.value)} placeholder="성함을 입력하세요" style={inp} />
             <textarea value={wish} onChange={e => setWish(e.target.value)} placeholder="발원문 (예: 가족 모두 건강하기를...)" rows={3} style={{ ...inp, resize: 'none' }} />
             <div style={{ textAlign: 'center', padding: '6px 0' }}>
-              <span style={{ color: 'rgba(255,200,80,0.5)', fontSize: 13 }}>연등 1구 </span>
-              <span style={{ color: 'rgba(255,235,150,0.95)', fontSize: 22, fontWeight: 700 }}>30,000원</span>
+              <span style={{ color: 'rgba(255,235,150,0.95)', fontSize: 15, fontWeight: 500 }}>연등 1인 3만 · 가족등 10만</span>
             </div>
             <div style={{ background: 'rgba(255,200,80,0.05)', border: '1px solid rgba(255,200,80,0.14)', borderRadius: 8, padding: '13px 15px', fontSize: 13, color: 'rgba(255,200,80,0.75)', lineHeight: 2.2 }}>
-              농협 351-0950-2778-43 천관사
-              <button onClick={() => { navigator.clipboard.writeText('351-0950-2778-43'); setCopied(true); setTimeout(() => setCopied(false), 2000) }}
+              시티은행 261-0359-626501 배연암
+              <button onClick={() => { navigator.clipboard.writeText('261-0359-626501'); setCopied(true); setTimeout(() => setCopied(false), 2000) }}
                 style={{ marginLeft: 8, background: 'rgba(255,180,50,0.15)', border: '1px solid rgba(255,180,50,0.35)', color: 'rgba(255,210,80,0.9)', borderRadius: 4, padding: '2px 8px', fontSize: 11, cursor: 'pointer' }}>{copied ? '복사됨' : '복사'}</button><br />
-              우체국 500678-01-001511 천관사<br />
               <span style={{ fontSize: 11, color: 'rgba(255,200,80,0.38)' }}>입금자명을 신청자 성함과 동일하게 입금해 주세요.</span>
             </div>
             <button onClick={handleSubmit} disabled={loading || !name.trim()}
               style={{ background: loading ? 'rgba(60,40,20,0.3)' : 'rgba(255,180,50,0.22)', border: '1px solid rgba(255,180,50,0.55)', color: 'rgba(255,220,100,0.95)', borderRadius: 8, padding: 14, fontSize: 15, cursor: loading ? 'default' : 'pointer', fontWeight: 500 }}>
-              {loading ? '접수 중...' : '연등 달기 — 30,000원'}
+              {loading ? '접수 중...' : '연등 달기'}
             </button>
           </div>
         ) : (
