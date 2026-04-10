@@ -105,11 +105,14 @@ export default function H12IndungHero({ config }: Props) {
   const [submitted, setSubmitted] = useState(false)
   const [name, setName] = useState('')
   const [wish, setWish] = useState('')
+  const [contact, setContact] = useState('')
   const [loading, setLoading] = useState(false)
   const [copied, setCopied] = useState(false)
 
-  const ROWS = Math.ceil(MAX / COLS)
-  const CANVAS_H = Math.max(600, ROWS * 18 + 40)
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
+  const ACTIVE_COLS = isMobile ? 8 : COLS
+  const ROWS = Math.ceil(MAX / ACTIVE_COLS)
+  const CANVAS_H = isMobile ? (typeof window !== 'undefined' ? window.innerHeight : 700) : Math.max(600, ROWS * 18 + 40)
 
   const fetchDonors = useCallback(async () => {
     try {
@@ -141,12 +144,12 @@ export default function H12IndungHero({ config }: Props) {
     canvas.style.height = CANVAS_H + 'px'
 
     const PX = 0.015, PY = 0.03
-    const CW = (1 - PX * 2) / COLS
+    const CW = (1 - PX * 2) / ACTIVE_COLS
     const CH = (1 - PY * 2) / ROWS
 
     slotsRef.current = Array.from({ length: MAX }, (_, i) => ({
-      bx: PX + (i % COLS) * CW + CW * 0.5,
-      by: PY + Math.floor(i / COLS) * CH + CH * 0.5,
+      bx: PX + (i % ACTIVE_COLS) * CW + CW * 0.5,
+      by: PY + Math.floor(i / ACTIVE_COLS) * CH + CH * 0.5,
       phase: Math.random() * Math.PI * 2,
       speed: 0.5 + Math.random() * 0.8,
       hue: 26 + Math.random() * 28,
@@ -413,7 +416,7 @@ export default function H12IndungHero({ config }: Props) {
           name: name.trim(),
           wish: wish.trim() || WISHES_DEFAULT[donors.length % WISHES_DEFAULT.length],
           lantern_count: 1,
-          phase,
+          phase, contact: contact.trim(),
         }),
       })
       await fetchDonors()
@@ -427,7 +430,7 @@ export default function H12IndungHero({ config }: Props) {
   const handleConfirm = () => {
     setSubmitted(false)
     setShowForm(true)
-    setName(''); setWish('')
+    setName(''); setWish(''); setContact('')
     myLanternHighlightRef.current = tickRef.current
     setTimeout(() => {
       containerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
@@ -436,7 +439,7 @@ export default function H12IndungHero({ config }: Props) {
 
   const handleAddMore = () => {
     setSubmitted(false)
-    setName(''); setWish('')
+    setName(''); setWish(''); setContact('')
   }
 
   const shareKakao = () => {
@@ -547,6 +550,8 @@ export default function H12IndungHero({ config }: Props) {
             <textarea value={wish} onChange={e => setWish(e.target.value)}
               placeholder="발원문 (예: 가족 모두 건강하기를...)" rows={3}
               style={{ ...inp, resize: 'none' }} />
+            <input value={contact} onChange={e => setContact(e.target.value)}
+              type="tel" placeholder="연락처 (010-0000-0000)" style={inp} />
 
             <div style={{ textAlign: 'center', padding: '6px 0' }}>
               <span style={{ color: 'rgba(255,200,80,0.5)', fontSize: 13 }}>인등 1구 </span>

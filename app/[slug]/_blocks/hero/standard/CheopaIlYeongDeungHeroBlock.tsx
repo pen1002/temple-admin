@@ -32,7 +32,8 @@ export default function CheopaIlYeongDeungHeroBlock({ config }: Props) {
   const MAX = (config?.targetCount as number) || ROUND_TARGETS[currentRound - 1] || 250
   const phase = currentRound
 
-  const GRID_COLS = Math.min(25, Math.ceil(Math.sqrt(MAX * 2.5)))
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
+  const GRID_COLS = isMobile ? 5 : Math.min(25, Math.ceil(Math.sqrt(MAX * 2.5)))
   const GRID_ROWS = Math.ceil(MAX / GRID_COLS)
 
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -53,10 +54,11 @@ export default function CheopaIlYeongDeungHeroBlock({ config }: Props) {
   const [submitted, setSubmitted] = useState(false)
   const [name, setName] = useState('')
   const [wish, setWish] = useState('')
+  const [contact, setContact] = useState('')
   const [loading, setLoading] = useState(false)
   const [copied, setCopied] = useState(false)
 
-  const CANVAS_H = Math.max(420, GRID_ROWS * 52 + 80)
+  const CANVAS_H = isMobile ? (typeof window !== 'undefined' ? window.innerHeight : 700) : Math.max(420, GRID_ROWS * 52 + 80)
 
   const fetchDonors = useCallback(async () => {
     try {
@@ -88,7 +90,8 @@ export default function CheopaIlYeongDeungHeroBlock({ config }: Props) {
     const padX = W * 0.06, padY = H * 0.08
     const cellW = (W - padX * 2) / GRID_COLS
     const cellH = (H - padY * 2) / GRID_ROWS
-    const rx = Math.min(cellW * 0.32, 9 * dpr)
+    const mobileMode = W_CSS < 768
+    const rx = mobileMode ? Math.min(cellW * 0.38, 20 * dpr) : Math.min(cellW * 0.32, 9 * dpr)
     const ry = rx * 1.45
 
     // 별
@@ -306,7 +309,7 @@ export default function CheopaIlYeongDeungHeroBlock({ config }: Props) {
     try {
       await fetch('/api/indung', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ temple_slug: slug, name: name.trim(), wish: wish.trim() || WISHES_DEFAULT[donors.length % WISHES_DEFAULT.length], lantern_count: 1, phase }),
+        body: JSON.stringify({ temple_slug: slug, name: name.trim(), wish: wish.trim() || WISHES_DEFAULT[donors.length % WISHES_DEFAULT.length], lantern_count: 1, phase, contact: contact.trim() }),
       })
       await fetchDonors()
       myLanternIdxRef.current = donorsRef.current.length - 1
@@ -315,8 +318,8 @@ export default function CheopaIlYeongDeungHeroBlock({ config }: Props) {
     } catch {}
     setLoading(false)
   }
-  const handleConfirm = () => { setSubmitted(false); setName(''); setWish(''); myLanternHighlightRef.current = tickRef.current; setTimeout(() => containerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100) }
-  const handleAddMore = () => { setSubmitted(false); setName(''); setWish('') }
+  const handleConfirm = () => { setSubmitted(false); setName(''); setWish(''); setContact(''); myLanternHighlightRef.current = tickRef.current; setTimeout(() => containerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100) }
+  const handleAddMore = () => { setSubmitted(false); setName(''); setWish(''); setContact('') }
   const shareKakao = () => {
     const url = typeof window !== 'undefined' ? window.location.href : ''
     navigator.clipboard.writeText(`${tName} 연등불사 ${currentRound}차에 동참했습니다.\n\n함께 소원을 빌어요 🏮\n${url}`).then(() => alert('링크가 복사되었습니다.\n카카오톡에 붙여넣기하여 공유해 주세요.'))
@@ -393,6 +396,7 @@ export default function CheopaIlYeongDeungHeroBlock({ config }: Props) {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 11 }}>
             <input value={name} onChange={e => setName(e.target.value)} placeholder="성함을 입력하세요" style={inp} />
             <textarea value={wish} onChange={e => setWish(e.target.value)} placeholder="발원문 (예: 가족 모두 건강하기를...)" rows={3} style={{ ...inp, resize: 'none' }} />
+            <input value={contact} onChange={e => setContact(e.target.value)} type="tel" placeholder="연락처 (010-0000-0000)" style={inp} />
             <div style={{ textAlign: 'center', padding: '6px 0' }}>
               <span style={{ color: 'rgba(255,235,150,0.95)', fontSize: 15, fontWeight: 500 }}>연등 1인 3만 · 가족등 10만</span>
             </div>

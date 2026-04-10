@@ -125,6 +125,7 @@ model IndungDonor {
   bank_confirmed Boolean  @default(false)
   lantern_count  Int      @default(1)
   phase          Int      @default(1)
+  contact        String   @default("")
   created_at     DateTime @default(now())
 
   @@map("indung_donors")

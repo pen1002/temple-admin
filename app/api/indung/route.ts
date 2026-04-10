@@ -11,12 +11,13 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
     const { temple_slug = 'cheongwansa', name, wish, phase = 1 } = body
+    const contact = (body.contact as string)?.trim() || ''
     const lantern_count = Math.min(10, Math.max(1, parseInt(body.lantern_count) || 1))
     const amount = lantern_count * 30000
     if (!name?.trim()) return NextResponse.json({ error: '이름 필수' }, { status: 400 })
 
     const donor = await prisma.indungDonor.create({
-      data: { temple_slug, name: name.trim(), wish: wish?.trim() || '', amount, lantern_count, phase },
+      data: { temple_slug, name: name.trim(), wish: wish?.trim() || '', amount, lantern_count, phase, contact },
     })
 
     if (SHEETS_WEBHOOK) {
@@ -31,6 +32,7 @@ export async function POST(req: NextRequest) {
           amount: amount + '원',
           lantern_count: lantern_count + '구',
           phase: phase + '차',
+          contact,
         }),
       }).catch(() => {})
     }
