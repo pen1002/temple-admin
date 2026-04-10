@@ -1,5 +1,6 @@
 import { google, sheets_v4 } from 'googleapis'
 import path from 'path'
+import fs from 'fs'
 
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 const SHEET_ID = '19Z62fOCr-Esj3DuA8Y_1oKMqu3yTQsqwcjnlqXcJkmE'
@@ -8,10 +9,23 @@ let cachedClient: sheets_v4.Sheets | null = null
 
 export async function getSheetsClient(): Promise<sheets_v4.Sheets> {
   if (cachedClient) return cachedClient
-  const auth = new google.auth.GoogleAuth({
-    keyFile: path.resolve(process.cwd(), 'google-service-account.json'),
-    scopes: SCOPES,
-  })
+
+  let auth: InstanceType<typeof google.auth.GoogleAuth>
+
+  // 1순위: 환경변수 JSON (Vercel 프로덕션)
+  if (process.env.GOOGLE_SERVICE_ACCOUNT_JSON) {
+    const credentials = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON)
+    auth = new google.auth.GoogleAuth({ credentials, scopes: SCOPES })
+  }
+  // 2순위: 로컬 파일 (개발환경)
+  else {
+    const keyFile = path.resolve(process.cwd(), 'google-service-account.json')
+    if (!fs.existsSync(keyFile)) {
+      throw new Error('Google service account not configured: set GOOGLE_SERVICE_ACCOUNT_JSON env or provide google-service-account.json')
+    }
+    auth = new google.auth.GoogleAuth({ keyFile, scopes: SCOPES })
+  }
+
   const client = await auth.getClient()
   cachedClient = google.sheets({ version: 'v4', auth: client as never })
   return cachedClient
