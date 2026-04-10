@@ -15,6 +15,10 @@ export async function getSheetsClient(): Promise<sheets_v4.Sheets> {
   // 1순위: 환경변수 JSON (Vercel 프로덕션)
   if (process.env.GOOGLE_SERVICE_ACCOUNT_JSON) {
     const credentials = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON)
+    // Vercel 환경변수에서 \n이 리터럴 문자열로 저장되는 문제 보정
+    if (credentials.private_key) {
+      credentials.private_key = credentials.private_key.replace(/\\n/g, '\n')
+    }
     auth = new google.auth.GoogleAuth({ credentials, scopes: SCOPES })
   }
   // 2순위: 로컬 파일 (개발환경)
