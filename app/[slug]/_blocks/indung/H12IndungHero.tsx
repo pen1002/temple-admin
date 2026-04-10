@@ -3,7 +3,8 @@ import { useEffect, useState, useRef, useCallback } from 'react'
 
 interface Donor {
   id: string; name: string; wish: string
-  lantern_count: number; created_at: string; phase: number
+  lantern_count: number; bank_confirmed: boolean
+  created_at: string; phase: number
 }
 interface Props { config?: Record<string, unknown> }
 
@@ -98,7 +99,7 @@ export default function H12IndungHero({ config }: Props) {
   const myLanternHighlightRef = useRef(0)
 
   const [donors, setDonors] = useState<Donor[]>([])
-  const [tooltip, setTooltip] = useState<{ x: number; y: number; name: string; wish: string } | null>(null)
+  const [tooltip, setTooltip] = useState<{ x: number; y: number; name: string; wish: string; confirmed: boolean } | null>(null)
   const [selected, setSelected] = useState<Donor | null>(null)
   const [showForm, setShowForm] = useState(true)
   const [submitted, setSubmitted] = useState(false)
@@ -121,7 +122,11 @@ export default function H12IndungHero({ config }: Props) {
     } catch {}
   }, [slug, phase])
 
-  useEffect(() => { fetchDonors() }, [fetchDonors])
+  useEffect(() => {
+    // 시트 입금확인 → DB 동기화 (백그라운드, 에러 무시)
+    fetch('/api/indung/sync').catch(() => {})
+    fetchDonors()
+  }, [fetchDonors])
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -214,10 +219,12 @@ export default function H12IndungHero({ config }: Props) {
           ? Math.max(0, 1 - (t - myLanternHighlightRef.current) * 0.5)
           : 0
 
+        const confirmed = isDonor && cur[i].bank_confirmed
         const flicker = 0.78 + 0.22 * Math.sin(t * 8.5 + s.phase)
         const textBoost = s.isText ? 0.4 + 0.6 * textWave : 0
+        const confirmBoost = confirmed ? 0.15 : 0
         const highlightBoost = myHighlight * 0.8
-        const br = Math.min(1, flicker + textBoost + highlightBoost)
+        const br = Math.min(1, flicker + textBoost + confirmBoost + highlightBoost)
 
         if (!isDonor) {
           const dimBr = s.isText ? (0.22 + 0.22 * textWave) : 0.015
@@ -266,6 +273,15 @@ export default function H12IndungHero({ config }: Props) {
           ctx.textAlign = 'center'; ctx.textBaseline = 'middle'
           ctx.fillText(cur[i].name.slice(0, 2), px, py)
           ctx.restore()
+        }
+
+        // 입금완료 인등 — 은은한 초록 링
+        if (confirmed && bodyR > 3) {
+          ctx.beginPath()
+          ctx.arc(px, py, bodyR * 1.8, 0, Math.PI * 2)
+          ctx.strokeStyle = `rgba(100,220,150,${0.3 + 0.15 * Math.sin(t * 2 + s.phase)})`
+          ctx.lineWidth = 0.8
+          ctx.stroke()
         }
 
         if (myHighlight > 0.1) {
@@ -354,7 +370,7 @@ export default function H12IndungHero({ config }: Props) {
     const idx = getSlotIdx(mx, my, rect.width, rect.height)
     if (idx >= 0) {
       const d = donorsRef.current[idx]
-      setTooltip({ x: mx, y: my, name: d.name, wish: d.wish })
+      setTooltip({ x: mx, y: my, name: d.name, wish: d.wish, confirmed: d.bank_confirmed })
     } else setTooltip(null)
   }
 
@@ -491,6 +507,7 @@ export default function H12IndungHero({ config }: Props) {
           }}>
             <div style={{ color: 'rgba(255,235,150,0.95)', fontSize: 14, fontWeight: 700, marginBottom: 3 }}>
               {tooltip.name} 불자님
+              {tooltip.confirmed && <span style={{ color: 'rgba(100,220,150,0.9)', fontSize: 10, marginLeft: 6 }}>✓ 점등</span>}
             </div>
             <div style={{ color: 'rgba(255,200,80,0.6)', fontSize: 11, lineHeight: 1.5 }}>
               {(tooltip.wish || '').slice(0, 26)}{(tooltip.wish?.length || 0) > 26 ? '…' : ''}
@@ -509,6 +526,7 @@ export default function H12IndungHero({ config }: Props) {
               </div>
               <div style={{ fontSize: 11, color: 'rgba(255,200,80,0.4)', marginBottom: 6 }}>
                 {new Date(selected.created_at).toLocaleDateString('ko-KR')} · {phase}차
+                {selected.bank_confirmed && <span style={{ color: 'rgba(100,220,150,0.9)', marginLeft: 6 }}>✓ 입금확인</span>}
               </div>
               <div style={{ fontSize: 13, color: 'rgba(255,220,140,0.85)', lineHeight: 1.9, borderTop: '1px solid rgba(255,200,80,0.15)', paddingTop: 12, wordBreak: 'keep-all' }}>
                 {selected.wish}
