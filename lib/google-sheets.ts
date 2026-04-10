@@ -15,9 +15,12 @@ export async function getSheetsClient(): Promise<sheets_v4.Sheets> {
   // 1순위: 환경변수 JSON (Vercel 프로덕션)
   if (process.env.GOOGLE_SERVICE_ACCOUNT_JSON) {
     const credentials = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON)
-    // Vercel 환경변수에서 \n이 리터럴 문자열로 저장되는 문제 보정
+    // Vercel 환경변수 저장 시 PEM 헤더 공백→밑줄 변환 + \n 이중이스케이프 보정
     if (credentials.private_key) {
-      credentials.private_key = credentials.private_key.replace(/\\n/g, '\n')
+      credentials.private_key = credentials.private_key
+        .replace(/\\n/g, '\n')
+        .replace(/PRIVATE_KEY/g, 'PRIVATE KEY')
+        .replace(/PRIVATEKEY/g, 'PRIVATE KEY')
     }
     auth = new google.auth.GoogleAuth({ credentials, scopes: SCOPES })
   }
