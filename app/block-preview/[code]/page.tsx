@@ -17,6 +17,8 @@ import H12IndungHero from '@/app/[slug]/_blocks/indung/H12IndungHero'
 import FiveHundredLanternHeroBlock from '@/app/[slug]/_blocks/hero/standard/FiveHundredLanternHeroBlock'
 // @ts-ignore
 import CheopaIlYeongDeungHeroBlock from '@/app/[slug]/_blocks/hero/standard/CheopaIlYeongDeungHeroBlock'
+// @ts-ignore
+import H15ParadeBlock from '@/app/[slug]/_blocks/hero/standard/H15ParadeBlock'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore — [slug] 디렉토리명에 대괄호 포함
 import HeroBlock, { CombinedHero, LanternHero, ParticleHero, ImageHero } from '@/app/[slug]/_blocks/HeroBlock'
@@ -196,7 +198,7 @@ function Placeholder({ code, name: nameProp, desc: descProp, catColor, catBg, ca
 // ── 지원 코드 목록 ───────────────────────────────────────────────────────────
 const REAL_BLOCKS: Record<string, boolean> = {
   'H-01':true,'H-02':true,'H-03':true,'H-04':true,'H-05':true,
-  'H-06':true,'H-07':true,'H-08':true,'H-09':true,'H-10':true,'H-11':true,'H-12':true,'H-13':true,'H-14':true,
+  'H-06':true,'H-07':true,'H-08':true,'H-09':true,'H-10':true,'H-11':true,'H-12':true,'H-13':true,'H-14':true,'H-15':true,
   'D-01':true,
   'L-01':true,'L-02':true,'L-03':true,'L-04':true,'L-05':true,'L-06':true,'L-07':true,
   'E-01':true,'E-02':true,'E-03':true,'E-04':true,'E-05':true,'E-06':true,
@@ -238,6 +240,7 @@ export default async function BlockPreviewPage(
   if (code === 'H-12') return <div style={{ margin:0, padding:0, overflow:'hidden' }}><H12IndungHero config={{ templeSlug:'cheongwansa', templeName:'천관사', currentPhase:1 }} /></div>
   if (code === 'H-13') return <div style={{ margin:0, padding:0, overflow:'hidden' }}><FiveHundredLanternHeroBlock config={{ templeSlug:'preview', templeName:'미리보기 사찰', currentRound:1, targetCount:500, currentPhase:1 }} /></div>
   if (code === 'H-14') return <div style={{ margin:0, padding:0, overflow:'hidden' }}><CheopaIlYeongDeungHeroBlock config={{ templeSlug:'bulyeonam', templeName:'불연암', currentRound:1, targetCount:250, currentPhase:1 }} /></div>
+  if (code === 'H-15') return <div style={{ margin:0, padding:0, overflow:'hidden' }}><H15ParadeBlock /></div>
 
   // ── D-01 법문 ─────────────────────────────────────────────────────────────
   if (code === 'D-01') {

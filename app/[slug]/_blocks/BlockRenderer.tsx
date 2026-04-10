@@ -15,6 +15,7 @@ import L01IndungBlock from './indung/L01IndungBlock'
 import H12IndungHero from './indung/H12IndungHero'
 import FiveHundredLanternHeroBlock from './hero/standard/FiveHundredLanternHeroBlock'
 import CheopaIlYeongDeungHeroBlock from './hero/standard/CheopaIlYeongDeungHeroBlock'
+import H15ParadeBlock from './hero/standard/H15ParadeBlock'
 import DharmaBlock  from './DharmaBlock'
 import NoticeBlock  from './NoticeBlock'
 import EventBlock   from './EventBlock'
@@ -191,6 +192,11 @@ export default function BlockRenderer({ blockType, config, temple, content, dail
   // H-14: 초파일연등형 — 250등 단위 5차 화폭형
   if (blockType === 'H-14') {
     return <CheopaIlYeongDeungHeroBlock config={config} />
+  }
+
+  // H-15: 봉축장엄등행진 — 7종 장엄등 퍼레이드
+  if (blockType === 'H-15') {
+    return <H15ParadeBlock />
   }
 
   if (blockType.startsWith('H-')) {
