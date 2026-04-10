@@ -13,6 +13,7 @@ import StandardParadeHero from './hero/standard/LanternParadeHeroBlock'
 import H11BonchukHaroo from './hero/standard/H11BonchukHarooBlock'
 import L01IndungBlock from './indung/L01IndungBlock'
 import H12IndungHero from './indung/H12IndungHero'
+import FiveHundredLanternHeroBlock from './hero/standard/FiveHundredLanternHeroBlock'
 import DharmaBlock  from './DharmaBlock'
 import NoticeBlock  from './NoticeBlock'
 import EventBlock   from './EventBlock'
@@ -179,6 +180,11 @@ export default function BlockRenderer({ blockType, config, temple, content, dail
   // H-12: 삼천인등 히어로 (천관사) — startsWith('H-') 캐치올보다 먼저!
   if (blockType === 'H-12') {
     return <H12IndungHero config={config} />
+  }
+
+  // H-13: 오백인등형 — 500등 단위 차수 확장
+  if (blockType === 'H-13') {
+    return <FiveHundredLanternHeroBlock config={config} />
   }
 
   if (blockType.startsWith('H-')) {
