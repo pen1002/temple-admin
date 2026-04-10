@@ -234,7 +234,7 @@ export default async function BlockPreviewPage(
   if (code === 'H-10') return <div style={{ margin:0, padding:0, overflow:'hidden' }}><BorimsaParadeHero temple={T_BORIMSA} /></div>
   if (code === 'H-11') return <div style={{ margin:0, padding:0, overflow:'hidden' }}><H11BonchukHaroo /></div>
   if (code === 'H-12') return <div style={{ margin:0, padding:0, overflow:'hidden' }}><H12IndungHero config={{ templeSlug:'cheongwansa', templeName:'천관사', currentPhase:1 }} /></div>
-  if (code === 'H-13') return <div style={{ margin:0, padding:0, overflow:'hidden' }}><FiveHundredLanternHeroBlock config={{ templeSlug:'preview', templeName:'미리보기 사찰', currentRound:2, targetCount:1000, currentPhase:2 }} /></div>
+  if (code === 'H-13') return <div style={{ margin:0, padding:0, overflow:'hidden' }}><FiveHundredLanternHeroBlock config={{ templeSlug:'preview', templeName:'미리보기 사찰', currentRound:1, targetCount:500, currentPhase:1 }} /></div>
 
   // ── D-01 법문 ─────────────────────────────────────────────────────────────
   if (code === 'D-01') {
