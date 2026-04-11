@@ -1,7 +1,9 @@
 import { notFound } from 'next/navigation'
 import { PrismaClient } from '@prisma/client'
 
-const db = new PrismaClient()
+const globalForPrisma = global as unknown as { prismaCyberPage?: PrismaClient }
+const db = globalForPrisma.prismaCyberPage ?? new PrismaClient()
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prismaCyberPage = db
 
 const HALLS = [
   { id: 'daeungjeon', icon: '🙏', name: '대웅전', desc: '부처님께 참배하고 마음을 가다듬습니다', color: '#c9a84c' },
