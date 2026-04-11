@@ -3,6 +3,10 @@ import { useEffect, useState, useCallback } from 'react'
 import { useParams } from 'next/navigation'
 
 const AMOUNTS = [{ label: '5천원', value: 5000 }, { label: '1만원', value: 10000 }, { label: '3만원', value: 30000 }]
+const PER_ROUND = 100
+const MAX_ROUND = 20
+const TOTAL = PER_ROUND * MAX_ROUND // 2,000
+const COLS = 10
 
 export default function CandlePage() {
   const { slug } = useParams<{ slug: string }>()
@@ -15,8 +19,14 @@ export default function CandlePage() {
   const [loading, setLoading] = useState(false)
   const [tooltip, setTooltip] = useState<{ x: number; y: number; name: string; wish: string } | null>(null)
 
+  const currentRound = Math.min(MAX_ROUND, Math.floor(candles.length / PER_ROUND) + 1)
+  const roundStart = (currentRound - 1) * PER_ROUND
+  const roundEnd = currentRound * PER_ROUND
+  const roundCount = Math.min(candles.length - roundStart, PER_ROUND)
+  const pct = Math.min(100, Math.round((candles.length / TOTAL) * 100))
+
   const fetchData = useCallback(async () => {
-    const res = await fetch(`/api/cyber/offering?temple_slug=${slug}&type=candle&limit=36`)
+    const res = await fetch(`/api/cyber/offering?temple_slug=${slug}&type=candle&limit=${TOTAL}`)
     const data = await res.json()
     if (Array.isArray(data)) setCandles(data)
   }, [slug])
@@ -35,40 +45,71 @@ export default function CandlePage() {
     setLoading(false)
   }
 
-  const TOTAL = 36
   const inp: React.CSSProperties = { background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(240,192,96,0.25)', borderRadius: 8, padding: '10px 14px', color: 'rgba(255,220,120,0.9)', fontSize: 14, outline: 'none', width: '100%' }
 
   return (
-    <div style={{ padding: '20px 20px 60px', maxWidth: 600, margin: '0 auto' }}>
-      <div style={{ textAlign: 'center', marginBottom: 28 }}>
+    <div style={{ padding: '20px 20px 60px', maxWidth: 640, margin: '0 auto' }}>
+      <div style={{ textAlign: 'center', marginBottom: 24 }}>
         <div style={{ fontSize: 48, marginBottom: 8 }}>🕯</div>
         <h2 style={{ fontSize: 22, fontWeight: 600, color: '#f0c060', letterSpacing: 3, fontFamily: '"Noto Serif KR",serif' }}>초공양</h2>
         <p style={{ fontSize: 12, color: 'rgba(240,192,96,0.5)', marginTop: 4 }}>초를 밝혀 지혜의 빛을 공양합니다</p>
-        <p style={{ fontSize: 11, color: 'rgba(240,192,96,0.3)', marginTop: 4 }}>점등 {candles.length} / {TOTAL}</p>
       </div>
 
-      {/* 초 그리드 6×6 */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 8, marginBottom: 24, position: 'relative' }}>
-        {Array.from({ length: TOTAL }).map((_, i) => {
-          const lit = i < candles.length
-          const c = lit ? candles[i] : null
+      {/* 전체 프로그레스 */}
+      <div style={{ maxWidth: 480, margin: '0 auto 8px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
+          <span style={{ color: 'rgba(240,192,96,0.7)', fontSize: 13, minWidth: 90, textAlign: 'right' }}>
+            {candles.length.toLocaleString()} / {TOTAL.toLocaleString()}
+          </span>
+          <div style={{ flex: 1, height: 6, background: 'rgba(240,192,96,0.1)', borderRadius: 3, overflow: 'hidden' }}>
+            <div style={{ height: '100%', width: `${pct}%`, background: 'linear-gradient(90deg,#c9a84c,#f6e05e)', borderRadius: 3, transition: 'width 0.8s' }} />
+          </div>
+          <span style={{ color: 'rgba(240,192,96,0.7)', fontSize: 13, minWidth: 32 }}>{pct}%</span>
+        </div>
+      </div>
+
+      {/* 차수 진행 */}
+      <div style={{ display: 'flex', gap: 3, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 6 }}>
+        {Array.from({ length: MAX_ROUND }, (_, i) => i + 1).map(r => {
+          const done = r < currentRound
+          const active = r === currentRound
+          return (
+            <span key={r} style={{
+              width: active ? 12 : 8, height: active ? 12 : 8, borderRadius: '50%', display: 'inline-block',
+              background: done ? '#c9a84c' : active ? '#fff' : 'rgba(255,255,255,0.08)',
+              border: active ? '2px solid #c9a84c' : 'none',
+              boxShadow: active ? '0 0 6px rgba(201,168,76,0.5)' : 'none',
+            }} />
+          )
+        })}
+      </div>
+      <p style={{ textAlign: 'center', fontSize: 12, color: 'rgba(240,192,96,0.5)', marginBottom: 20 }}>
+        {currentRound}차 ({roundCount} / {PER_ROUND})
+      </p>
+
+      {/* 현재 차수 초 그리드 10×10 */}
+      <div style={{ display: 'grid', gridTemplateColumns: `repeat(${COLS}, 1fr)`, gap: 4, marginBottom: 24 }}>
+        {Array.from({ length: PER_ROUND }).map((_, i) => {
+          const globalIdx = roundStart + i
+          const lit = globalIdx < candles.length
+          const c = lit ? candles[globalIdx] : null
           return (
             <div key={i}
               onClick={() => !lit && setShowForm(true)}
               onMouseEnter={e => c && setTooltip({ x: e.clientX, y: e.clientY, name: c.name, wish: c.wish || '' })}
               onMouseLeave={() => setTooltip(null)}
               style={{
-                aspectRatio: '1', borderRadius: 8, cursor: lit ? 'default' : 'pointer',
-                background: lit ? 'rgba(240,192,96,0.12)' : 'rgba(255,255,255,0.03)',
-                border: `1px solid ${lit ? 'rgba(240,192,96,0.3)' : 'rgba(255,255,255,0.06)'}`,
+                aspectRatio: '1', borderRadius: 6, cursor: lit ? 'default' : 'pointer',
+                background: lit ? 'rgba(240,192,96,0.12)' : 'rgba(255,255,255,0.02)',
+                border: `1px solid ${lit ? 'rgba(240,192,96,0.25)' : 'rgba(255,255,255,0.04)'}`,
                 display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
                 transition: 'all 0.3s',
               }}
             >
-              <div style={{ fontSize: lit ? 24 : 18, filter: lit ? 'drop-shadow(0 0 6px rgba(255,200,50,0.5))' : 'grayscale(1) opacity(0.2)' }}>
+              <div style={{ fontSize: lit ? 16 : 12, filter: lit ? 'drop-shadow(0 0 4px rgba(255,200,50,0.5))' : 'grayscale(1) opacity(0.15)' }}>
                 🕯
               </div>
-              {lit && <div style={{ fontSize: 9, color: 'rgba(240,192,96,0.7)', marginTop: 2 }}>{c!.name.slice(0, 3)}</div>}
+              {lit && <div style={{ fontSize: 7, color: 'rgba(240,192,96,0.6)', marginTop: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%', padding: '0 2px' }}>{c!.name.slice(0, 2)}</div>}
             </div>
           )
         })}
@@ -109,6 +150,13 @@ export default function CandlePage() {
           <button onClick={() => setShowForm(true)} style={{ background: 'rgba(240,192,96,0.15)', border: '1px solid rgba(240,192,96,0.4)', color: 'rgba(255,220,120,0.9)', borderRadius: 8, padding: '12px 28px', cursor: 'pointer', fontSize: 14 }}>
             🕯 초 밝히기
           </button>
+        </div>
+      )}
+
+      {candles.length >= TOTAL && (
+        <div style={{ textAlign: 'center', padding: '20px 0' }}>
+          <div style={{ fontSize: 36, marginBottom: 8 }}>✨</div>
+          <p style={{ color: '#f0c060', fontSize: 16, fontWeight: 600 }}>2,000초 원만성취</p>
         </div>
       )}
     </div>
