@@ -3,14 +3,14 @@ import { useState } from 'react'
 import { useParams } from 'next/navigation'
 
 const PRAYERS = [
-  { id: 'PR-01', name: '인등기도', amount: 30000 },
-  { id: 'PR-02', name: '백일기도', amount: 100000 },
-  { id: 'PR-03', name: '1년기도', amount: 300000 },
-  { id: 'PR-06', name: '49재', amount: 200000 },
-  { id: 'PR-07', name: '천도재', amount: 300000 },
-  { id: 'PR-08', name: '정초기도', amount: 50000 },
-  { id: 'PR-09', name: '산신기도', amount: 30000 },
-  { id: 'PR-05', name: '수험생 정진기도', amount: 50000 },
+  { id: 'PR-01', name: '인등기도', amount: 10000 },
+  { id: 'PR-02', name: '백일기도', amount: 10000 },
+  { id: 'PR-03', name: '1년기도', amount: 10000 },
+  { id: 'PR-06', name: '49재', amount: 10000 },
+  { id: 'PR-07', name: '천도재', amount: 10000 },
+  { id: 'PR-08', name: '정초기도', amount: 10000 },
+  { id: 'PR-09', name: '산신기도', amount: 10000 },
+  { id: 'PR-05', name: '수험생 정진기도', amount: 10000 },
 ]
 
 export default function JongmusoPage() {
@@ -21,6 +21,7 @@ export default function JongmusoPage() {
   const [wish, setWish] = useState('')
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [copied, setCopied] = useState(false)
 
   const handleSubmit = async () => {
     if (!name.trim() || !selected) return
@@ -70,6 +71,15 @@ export default function JongmusoPage() {
               <input value={name} onChange={e => setName(e.target.value)} placeholder="신청자 성함 *" style={inp} />
               <input value={contact} onChange={e => setContact(e.target.value)} type="tel" placeholder="연락처 (010-0000-0000)" style={inp} />
               <textarea value={wish} onChange={e => setWish(e.target.value)} placeholder="발원문 (선택)" rows={3} style={{ ...inp, resize: 'none' }} />
+              {/* 계좌 안내 */}
+              <div style={{ background: 'rgba(232,160,80,0.05)', border: '1px solid rgba(232,160,80,0.14)', borderRadius: 8, padding: '13px 15px', fontSize: 13, color: 'rgba(232,160,80,0.75)', lineHeight: 2.2 }}>
+                시티은행 261-0359-626501 배연암
+                <button onClick={() => { navigator.clipboard.writeText('261-0359-626501'); setCopied(true); setTimeout(() => setCopied(false), 2000) }}
+                  style={{ marginLeft: 8, background: 'rgba(232,160,80,0.15)', border: '1px solid rgba(232,160,80,0.35)', color: 'rgba(255,210,80,0.9)', borderRadius: 4, padding: '2px 8px', fontSize: 11, cursor: 'pointer' }}>
+                  {copied ? '복사됨' : '복사'}
+                </button><br />
+                <span style={{ fontSize: 11, color: 'rgba(232,160,80,0.38)' }}>입금자명을 신청자 성함과 동일하게 입금해 주세요.</span>
+              </div>
               <button onClick={handleSubmit} disabled={loading || !name.trim()} style={{ background: loading ? 'rgba(180,120,40,0.3)' : 'rgba(232,160,80,0.25)', border: '1px solid rgba(232,160,80,0.55)', color: 'rgba(255,220,120,0.95)', borderRadius: 8, padding: 14, fontSize: 15, cursor: 'pointer', fontWeight: 500 }}>
                 {loading ? '접수 중...' : `${selected.name} 접수하기`}
               </button>

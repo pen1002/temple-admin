@@ -10,7 +10,8 @@ const HALLS = [
   { id: 'jijangjeon', icon: '🪷', name: '지장전', desc: '조상 영가의 극락왕생을 발원합니다', color: '#9b7acc' },
   { id: 'jongmuso',   icon: '📿', name: '종무소', desc: '기도를 접수하고 불사에 동참합니다', color: '#e8a050' },
   { id: 'candle',     icon: '🕯', name: '초공양', desc: '초를 밝혀 지혜의 빛을 공양합니다', color: '#f0c060' },
-  { id: 'indung',     icon: '🏮', name: '인등·연등', desc: '인등과 연등을 밝혀 소원을 발원합니다', color: '#e06040' },
+  { id: 'indung',     icon: '🕯', name: '인등불사', desc: '인등을 밝혀 소원을 발원합니다', color: '#f0c060' },
+  { id: 'yeondeung',  icon: '🏮', name: '연등공양', desc: '부처님오신날 연등을 밝혀 공양합니다', color: '#e06040' },
 ]
 
 export default async function CyberEntryPage({ params }: { params: Promise<{ slug: string }> }) {
