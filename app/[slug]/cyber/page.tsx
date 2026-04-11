@@ -41,7 +41,7 @@ export default async function CyberEntryPage({ params }: { params: Promise<{ slu
       </p>
 
       {/* 전각 카드 그리드 */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 12 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
         {HALLS.map(h => (
           <a key={h.id} href={`/${slug}/cyber/${h.id}`} style={{
             display: 'flex', flexDirection: 'column', alignItems: 'center',

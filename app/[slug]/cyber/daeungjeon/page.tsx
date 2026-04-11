@@ -30,7 +30,10 @@ export default function DaeungjeonPage() {
       body: JSON.stringify({ temple_slug: slug, type: 'bow', name: bowName }),
     })
     await fetchData()
-    setTimeout(() => setBowing(false), 1500)
+    setTimeout(() => {
+      setBowing(false)
+      window.location.href = `/${slug}/cyber`
+    }, 1500)
   }
 
   return (
