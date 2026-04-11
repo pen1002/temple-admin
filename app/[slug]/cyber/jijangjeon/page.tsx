@@ -37,7 +37,7 @@ export default function JijangjeonPage() {
     setLoading(true)
     await fetch('/api/cyber/offering', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ temple_slug: slug, type: 'memorial', name: name.trim(), deceased: deceased.trim(), relationship, wish: wish.trim(), contact: contact.trim(), amount: 10000 }),
+      body: JSON.stringify({ temple_slug: slug, type: 'memorial', name: name.trim(), deceased: deceased.trim(), relationship, wish: wish.trim(), contact: contact.trim(), amount: 5000 }),
     })
     await fetchData()
     setSubmitted(true)
@@ -53,6 +53,7 @@ export default function JijangjeonPage() {
         <div style={{ fontSize: 48, marginBottom: 8 }}>🪷</div>
         <h2 style={{ fontSize: 22, fontWeight: 600, color: '#d4b8ff', letterSpacing: 3, fontFamily: '"Noto Serif KR",serif' }}>지장전</h2>
         <p style={{ fontSize: 12, color: `rgba(${accentRgb},0.5)`, marginTop: 4 }}>조상 영가의 극락왕생을 발원합니다</p>
+        <p style={{ fontSize: 11, color: `rgba(${accentRgb},0.35)`, marginTop: 4 }}>위패 1위 봉안 1년 5,000원</p>
       </div>
 
       {/* 프로그레스 */}
@@ -116,6 +117,9 @@ export default function JijangjeonPage() {
           </select>
           <textarea value={wish} onChange={e => setWish(e.target.value)} placeholder="발원문 (선택)" rows={3} style={{ ...inp, resize: 'none' }} />
           <input value={contact} onChange={e => setContact(e.target.value)} type="tel" placeholder="연락처 (010-0000-0000)" style={inp} />
+          <div style={{ textAlign: 'center', padding: '4px 0' }}>
+            <span style={{ color: 'rgba(220,200,255,0.95)', fontSize: 15, fontWeight: 600 }}>위패 1위 봉안 1년 5,000원</span>
+          </div>
           <button onClick={handleSubmit} disabled={loading || !name.trim() || !deceased.trim()} style={{ background: loading ? `rgba(${accentRgb},0.15)` : `rgba(${accentRgb},0.25)`, border: `1px solid rgba(${accentRgb},0.5)`, color: 'rgba(220,200,255,0.95)', borderRadius: 8, padding: 14, fontSize: 15, cursor: 'pointer', fontWeight: 500 }}>
             {loading ? '접수 중...' : '위패 봉안 신청'}
           </button>
