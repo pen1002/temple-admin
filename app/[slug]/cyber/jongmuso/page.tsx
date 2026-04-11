@@ -91,7 +91,10 @@ export default function JongmusoPage() {
           <div style={{ fontSize: 42, marginBottom: 12 }}>📿</div>
           <p style={{ color: 'rgba(255,220,120,0.95)', fontSize: 16, fontWeight: 500, lineHeight: 1.9 }}>기도 접수가 완료되었습니다.</p>
           <p style={{ color: 'rgba(232,160,80,0.5)', fontSize: 13, marginTop: 8, lineHeight: 1.8 }}>입금 확인 후 기도가 시작됩니다.</p>
-          <button onClick={() => { setSubmitted(false); setSelected(null); setName(''); setWish(''); setContact('') }} style={{ marginTop: 20, background: 'rgba(232,160,80,0.15)', border: '1px solid rgba(232,160,80,0.4)', color: 'rgba(255,220,120,0.9)', borderRadius: 8, padding: '10px 24px', cursor: 'pointer', fontSize: 13 }}>추가 접수</button>
+          <div style={{ display: 'flex', gap: 10, justifyContent: 'center', marginTop: 20 }}>
+            <button onClick={() => { setSubmitted(false); setSelected(null); setName(''); setWish(''); setContact('') }} style={{ background: 'rgba(232,160,80,0.15)', border: '1px solid rgba(232,160,80,0.4)', color: 'rgba(255,220,120,0.9)', borderRadius: 8, padding: '10px 24px', cursor: 'pointer', fontSize: 13 }}>추가 접수</button>
+            <a href={`/${slug}/cyber`} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(201,168,76,0.12)', border: '1px solid rgba(201,168,76,0.3)', color: '#c9a84c', borderRadius: 8, padding: '10px 24px', fontSize: 13, textDecoration: 'none' }}>☸ 도량으로 돌아가기</a>
+          </div>
         </div>
       )}
     </div>

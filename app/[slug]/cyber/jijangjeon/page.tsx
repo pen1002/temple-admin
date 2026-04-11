@@ -81,7 +81,7 @@ export default function JijangjeonPage() {
           <div style={{ fontSize: 42, marginBottom: 12 }}>🪷</div>
           <p style={{ color: 'rgba(220,200,255,0.95)', fontSize: 16, fontWeight: 500, lineHeight: 1.9 }}>위패가 봉안되었습니다.</p>
           <p style={{ color: 'rgba(155,122,204,0.5)', fontSize: 13, marginTop: 8 }}>조상 영가의 극락왕생을 기원합니다.</p>
-          <button onClick={() => { setSubmitted(false); setName(''); setDeceased(''); setWish(''); setContact('') }} style={{ marginTop: 20, background: 'rgba(155,122,204,0.15)', border: '1px solid rgba(155,122,204,0.4)', color: 'rgba(220,200,255,0.9)', borderRadius: 8, padding: '10px 24px', cursor: 'pointer', fontSize: 13 }}>추가 봉안</button>
+          <div style={{ display: "flex", gap: 10, justifyContent: "center", marginTop: 20 }}><button onClick={() => { setSubmitted(false); setName(""); setDeceased(""); setWish(""); setContact("") }} style={{ background: "rgba(155,122,204,0.15)", border: "1px solid rgba(155,122,204,0.4)", color: "rgba(220,200,255,0.9)", borderRadius: 8, padding: "10px 24px", cursor: "pointer", fontSize: 13 }}>추가 봉안</button><a href={"/" + slug + "/cyber"} style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(201,168,76,0.12)", border: "1px solid rgba(201,168,76,0.3)", color: "#c9a84c", borderRadius: 8, padding: "10px 24px", fontSize: 13, textDecoration: "none" }}>☸ 도량으로 돌아가기</a></div>
         </div>
       )}
     </div>

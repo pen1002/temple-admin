@@ -101,7 +101,10 @@ export default function IndungPage() {
         <div style={{ textAlign: 'center', padding: '20px 0' }}>
           <div style={{ fontSize: 42, marginBottom: 12 }}>🕯</div>
           <p style={{ color: 'rgba(255,235,150,0.95)', fontSize: 16, fontWeight: 500, lineHeight: 1.9 }}>인등이 점등되었습니다.</p>
-          <button onClick={() => { setSubmitted(false); setName(''); setWish(''); setContact('') }} style={{ marginTop: 16, background: `rgba(${accentRgb},0.15)`, border: `1px solid rgba(${accentRgb},0.4)`, color: accent, borderRadius: 8, padding: '10px 20px', cursor: 'pointer', fontSize: 13 }}>추가 신청</button>
+          <div style={{ display: 'flex', gap: 10, justifyContent: 'center', marginTop: 16 }}>
+            <button onClick={() => { setSubmitted(false); setName(''); setWish(''); setContact('') }} style={{ background: `rgba(${accentRgb},0.15)`, border: `1px solid rgba(${accentRgb},0.4)`, color: accent, borderRadius: 8, padding: '10px 20px', cursor: 'pointer', fontSize: 13 }}>추가 신청</button>
+            <a href={`/${slug}/cyber`} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(201,168,76,0.12)', border: '1px solid rgba(201,168,76,0.3)', color: '#c9a84c', borderRadius: 8, padding: '10px 20px', fontSize: 13, textDecoration: 'none' }}>☸ 도량으로</a>
+          </div>
         </div>
       )}
       {items.length >= TOTAL && <div style={{ textAlign: 'center', padding: '20px 0' }}><p style={{ color: accent, fontSize: 16, fontWeight: 600 }}>✨ 2,000등 원만성취</p></div>}

@@ -41,9 +41,10 @@ export default function CandlePage() {
       body: JSON.stringify({ temple_slug: slug, type: 'candle', name: name.trim(), wish: wish.trim(), contact: contact.trim(), amount }),
     })
     await fetchData()
-    setShowForm(false); setName(''); setWish(''); setContact('')
+    setShowForm(false); setSubmitDone(true); setName(''); setWish(''); setContact('')
     setLoading(false)
   }
+  const [submitDone, setSubmitDone] = useState(false)
 
   const inp: React.CSSProperties = { background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(240,192,96,0.25)', borderRadius: 8, padding: '10px 14px', color: 'rgba(255,220,120,0.9)', fontSize: 14, outline: 'none', width: '100%' }
 
@@ -145,7 +146,18 @@ export default function CandlePage() {
         </div>
       )}
 
-      {!showForm && candles.length < TOTAL && (
+      {submitDone && !showForm && (
+        <div style={{ textAlign: 'center', padding: '20px 0' }}>
+          <div style={{ fontSize: 42, marginBottom: 12 }}>🕯</div>
+          <p style={{ color: 'rgba(255,235,150,0.95)', fontSize: 16, fontWeight: 500, lineHeight: 1.9 }}>초가 점등되었습니다.</p>
+          <div style={{ display: 'flex', gap: 10, justifyContent: 'center', marginTop: 16 }}>
+            <button onClick={() => { setSubmitDone(false); setShowForm(true) }} style={{ background: 'rgba(240,192,96,0.15)', border: '1px solid rgba(240,192,96,0.4)', color: 'rgba(255,220,120,0.9)', borderRadius: 8, padding: '10px 20px', cursor: 'pointer', fontSize: 13 }}>추가 공양</button>
+            <a href={`/${slug}/cyber`} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(201,168,76,0.12)', border: '1px solid rgba(201,168,76,0.3)', color: '#c9a84c', borderRadius: 8, padding: '10px 20px', fontSize: 13, textDecoration: 'none' }}>☸ 도량으로</a>
+          </div>
+        </div>
+      )}
+
+      {!showForm && !submitDone && candles.length < TOTAL && (
         <div style={{ textAlign: 'center' }}>
           <button onClick={() => setShowForm(true)} style={{ background: 'rgba(240,192,96,0.15)', border: '1px solid rgba(240,192,96,0.4)', color: 'rgba(255,220,120,0.9)', borderRadius: 8, padding: '12px 28px', cursor: 'pointer', fontSize: 14 }}>
             🕯 초 밝히기
