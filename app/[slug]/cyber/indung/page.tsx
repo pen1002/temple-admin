@@ -68,14 +68,41 @@ export default function IndungPage() {
           const gi = roundStart + i, lit = gi < items.length, c = lit ? items[gi] : null
           return (
             <div key={i} onMouseEnter={e => c && setTooltip({ x: e.clientX, y: e.clientY, name: c.name, wish: c.wish || '' })} onMouseLeave={() => setTooltip(null)}
-              style={{ aspectRatio: '1', borderRadius: '50%', background: lit ? 'radial-gradient(circle, rgba(255,220,80,0.25) 0%, rgba(201,168,76,0.08) 70%)' : 'rgba(255,255,255,0.02)', border: `1px solid ${lit ? 'rgba(255,220,80,0.35)' : 'rgba(255,255,255,0.04)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: lit ? '0 0 8px rgba(255,200,50,0.2)' : 'none' }}>
-              <div style={{ width: '60%', height: '60%', borderRadius: '50%', background: lit ? 'radial-gradient(circle at 40% 35%, rgba(255,240,180,0.95), rgba(255,200,50,0.8) 50%, rgba(201,150,40,0.6))' : 'rgba(100,90,60,0.1)', boxShadow: lit ? '0 0 6px rgba(255,200,50,0.5)' : 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                {lit && <span style={{ fontSize: 7, color: 'rgba(100,60,10,0.8)', fontWeight: 700 }}>{c!.name.slice(0, 2)}</span>}
-              </div>
+              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '2px 0' }}>
+              {/* 불꽃 */}
+              {lit && (
+                <div style={{ width: 6, height: 10, background: 'radial-gradient(ellipse at 50% 80%, rgba(255,200,50,0.95), rgba(255,140,20,0.7) 60%, transparent)', borderRadius: '50% 50% 40% 40%', marginBottom: -2, filter: 'blur(0.5px)', animation: 'id-flame 0.8s ease-in-out infinite alternate' }} />
+              )}
+              {/* 인등 SVG — 도자기 모형 */}
+              <svg viewBox="0 0 44 50" style={{ width: '100%', maxWidth: 36, filter: lit ? 'drop-shadow(0 0 5px rgba(255,200,50,0.3))' : 'grayscale(1) opacity(0.12)' }}>
+                {/* 심지 목 */}
+                <rect x="19" y="2" width="6" height="6" rx="1.5" fill={lit ? '#d4c8a0' : '#888'} />
+                {/* 어깨 (좁은 목에서 넓어지는 곡선) */}
+                <path d="M16 8 Q16 4 22 4 Q28 4 28 8 L30 16 Q32 20 32 24 L32 38 Q32 42 28 42 L16 42 Q12 42 12 38 L12 24 Q12 20 14 16 Z"
+                  fill={lit ? 'url(#idBodyGrad)' : '#666'} stroke={lit ? 'rgba(220,210,190,0.4)' : '#555'} strokeWidth="0.5" />
+                {/* 손잡이 */}
+                <path d="M32 22 Q38 22 38 30 Q38 36 32 36" fill="none" stroke={lit ? '#c8bda0' : '#666'} strokeWidth="2.5" strokeLinecap="round" />
+                {/* 바닥 */}
+                <rect x="11" y="42" width="22" height="3" rx="1" fill={lit ? '#b8a888' : '#555'} />
+                {/* 하이라이트 */}
+                <ellipse cx="20" cy="20" rx="4" ry="6" fill="rgba(255,255,255,0.15)" />
+                {/* 이름 */}
+                {lit && c && (
+                  <text x="22" y="33" textAnchor="middle" fill="rgba(100,70,30,0.7)" fontSize="7" fontWeight="700">{c.name.slice(0, 2)}</text>
+                )}
+                <defs>
+                  <radialGradient id="idBodyGrad" cx="40%" cy="35%">
+                    <stop offset="0%" stopColor="#f0e8d8" />
+                    <stop offset="50%" stopColor="#ddd4c0" />
+                    <stop offset="100%" stopColor="#c8bda0" />
+                  </radialGradient>
+                </defs>
+              </svg>
             </div>
           )
         })}
       </div>
+      <style>{`@keyframes id-flame { 0% { transform: scaleY(0.85) scaleX(0.9); opacity:0.8; } 100% { transform: scaleY(1.1) scaleX(1.05); opacity:1; } }`}</style>
       {tooltip && (
         <div style={{ position: 'fixed', left: tooltip.x + 10, top: tooltip.y - 50, background: 'rgba(12,4,28,0.97)', border: '1px solid rgba(240,192,96,0.4)', borderRadius: 8, padding: '8px 12px', pointerEvents: 'none', zIndex: 100 }}>
           <div style={{ fontSize: 13, color: 'rgba(255,235,150,0.95)', fontWeight: 700 }}>{tooltip.name} 불자님</div>
