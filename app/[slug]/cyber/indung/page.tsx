@@ -4,7 +4,7 @@ import { useParams } from 'next/navigation'
 
 const PER_ROUND = 100, MAX_ROUND = 20, TOTAL = 2000
 const getMobileCols = () => typeof window !== 'undefined' && window.innerWidth < 480 ? 5 : 10
-const AMOUNTS = [{ label: '1만원', value: 10000 }, { label: '3만원', value: 30000 }, { label: '7만원', value: 70000 }]
+const AMOUNT = 10000
 
 interface Donor { id: string; name: string; wish: string }
 
@@ -12,7 +12,7 @@ export default function IndungPage() {
   const { slug } = useParams<{ slug: string }>()
   const [items, setItems] = useState<Donor[]>([])
   const [name, setName] = useState(''); const [wish, setWish] = useState(''); const [contact, setContact] = useState('')
-  const [amount, setAmount] = useState(30000); const [loading, setLoading] = useState(false); const [submitted, setSubmitted] = useState(false)
+  const [loading, setLoading] = useState(false); const [submitted, setSubmitted] = useState(false)
   const [tooltip, setTooltip] = useState<{ x: number; y: number; name: string; wish: string } | null>(null)
 
   const fetchData = useCallback(async () => {
@@ -30,7 +30,7 @@ export default function IndungPage() {
   const handleSubmit = async () => {
     if (!name.trim()) return; setLoading(true)
     await fetch('/api/cyber/offering', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ temple_slug: slug, type: 'indung', name: name.trim(), wish: wish.trim(), contact: contact.trim(), amount }) })
+      body: JSON.stringify({ temple_slug: slug, type: 'indung', name: name.trim(), wish: wish.trim(), contact: contact.trim(), amount: AMOUNT }) })
     await fetchData(); setSubmitted(true); setLoading(false)
   }
 
@@ -89,13 +89,11 @@ export default function IndungPage() {
           <input value={name} onChange={e => setName(e.target.value)} placeholder="성함 *" style={inp} />
           <textarea value={wish} onChange={e => setWish(e.target.value)} placeholder="발원문 (선택)" rows={2} style={{ ...inp, resize: 'none' }} />
           <input value={contact} onChange={e => setContact(e.target.value)} type="tel" placeholder="연락처 (010-0000-0000)" style={inp} />
-          <div style={{ display: 'flex', gap: 8 }}>
-            {AMOUNTS.map(a => (
-              <button key={a.value} onClick={() => setAmount(a.value)} style={{ flex: 1, padding: '10px 0', borderRadius: 8, fontSize: 13, cursor: 'pointer', border: amount === a.value ? `2px solid rgba(${accentRgb},0.8)` : `1px solid rgba(${accentRgb},0.2)`, background: amount === a.value ? `rgba(${accentRgb},0.2)` : 'rgba(255,255,255,0.04)', color: amount === a.value ? accent : `rgba(${accentRgb},0.5)`, fontWeight: amount === a.value ? 700 : 400 }}>{a.label}</button>
-            ))}
+          <div style={{ textAlign: 'center', padding: '6px 0' }}>
+            <span style={{ color: `rgba(${accentRgb},0.95)`, fontSize: 15, fontWeight: 600 }}>인등 1년 10,000원</span>
           </div>
           <button onClick={handleSubmit} disabled={loading || !name.trim()} style={{ background: loading ? `rgba(${accentRgb},0.15)` : `rgba(${accentRgb},0.22)`, border: `1px solid rgba(${accentRgb},0.55)`, color: 'rgba(255,220,120,0.95)', borderRadius: 8, padding: 14, fontSize: 15, cursor: 'pointer', fontWeight: 500 }}>
-            {loading ? '접수 중...' : `인등 신청하기 — ${amount.toLocaleString()}원`}
+            {loading ? '접수 중...' : '인등 신청하기'}
           </button>
         </div>
       ) : (

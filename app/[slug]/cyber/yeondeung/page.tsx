@@ -4,7 +4,7 @@ import { useParams } from 'next/navigation'
 
 const PER_ROUND = 100, MAX_ROUND = 20, TOTAL = 2000
 const getMobileCols = () => typeof window !== 'undefined' && window.innerWidth < 480 ? 5 : 10
-const AMOUNTS = [{ label: '1만원', value: 10000 }, { label: '3만원', value: 30000 }, { label: '7만원', value: 70000 }]
+const AMOUNTS = [{ label: '1인 5만원', value: 50000 }, { label: '가족등 10만원', value: 100000 }]
 
 interface Donor { id: string; name: string; wish: string }
 
@@ -12,7 +12,7 @@ export default function YeondeungPage() {
   const { slug } = useParams<{ slug: string }>()
   const [items, setItems] = useState<Donor[]>([])
   const [name, setName] = useState(''); const [wish, setWish] = useState(''); const [contact, setContact] = useState('')
-  const [amount, setAmount] = useState(30000); const [loading, setLoading] = useState(false); const [submitted, setSubmitted] = useState(false)
+  const [amount, setAmount] = useState(50000); const [loading, setLoading] = useState(false); const [submitted, setSubmitted] = useState(false)
   const [tooltip, setTooltip] = useState<{ x: number; y: number; name: string; wish: string } | null>(null)
 
   const fetchData = useCallback(async () => {
@@ -43,6 +43,7 @@ export default function YeondeungPage() {
         <div style={{ fontSize: 48, marginBottom: 8 }}>🏮</div>
         <h2 style={{ fontSize: 22, fontWeight: 600, color: accent, letterSpacing: 3, fontFamily: '"Noto Serif KR",serif' }}>연등공양</h2>
         <p style={{ fontSize: 12, color: `rgba(${accentRgb},0.5)`, marginTop: 4 }}>부처님오신날 연등을 밝혀 공양합니다</p>
+        <p style={{ fontSize: 11, color: `rgba(${accentRgb},0.4)`, marginTop: 6 }}>🏮 연등 신청자는 서울 불연암에 등을 달아드립니다</p>
       </div>
 
       {/* 프로그레스 */}
@@ -109,6 +110,9 @@ export default function YeondeungPage() {
         <div style={{ textAlign: 'center', padding: '20px 0' }}>
           <div style={{ fontSize: 42, marginBottom: 12 }}>🏮</div>
           <p style={{ color: 'rgba(255,235,150,0.95)', fontSize: 16, fontWeight: 500, lineHeight: 1.9 }}>연등이 점등되었습니다.</p>
+          <p style={{ color: `rgba(${accentRgb},0.7)`, fontSize: 13, marginTop: 8, lineHeight: 1.8, background: `rgba(${accentRgb},0.06)`, border: `1px solid rgba(${accentRgb},0.15)`, borderRadius: 8, padding: '10px 14px' }}>
+            🏮 연등 신청자는 서울 불연암에 등을 달아드립니다.
+          </p>
           <div style={{ display: 'flex', gap: 10, justifyContent: 'center', marginTop: 16 }}>
             <button onClick={() => { setSubmitted(false); setName(''); setWish(''); setContact('') }} style={{ background: `rgba(${accentRgb},0.15)`, border: `1px solid rgba(${accentRgb},0.4)`, color: accent, borderRadius: 8, padding: '10px 20px', cursor: 'pointer', fontSize: 13 }}>추가 신청</button>
             <a href={`/${slug}/cyber`} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(201,168,76,0.12)', border: '1px solid rgba(201,168,76,0.3)', color: '#c9a84c', borderRadius: 8, padding: '10px 20px', fontSize: 13, textDecoration: 'none' }}>☸ 도량으로</a>
