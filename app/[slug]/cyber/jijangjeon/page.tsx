@@ -3,7 +3,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { useParams } from 'next/navigation'
 
 const RELATIONS = ['부', '모', '조부', '조모', '배우자', '자녀', '형제자매', '기타']
-const PER_ROUND = 5, MAX_ROUND = 40, TOTAL = 2000
+const PER_ROUND = 50, MAX_ROUND = 40, TOTAL = 2000, COLS = 10
 
 interface Memorial { id: string; name: string; deceased: string; relationship: string; wish: string }
 
@@ -68,8 +68,8 @@ export default function JijangjeonPage() {
       </div>
       <p style={{ textAlign: 'center', fontSize: 12, color: `rgba(${accentRgb},0.5)`, marginBottom: 16 }}>{currentRound}차 ({roundCount} / {PER_ROUND})</p>
 
-      {/* 위패 격자 — 현재 차수 5개 */}
-      <div style={{ display: 'grid', gridTemplateColumns: `repeat(${PER_ROUND}, 1fr)`, gap: 6, marginBottom: 24 }}>
+      {/* 위패 격자 — 현재 차수 50위 (10×5) */}
+      <div style={{ display: 'grid', gridTemplateColumns: `repeat(${COLS}, 1fr)`, gap: 5, marginBottom: 24 }}>
         {Array.from({ length: PER_ROUND }).map((_, i) => {
           const gi = roundStart + i
           const lit = gi < memorials.length
@@ -79,26 +79,38 @@ export default function JijangjeonPage() {
               onMouseEnter={e => m && setTooltip({ x: e.clientX, y: e.clientY, deceased: m.deceased, name: m.name, rel: m.relationship })}
               onMouseLeave={() => setTooltip(null)}
               style={{
-                background: lit ? 'rgba(139,90,43,0.25)' : 'rgba(255,255,255,0.02)',
-                border: `1px solid ${lit ? 'rgba(139,90,43,0.4)' : 'rgba(255,255,255,0.04)'}`,
-                borderRadius: 6, padding: '10px 4px', textAlign: 'center', minHeight: 80,
-                boxShadow: lit ? '0 0 6px rgba(155,122,204,0.15)' : 'none',
+                position: 'relative',
+                background: lit ? 'rgba(139,90,43,0.3)' : 'rgba(255,255,255,0.02)',
+                border: `1px solid ${lit ? 'rgba(212,184,255,0.3)' : 'rgba(255,255,255,0.04)'}`,
+                borderRadius: 6, padding: '8px 2px', textAlign: 'center', minHeight: 56,
                 display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                overflow: 'hidden',
               }}>
+              {/* 광배 효과 */}
+              {lit && (
+                <div style={{
+                  position: 'absolute', inset: -4,
+                  background: 'radial-gradient(ellipse at 50% 30%, rgba(212,184,255,0.25) 0%, rgba(155,122,204,0.1) 40%, transparent 70%)',
+                  borderRadius: 8,
+                  animation: 'jj-glow 3s ease-in-out infinite alternate',
+                  pointerEvents: 'none',
+                }} />
+              )}
               {lit ? (
-                <>
-                  <div style={{ fontSize: 11, color: 'rgba(240,223,160,0.85)', writingMode: 'vertical-rl', letterSpacing: 2, lineHeight: 1.3 }}>
-                    {m!.deceased}
+                <div style={{ position: 'relative', zIndex: 1 }}>
+                  <div style={{ fontSize: 10, color: 'rgba(240,223,160,0.9)', writingMode: 'vertical-rl', letterSpacing: 2, lineHeight: 1.2, textShadow: '0 0 6px rgba(212,184,255,0.4)' }}>
+                    {m!.deceased.slice(0, 4)}
                   </div>
-                  <div style={{ fontSize: 8, color: `rgba(${accentRgb},0.45)`, marginTop: 4 }}>{m!.relationship}</div>
-                </>
+                  <div style={{ fontSize: 7, color: `rgba(${accentRgb},0.5)`, marginTop: 3 }}>{m!.relationship}</div>
+                </div>
               ) : (
-                <div style={{ fontSize: 20, opacity: 0.1 }}>🪧</div>
+                <div style={{ fontSize: 14, opacity: 0.08 }}>🪧</div>
               )}
             </div>
           )
         })}
       </div>
+      <style>{`@keyframes jj-glow { 0% { opacity: 0.6; } 100% { opacity: 1; } }`}</style>
 
       {tooltip && (
         <div style={{ position: 'fixed', left: tooltip.x + 10, top: tooltip.y - 60, background: 'rgba(12,4,28,0.97)', border: `1px solid rgba(${accentRgb},0.4)`, borderRadius: 8, padding: '8px 12px', pointerEvents: 'none', zIndex: 100 }}>
