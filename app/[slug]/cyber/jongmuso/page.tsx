@@ -48,7 +48,7 @@ export default function JongmusoPage() {
         <>
           {/* 기도 종류 선택 */}
           {!selected ? (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: 10 }}>
               {PRAYERS.map(p => (
                 <button key={p.id} onClick={() => setSelected(p)} style={{
                   background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(232,160,80,0.15)', borderRadius: 10,

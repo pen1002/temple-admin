@@ -49,7 +49,7 @@ export default function JijangjeonPage() {
       {memorials.length > 0 && (
         <div style={{ marginBottom: 32 }}>
           <p style={{ fontSize: 11, color: 'rgba(155,122,204,0.4)', letterSpacing: 2, marginBottom: 10 }}>봉안된 위패 {memorials.length}위</p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))', gap: 8 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(60px, 1fr))', gap: 6 }}>
             {memorials.map(m => (
               <div key={m.id} style={{ background: 'rgba(139,90,43,0.2)', border: '1px solid rgba(139,90,43,0.3)', borderRadius: 6, padding: '12px 6px', textAlign: 'center', minHeight: 80 }}>
                 <div style={{ fontSize: 11, color: 'rgba(240,223,160,0.8)', writingMode: 'vertical-rl', margin: '0 auto', letterSpacing: 2 }}>

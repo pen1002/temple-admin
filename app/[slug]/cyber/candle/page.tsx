@@ -5,8 +5,8 @@ import { useParams } from 'next/navigation'
 const AMOUNTS = [{ label: '5천원', value: 5000 }, { label: '1만원', value: 10000 }, { label: '3만원', value: 30000 }]
 const PER_ROUND = 100
 const MAX_ROUND = 20
-const TOTAL = PER_ROUND * MAX_ROUND // 2,000
-const COLS = 10
+const TOTAL = PER_ROUND * MAX_ROUND
+const getMobileCols = () => typeof window !== 'undefined' && window.innerWidth < 480 ? 5 : 10
 
 export default function CandlePage() {
   const { slug } = useParams<{ slug: string }>()
@@ -89,7 +89,7 @@ export default function CandlePage() {
       </p>
 
       {/* 현재 차수 초 그리드 10×10 */}
-      <div style={{ display: 'grid', gridTemplateColumns: `repeat(${COLS}, 1fr)`, gap: 4, marginBottom: 24 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: `repeat(${getMobileCols()}, 1fr)`, gap: 4, marginBottom: 24 }}>
         {Array.from({ length: PER_ROUND }).map((_, i) => {
           const globalIdx = roundStart + i
           const lit = globalIdx < candles.length

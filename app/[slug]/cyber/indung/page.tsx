@@ -2,7 +2,8 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useParams } from 'next/navigation'
 
-const PER_ROUND = 100, MAX_ROUND = 20, TOTAL = 2000, COLS = 10
+const PER_ROUND = 100, MAX_ROUND = 20, TOTAL = 2000
+const getMobileCols = () => typeof window !== 'undefined' && window.innerWidth < 480 ? 5 : 10
 const AMOUNTS = [{ label: '1만원', value: 10000 }, { label: '3만원', value: 30000 }, { label: '7만원', value: 70000 }]
 
 interface Donor { id: string; name: string; wish: string }
@@ -62,7 +63,7 @@ export default function IndungPage() {
       <p style={{ textAlign: 'center', fontSize: 12, color: `rgba(${accentRgb},0.5)`, marginBottom: 16 }}>{currentRound}차 ({roundCount} / {PER_ROUND})</p>
 
       {/* 인등 격자 — 원형 */}
-      <div style={{ display: 'grid', gridTemplateColumns: `repeat(${COLS}, 1fr)`, gap: 4, marginBottom: 20, position: 'relative' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: `repeat(${getMobileCols()}, 1fr)`, gap: 4, marginBottom: 20, position: 'relative' }}>
         {Array.from({ length: PER_ROUND }).map((_, i) => {
           const gi = roundStart + i, lit = gi < items.length, c = lit ? items[gi] : null
           return (

@@ -34,7 +34,7 @@ export default function DaeungjeonPage() {
   }
 
   return (
-    <div style={{ textAlign: 'center', padding: '20px 20px 60px', maxWidth: 600, margin: '0 auto' }}>
+    <div style={{ textAlign: 'center', padding: 'clamp(16px,4vw,20px) 16px 60px', maxWidth: 600, margin: '0 auto' }}>
       {/* 불상 */}
       <div style={{ position: 'relative', margin: '20px auto 30px', width: 200, height: 260 }}>
         {/* 후광 */}
@@ -72,13 +72,13 @@ export default function DaeungjeonPage() {
       <input
         value={name} onChange={e => setName(e.target.value)}
         placeholder="성함 (선택)"
-        style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(201,168,76,0.2)', borderRadius: 8, padding: '10px 14px', color: 'rgba(255,220,120,0.9)', fontSize: 14, outline: 'none', width: '100%', maxWidth: 280, marginBottom: 16, textAlign: 'center' }}
+        style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(201,168,76,0.2)', borderRadius: 8, padding: '10px 14px', color: 'rgba(255,220,120,0.9)', fontSize: 14, outline: 'none', width: '100%', maxWidth: 320, marginBottom: 16, textAlign: 'center', boxSizing: 'border-box' }}
       />
 
       {/* 참배 버튼 */}
       <div>
         <button onClick={handleBow} disabled={bowing} style={{
-          padding: '16px 48px', fontSize: 18, fontWeight: 700, borderRadius: 12, cursor: bowing ? 'default' : 'pointer',
+          padding: 'clamp(14px,3vw,16px) clamp(32px,8vw,48px)', fontSize: 'clamp(16px,4vw,18px)', fontWeight: 700, borderRadius: 12, cursor: bowing ? 'default' : 'pointer', width: '100%', maxWidth: 320,
           background: bowing ? 'rgba(201,168,76,0.4)' : 'linear-gradient(135deg, #c9a84c, #e8c860)',
           color: '#1a1200', border: 'none', letterSpacing: 3,
           boxShadow: bowing ? '0 0 30px rgba(201,168,76,0.4)' : '0 4px 16px rgba(201,168,76,0.3)',

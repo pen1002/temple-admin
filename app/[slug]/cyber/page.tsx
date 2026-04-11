@@ -20,11 +20,11 @@ export default async function CyberEntryPage({ params }: { params: Promise<{ slu
   if (!temple) notFound()
 
   return (
-    <div style={{ padding: '40px 20px 60px', maxWidth: 720, margin: '0 auto', textAlign: 'center' }}>
+    <div style={{ padding: 'clamp(24px,5vw,40px) 16px 60px', maxWidth: 720, margin: '0 auto', textAlign: 'center' }}>
       {/* 일주문 */}
       <div style={{ marginBottom: 32 }}>
-        <div style={{ fontSize: 48, marginBottom: 12 }}>☸</div>
-        <h1 style={{ fontSize: 28, fontWeight: 700, color: '#fff', letterSpacing: 4, marginBottom: 6, fontFamily: '"Noto Serif KR",serif' }}>
+        <div style={{ fontSize: 'clamp(36px,8vw,48px)', marginBottom: 10 }}>☸</div>
+        <h1 style={{ fontSize: 'clamp(22px,6vw,28px)', fontWeight: 700, color: '#fff', letterSpacing: 4, marginBottom: 6, fontFamily: '"Noto Serif KR",serif' }}>
           {temple.name}
         </h1>
         <p style={{ fontSize: 13, color: 'rgba(201,168,76,0.6)', letterSpacing: 3 }}>
@@ -41,17 +41,17 @@ export default async function CyberEntryPage({ params }: { params: Promise<{ slu
       </p>
 
       {/* 전각 카드 그리드 */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 12 }}>
         {HALLS.map(h => (
           <a key={h.id} href={`/${slug}/cyber/${h.id}`} style={{
             display: 'flex', flexDirection: 'column', alignItems: 'center',
-            padding: '28px 16px 24px', borderRadius: 14, textDecoration: 'none',
+            padding: 'clamp(16px,3vw,28px) 12px clamp(14px,2.5vw,24px)', borderRadius: 12, textDecoration: 'none',
             background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(201,168,76,0.12)',
             transition: 'border-color 0.2s, background 0.2s',
           }}>
-            <div style={{ fontSize: 36, marginBottom: 10 }}>{h.icon}</div>
-            <div style={{ fontSize: 16, fontWeight: 600, color: h.color, letterSpacing: 2, marginBottom: 6 }}>{h.name}</div>
-            <div style={{ fontSize: 12, color: 'rgba(240,223,160,0.55)', lineHeight: 1.6 }}>{h.desc}</div>
+            <div style={{ fontSize: 'clamp(28px,6vw,36px)', marginBottom: 8 }}>{h.icon}</div>
+            <div style={{ fontSize: 'clamp(13px,3.5vw,16px)', fontWeight: 600, color: h.color, letterSpacing: 2, marginBottom: 4 }}>{h.name}</div>
+            <div style={{ fontSize: 'clamp(10px,2.5vw,12px)', color: 'rgba(240,223,160,0.55)', lineHeight: 1.6 }}>{h.desc}</div>
           </a>
         ))}
       </div>
