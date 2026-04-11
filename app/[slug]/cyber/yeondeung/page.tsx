@@ -69,17 +69,35 @@ export default function YeondeungPage() {
           const gi = roundStart + i, lit = gi < items.length, c = lit ? items[gi] : null
           return (
             <div key={i} onMouseEnter={e => c && setTooltip({ x: e.clientX, y: e.clientY, name: c.name, wish: c.wish || '' })} onMouseLeave={() => setTooltip(null)}
-              style={{ aspectRatio: '0.7', borderRadius: 8, background: lit ? 'rgba(224,80,40,0.08)' : 'rgba(255,255,255,0.02)', border: `1px solid ${lit ? 'rgba(224,80,40,0.2)' : 'rgba(255,255,255,0.04)'}`, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 1, boxShadow: lit ? '0 0 8px rgba(224,80,40,0.15)' : 'none' }}>
-              {/* 줄 */}
-              <div style={{ width: 1, height: 5, background: lit ? 'rgba(224,80,40,0.3)' : 'rgba(255,255,255,0.05)' }} />
-              {/* 마개 */}
-              <div style={{ width: '45%', height: 3, borderRadius: '2px 2px 0 0', background: lit ? 'rgba(255,200,50,0.6)' : 'rgba(100,80,60,0.1)' }} />
-              {/* 몸통 */}
-              <div style={{ width: '55%', height: '40%', borderRadius: '40%', background: lit ? 'radial-gradient(ellipse at 50% 40%, rgba(255,120,60,0.9), rgba(224,70,30,0.7) 60%, rgba(180,40,20,0.5))' : 'rgba(80,40,30,0.08)', boxShadow: lit ? '0 0 6px rgba(224,80,40,0.4)' : 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                {lit && <span style={{ fontSize: 6, color: 'rgba(255,240,200,0.9)', fontWeight: 700 }}>{c!.name.slice(0, 2)}</span>}
-              </div>
-              {/* 술 */}
-              {lit && <div style={{ display: 'flex', gap: 1 }}>{[0, 1, 2].map(k => <div key={k} style={{ width: 1, height: 4, background: 'rgba(224,80,40,0.25)' }} />)}</div>}
+              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '2px 0' }}>
+              <svg viewBox="0 0 50 68" style={{ width: '100%', maxWidth: 40, filter: lit ? 'drop-shadow(0 0 6px rgba(240,150,180,0.4))' : 'grayscale(1) opacity(0.12)' }}>
+                {/* 줄 */}
+                <line x1="25" y1="0" x2="25" y2="10" stroke={lit ? '#666' : '#444'} strokeWidth="1" />
+                {/* 상단 테 */}
+                <rect x="13" y="9" width="24" height="4" rx="1.5" fill={lit ? '#c0392b' : '#555'} />
+                {/* 연등 몸통 — 구형 */}
+                <ellipse cx="25" cy="30" rx="18" ry="17" fill={lit ? '#f4b8cc' : '#555'} />
+                {/* 살 (세로 곡선 4개) */}
+                <path d="M25 13 Q25 30 25 47" stroke={lit ? '#e8a0b8' : '#666'} strokeWidth="1" fill="none" />
+                <path d="M14 15 Q10 30 14 45" stroke={lit ? '#e8a0b8' : '#666'} strokeWidth="0.7" fill="none" />
+                <path d="M36 15 Q40 30 36 45" stroke={lit ? '#e8a0b8' : '#666'} strokeWidth="0.7" fill="none" />
+                <path d="M9 20 Q7 30 9 40" stroke={lit ? '#e8a0b8' : '#666'} strokeWidth="0.5" fill="none" />
+                <path d="M41 20 Q43 30 41 40" stroke={lit ? '#e8a0b8' : '#666'} strokeWidth="0.5" fill="none" />
+                {/* 중앙 띠 (세로) */}
+                <rect x="23" y="13" width="4" height="34" rx="1" fill={lit ? '#e898b0' : '#555'} opacity="0.5" />
+                {/* 하이라이트 */}
+                <ellipse cx="20" cy="26" rx="5" ry="7" fill="rgba(255,255,255,0.15)" />
+                {/* 하단 테 */}
+                <rect x="13" y="45" width="24" height="4" rx="1.5" fill={lit ? '#c0392b' : '#555'} />
+                {/* 하단 줄 */}
+                <line x1="25" y1="49" x2="25" y2="56" stroke={lit ? '#666' : '#444'} strokeWidth="1" />
+                {/* 발원문 패 */}
+                <rect x="20" y="55" width="10" height="12" rx="1" fill={lit ? '#f0b0c8' : '#555'} />
+                {/* 이름 */}
+                {lit && c && (
+                  <text x="25" y="33" textAnchor="middle" fill="rgba(140,50,80,0.7)" fontSize="7" fontWeight="700">{c.name.slice(0, 2)}</text>
+                )}
+              </svg>
             </div>
           )
         })}
