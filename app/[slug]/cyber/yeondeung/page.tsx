@@ -4,6 +4,15 @@ import { useParams } from 'next/navigation'
 
 const PER_ROUND = 100, MAX_ROUND = 20, TOTAL = 2000
 const getMobileCols = () => typeof window !== 'undefined' && window.innerWidth < 480 ? 5 : 10
+
+const LANTERN_COLORS = [
+  { body: '#f4b8cc', rib: '#e8a0b8', band: '#e898b0', rim: '#c0392b', tag: '#f0b0c8', text: 'rgba(140,50,80,0.7)', glow: 'rgba(240,150,180,0.4)' },   // 분홍
+  { body: '#f0ece4', rib: '#ddd8cc', band: '#e0dbd0', rim: '#a09080', tag: '#e8e0d4', text: 'rgba(80,70,60,0.7)', glow: 'rgba(255,255,240,0.4)' },      // 흰색
+  { body: '#f6e06e', rib: '#e8cc50', band: '#ecd45a', rim: '#c8a020', tag: '#f0d860', text: 'rgba(120,90,10,0.7)', glow: 'rgba(255,230,80,0.4)' },      // 노랑
+  { body: '#88bbee', rib: '#70a0d8', band: '#7aaddf', rim: '#3060a0', tag: '#80b0e0', text: 'rgba(30,60,120,0.7)', glow: 'rgba(130,180,240,0.4)' },     // 파랑
+  { body: '#f0a860', rib: '#e09040', band: '#e89848', rim: '#c06020', tag: '#e89850', text: 'rgba(120,60,10,0.7)', glow: 'rgba(240,170,80,0.4)' },      // 주황
+  { body: '#88cc88', rib: '#70b870', band: '#78c078', rim: '#308030', tag: '#80c080', text: 'rgba(30,80,30,0.7)', glow: 'rgba(130,220,130,0.4)' },       // 초록
+]
 const AMOUNTS = [{ label: '1인 5만원', value: 50000 }, { label: '가족등 10만원', value: 100000 }]
 
 interface Donor { id: string; name: string; wish: string }
@@ -67,35 +76,36 @@ export default function YeondeungPage() {
       <div style={{ display: 'grid', gridTemplateColumns: `repeat(${getMobileCols()}, 1fr)`, gap: 4, marginBottom: 20, position: 'relative' }}>
         {Array.from({ length: PER_ROUND }).map((_, i) => {
           const gi = roundStart + i, lit = gi < items.length, c = lit ? items[gi] : null
+          const cl = LANTERN_COLORS[gi % LANTERN_COLORS.length]
           return (
             <div key={i} onMouseEnter={e => c && setTooltip({ x: e.clientX, y: e.clientY, name: c.name, wish: c.wish || '' })} onMouseLeave={() => setTooltip(null)}
               style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '2px 0' }}>
-              <svg viewBox="0 0 50 68" style={{ width: '100%', maxWidth: 40, filter: lit ? 'drop-shadow(0 0 6px rgba(240,150,180,0.4))' : 'grayscale(1) opacity(0.12)' }}>
+              <svg viewBox="0 0 50 68" style={{ width: '100%', maxWidth: 40, filter: lit ? `drop-shadow(0 0 6px ${cl.glow})` : 'grayscale(1) opacity(0.12)' }}>
                 {/* 줄 */}
                 <line x1="25" y1="0" x2="25" y2="10" stroke={lit ? '#666' : '#444'} strokeWidth="1" />
                 {/* 상단 테 */}
-                <rect x="13" y="9" width="24" height="4" rx="1.5" fill={lit ? '#c0392b' : '#555'} />
+                <rect x="13" y="9" width="24" height="4" rx="1.5" fill={lit ? cl.rim : '#555'} />
                 {/* 연등 몸통 — 구형 */}
-                <ellipse cx="25" cy="30" rx="18" ry="17" fill={lit ? '#f4b8cc' : '#555'} />
-                {/* 살 (세로 곡선 4개) */}
-                <path d="M25 13 Q25 30 25 47" stroke={lit ? '#e8a0b8' : '#666'} strokeWidth="1" fill="none" />
-                <path d="M14 15 Q10 30 14 45" stroke={lit ? '#e8a0b8' : '#666'} strokeWidth="0.7" fill="none" />
-                <path d="M36 15 Q40 30 36 45" stroke={lit ? '#e8a0b8' : '#666'} strokeWidth="0.7" fill="none" />
-                <path d="M9 20 Q7 30 9 40" stroke={lit ? '#e8a0b8' : '#666'} strokeWidth="0.5" fill="none" />
-                <path d="M41 20 Q43 30 41 40" stroke={lit ? '#e8a0b8' : '#666'} strokeWidth="0.5" fill="none" />
-                {/* 중앙 띠 (세로) */}
-                <rect x="23" y="13" width="4" height="34" rx="1" fill={lit ? '#e898b0' : '#555'} opacity="0.5" />
+                <ellipse cx="25" cy="30" rx="18" ry="17" fill={lit ? cl.body : '#555'} />
+                {/* 살 (세로 곡선) */}
+                <path d="M25 13 Q25 30 25 47" stroke={lit ? cl.rib : '#666'} strokeWidth="1" fill="none" />
+                <path d="M14 15 Q10 30 14 45" stroke={lit ? cl.rib : '#666'} strokeWidth="0.7" fill="none" />
+                <path d="M36 15 Q40 30 36 45" stroke={lit ? cl.rib : '#666'} strokeWidth="0.7" fill="none" />
+                <path d="M9 20 Q7 30 9 40" stroke={lit ? cl.rib : '#666'} strokeWidth="0.5" fill="none" />
+                <path d="M41 20 Q43 30 41 40" stroke={lit ? cl.rib : '#666'} strokeWidth="0.5" fill="none" />
+                {/* 중앙 띠 */}
+                <rect x="23" y="13" width="4" height="34" rx="1" fill={lit ? cl.band : '#555'} opacity="0.5" />
                 {/* 하이라이트 */}
-                <ellipse cx="20" cy="26" rx="5" ry="7" fill="rgba(255,255,255,0.15)" />
+                <ellipse cx="20" cy="26" rx="5" ry="7" fill="rgba(255,255,255,0.18)" />
                 {/* 하단 테 */}
-                <rect x="13" y="45" width="24" height="4" rx="1.5" fill={lit ? '#c0392b' : '#555'} />
+                <rect x="13" y="45" width="24" height="4" rx="1.5" fill={lit ? cl.rim : '#555'} />
                 {/* 하단 줄 */}
                 <line x1="25" y1="49" x2="25" y2="56" stroke={lit ? '#666' : '#444'} strokeWidth="1" />
                 {/* 발원문 패 */}
-                <rect x="20" y="55" width="10" height="12" rx="1" fill={lit ? '#f0b0c8' : '#555'} />
+                <rect x="20" y="55" width="10" height="12" rx="1" fill={lit ? cl.tag : '#555'} />
                 {/* 이름 */}
                 {lit && c && (
-                  <text x="25" y="33" textAnchor="middle" fill="rgba(140,50,80,0.7)" fontSize="7" fontWeight="700">{c.name.slice(0, 2)}</text>
+                  <text x="25" y="33" textAnchor="middle" fill={cl.text} fontSize="7" fontWeight="700">{c.name.slice(0, 2)}</text>
                 )}
               </svg>
             </div>
