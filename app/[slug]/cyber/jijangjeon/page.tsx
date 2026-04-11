@@ -78,39 +78,42 @@ export default function JijangjeonPage() {
             <div key={i}
               onMouseEnter={e => m && setTooltip({ x: e.clientX, y: e.clientY, deceased: m.deceased, name: m.name, rel: m.relationship })}
               onMouseLeave={() => setTooltip(null)}
-              style={{
-                position: 'relative',
-                background: lit ? 'rgba(139,90,43,0.3)' : 'rgba(255,255,255,0.02)',
-                border: `1px solid ${lit ? 'rgba(212,184,255,0.3)' : 'rgba(255,255,255,0.04)'}`,
-                borderRadius: 6, padding: '8px 2px', textAlign: 'center', minHeight: 56,
-                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                overflow: 'hidden',
-              }}>
-              {/* 광배 효과 */}
+              style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '2px 0' }}>
+              {/* 광배 */}
               {lit && (
-                <div style={{
-                  position: 'absolute', inset: -4,
-                  background: 'radial-gradient(ellipse at 50% 30%, rgba(212,184,255,0.25) 0%, rgba(155,122,204,0.1) 40%, transparent 70%)',
-                  borderRadius: 8,
-                  animation: 'jj-glow 3s ease-in-out infinite alternate',
-                  pointerEvents: 'none',
-                }} />
+                <div style={{ position: 'absolute', top: -2, left: '50%', transform: 'translateX(-50%)', width: '120%', height: '80%', background: 'radial-gradient(ellipse at 50% 40%, rgba(212,184,255,0.3) 0%, rgba(201,168,76,0.1) 50%, transparent 75%)', borderRadius: '50%', animation: 'jj-glow 3s ease-in-out infinite alternate', pointerEvents: 'none' }} />
               )}
-              {lit ? (
-                <div style={{ position: 'relative', zIndex: 1 }}>
-                  <div style={{ fontSize: 10, color: 'rgba(240,223,160,0.9)', writingMode: 'vertical-rl', letterSpacing: 2, lineHeight: 1.2, textShadow: '0 0 6px rgba(212,184,255,0.4)' }}>
-                    {m!.deceased.slice(0, 4)}
-                  </div>
-                  <div style={{ fontSize: 7, color: `rgba(${accentRgb},0.5)`, marginTop: 3 }}>{m!.relationship}</div>
-                </div>
-              ) : (
-                <div style={{ fontSize: 14, opacity: 0.08 }}>🪧</div>
-              )}
+              {/* 위패 본체 — CSS로 그린 위패 모형 */}
+              <svg viewBox="0 0 40 70" style={{ width: '100%', maxWidth: 40, position: 'relative', zIndex: 1, filter: lit ? 'drop-shadow(0 0 4px rgba(212,184,255,0.3))' : 'grayscale(1) opacity(0.15)' }}>
+                {/* 검정 받침대 */}
+                <rect x="4" y="60" width="32" height="8" rx="1.5" fill={lit ? '#1a1a2e' : '#222'} stroke={lit ? '#c9a84c' : '#333'} strokeWidth="0.5" />
+                {/* 받침 다리 곡선 */}
+                <path d="M8 68 Q6 70 4 70 L4 68 Z" fill={lit ? '#c9a84c' : '#444'} />
+                <path d="M32 68 Q34 70 36 70 L36 68 Z" fill={lit ? '#c9a84c' : '#444'} />
+                {/* 연꽃 대좌 */}
+                <ellipse cx="20" cy="58" rx="14" ry="4" fill={lit ? '#e8a88c' : '#555'} />
+                <path d="M8 56 Q11 52 14 56" fill={lit ? '#f0b8a0' : '#555'} />
+                <path d="M12 56 Q15 51 18 56" fill={lit ? '#e8a088' : '#555'} />
+                <path d="M16 56 Q19 50 22 56" fill={lit ? '#f0b8a0' : '#555'} />
+                <path d="M20 56 Q23 51 26 56" fill={lit ? '#e8a088' : '#555'} />
+                <path d="M24 56 Q27 52 30 56" fill={lit ? '#f0b8a0' : '#555'} />
+                <ellipse cx="20" cy="56" rx="13" ry="2.5" fill={lit ? '#d4956c' : '#444'} opacity="0.5" />
+                {/* 위패 몸통 — 상단 아치형 */}
+                <path d="M11 54 L11 16 Q11 6 20 6 Q29 6 29 16 L29 54 Z" fill={lit ? '#2a1a10' : '#1a1a1a'} stroke={lit ? '#c9a84c' : '#333'} strokeWidth="0.8" />
+                {/* 금테 안쪽 선 */}
+                <path d="M13 52 L13 18 Q13 9 20 9 Q27 9 27 18 L27 52 Z" fill="none" stroke={lit ? 'rgba(201,168,76,0.5)' : '#333'} strokeWidth="0.4" />
+                {/* 영가 존함 (세로) */}
+                {lit && m && (
+                  <text x="20" y="34" textAnchor="middle" fill="#c9a84c" fontSize="7" fontWeight="700" writingMode="tb" style={{ textShadow: '0 0 4px rgba(201,168,76,0.5)' }}>
+                    {m.deceased.slice(0, 3)}
+                  </text>
+                )}
+              </svg>
             </div>
           )
         })}
       </div>
-      <style>{`@keyframes jj-glow { 0% { opacity: 0.6; } 100% { opacity: 1; } }`}</style>
+      <style>{`@keyframes jj-glow { 0% { opacity: 0.5; } 100% { opacity: 1; } }`}</style>
 
       {tooltip && (
         <div style={{ position: 'fixed', left: tooltip.x + 10, top: tooltip.y - 60, background: 'rgba(12,4,28,0.97)', border: `1px solid rgba(${accentRgb},0.4)`, borderRadius: 8, padding: '8px 12px', pointerEvents: 'none', zIndex: 100 }}>
