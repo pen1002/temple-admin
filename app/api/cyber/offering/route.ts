@@ -5,7 +5,7 @@ const globalForPrisma = global as unknown as { prismaCyber?: PrismaClient }
 const prisma = globalForPrisma.prismaCyber ?? new PrismaClient()
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prismaCyber = prisma
 
-const VALID_TYPES = ['bow', 'memorial', 'prayer', 'candle'] as const
+const VALID_TYPES = ['bow', 'memorial', 'prayer', 'candle', 'indung', 'yeondeung'] as const
 
 export async function POST(req: NextRequest) {
   try {
