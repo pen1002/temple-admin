@@ -1,6 +1,25 @@
 // 블록 미리보기 풀스크린 페이지 — 헤더/푸터 없이 블록만 렌더링
 // iframe에서 로드: /block-preview/H-01 등
+import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+
+export async function generateMetadata({ params }: { params: Promise<{ code: string }> }): Promise<Metadata> {
+  const { code } = await params
+  if (code === 'H-14') {
+    return {
+      title: '🪷 불연암 봉축 연등 모연 — 불기 2570년 부처님오신날',
+      description: '성함·발원문을 입력하시면 봉축연등을 달아 기도드립니다. 연등 1인 3만원 / 가족등 10만원',
+      openGraph: {
+        title: '🪷 불연암 봉축 연등 모연',
+        description: '아래에서 성함·발원문을 입력하시면 봉축연등을 달아 기도드립니다. 연등 1인 3만원 / 가족등 10만원',
+        images: [{ url: 'https://res.cloudinary.com/db3izttcy/image/upload/bulgwangsa_lantern_og_vdtsbb.png', width: 800, height: 600, alt: '불연암 봉축 연등 모연' }],
+        locale: 'ko_KR',
+        type: 'website',
+      },
+    }
+  }
+  return { title: `블록 미리보기 — ${code}` }
+}
 import TempleH06Hero, { defaultProps as h06DefaultProps } from '@/components/blocks/TempleH06Hero'
 import HeroH05Lantern from '@/components/hero/HeroH05Lantern'
 // @ts-ignore
