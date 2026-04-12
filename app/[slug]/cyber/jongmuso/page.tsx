@@ -10,8 +10,8 @@ const PRAYERS = [
   { id: 'PR-08', name: '정초기도', icon: '🎍' },
   { id: 'PR-09', name: '산신기도', icon: '⛰' },
 ]
-const PER_ROUND = 100, MAX_ROUND = 20, TOTAL = 2000, AMOUNT = 2000
-const getMobileCols = () => typeof window !== 'undefined' && window.innerWidth < 480 ? 5 : 10
+const PER_ROUND = 30, COLS = 5, AMOUNT = 2000
+
 
 interface Donor { id: string; name: string; wish: string }
 
@@ -24,22 +24,22 @@ export default function JongmusoPage() {
   const [wish, setWish] = useState('')
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [viewRound, setViewRound] = useState(1)
   const [copied, setCopied] = useState(false)
   const [tooltip, setTooltip] = useState<{ x: number; y: number; name: string; wish: string } | null>(null)
 
   const fetchData = useCallback(async () => {
     if (!selectedPrayer) return
-    const res = await fetch(`/api/cyber/offering?temple_slug=${slug}&type=prayer_${selectedPrayer.id}&limit=${TOTAL}`)
+    const res = await fetch(`/api/cyber/offering?temple_slug=${slug}&type=prayer_${selectedPrayer.id}&limit=10000`)
     const data = await res.json()
     if (Array.isArray(data)) setItems(data)
   }, [slug, selectedPrayer])
 
   useEffect(() => { if (selectedPrayer) fetchData() }, [fetchData, selectedPrayer])
 
-  const currentRound = Math.min(MAX_ROUND, Math.floor(items.length / PER_ROUND) + 1)
-  const roundStart = (currentRound - 1) * PER_ROUND
-  const roundCount = Math.min(items.length - roundStart, PER_ROUND)
-  const pct = Math.min(100, Math.round((items.length / TOTAL) * 100))
+  const totalRounds = Math.max(1, Math.ceil(items.length / PER_ROUND) + 1)
+  const roundStart = (viewRound - 1) * PER_ROUND
+  const roundCount = Math.min(Math.max(0, items.length - roundStart), PER_ROUND)
 
   const handleSubmit = async () => {
     if (!name.trim() || !selectedPrayer) return
@@ -117,26 +117,16 @@ export default function JongmusoPage() {
         <h2 style={{ fontSize: 20, fontWeight: 600, color: accent, letterSpacing: 2, fontFamily: '"Noto Serif KR",serif' }}>{selectedPrayer.name}</h2>
         <button onClick={() => { setSelectedPrayer(null); setSubmitted(false) }} style={{ marginTop: 8, background: 'none', border: `1px solid rgba(${accentRgb},0.25)`, color: `rgba(${accentRgb},0.6)`, borderRadius: 6, padding: '4px 14px', cursor: 'pointer', fontSize: 11 }}>← 다른 기도 선택</button>
       </div>
-
-      {/* 프로그레스 */}
-      <div style={{ maxWidth: 480, margin: '0 auto 8px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
-          <span style={{ color: `rgba(${accentRgb},0.7)`, fontSize: 13, minWidth: 90, textAlign: 'right' }}>{items.length.toLocaleString()} / {TOTAL.toLocaleString()}</span>
-          <div style={{ flex: 1, height: 6, background: `rgba(${accentRgb},0.1)`, borderRadius: 3, overflow: 'hidden' }}>
-            <div style={{ height: '100%', width: `${pct}%`, background: `linear-gradient(90deg,${accent},#f6c860)`, borderRadius: 3, transition: 'width 0.8s' }} />
-          </div>
-          <span style={{ color: `rgba(${accentRgb},0.7)`, fontSize: 13, minWidth: 32 }}>{pct}%</span>
-        </div>
+      {/* 차수 + 스와이프 네비 */}
+      <div style={{ textAlign: "center", marginBottom: 8 }}>
+        <span style={{ color: `rgba(${accentRgb},0.7)`, fontSize: 13 }}>전체 {items.length.toLocaleString()}등 점등</span>
       </div>
-      <div style={{ display: 'flex', gap: 3, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 6 }}>
-        {Array.from({ length: MAX_ROUND }, (_, i) => i + 1).map(r => (
-          <span key={r} style={{ width: r === currentRound ? 12 : 8, height: r === currentRound ? 12 : 8, borderRadius: '50%', display: 'inline-block', background: r < currentRound ? accent : r === currentRound ? '#fff' : 'rgba(255,255,255,0.08)', border: r === currentRound ? `2px solid ${accent}` : 'none', boxShadow: r === currentRound ? `0 0 6px rgba(${accentRgb},0.5)` : 'none' }} />
-        ))}
+      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 16, marginBottom: 12 }}>
+        <button onClick={() => setViewRound(Math.max(1, viewRound - 1))} disabled={viewRound <= 1} style={{ background: "none", border: `1px solid rgba(${accentRgb},0.2)`, color: viewRound <= 1 ? `rgba(${accentRgb},0.2)` : accent, borderRadius: 6, padding: "5px 12px", cursor: "pointer", fontSize: 13 }}>◂</button>
+        <span style={{ color: accent, fontSize: 14, fontWeight: 600 }}>{viewRound}차 ({roundCount}/{PER_ROUND})</span>
+        <button onClick={() => setViewRound(viewRound + 1)} style={{ background: "none", border: `1px solid rgba(${accentRgb},0.2)`, color: accent, borderRadius: 6, padding: "5px 12px", cursor: "pointer", fontSize: 13 }}>▸</button>
       </div>
-      <p style={{ textAlign: 'center', fontSize: 12, color: `rgba(${accentRgb},0.5)`, marginBottom: 16 }}>{currentRound}차 ({roundCount} / {PER_ROUND})</p>
-
-      {/* 격자 — 원형 기도등 */}
-      <div style={{ display: 'grid', gridTemplateColumns: `repeat(${getMobileCols()}, 1fr)`, gap: 4, marginBottom: 20 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: `repeat(${COLS}, 1fr)`, gap: 4, marginBottom: 20 }}>
         {Array.from({ length: PER_ROUND }).map((_, i) => {
           const gi = roundStart + i, lit = gi < items.length, c = lit ? items[gi] : null
           return (
@@ -204,9 +194,8 @@ export default function JongmusoPage() {
         </div>
       )}
 
-      {items.length >= TOTAL && (
+      {false && (
         <div style={{ textAlign: 'center', padding: '20px 0' }}>
-          <p style={{ color: accent, fontSize: 16, fontWeight: 600 }}>✨ {selectedPrayer.name} 2,000등 원만성취</p>
         </div>
       )}
     </div>

@@ -2,8 +2,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useParams } from 'next/navigation'
 
-const PER_ROUND = 100, MAX_ROUND = 20, TOTAL = 2000
-const getMobileCols = () => typeof window !== 'undefined' && window.innerWidth < 480 ? 5 : 10
+const PER_ROUND = 30, COLS = 5
 const AMOUNT = 10000
 
 interface Donor { id: string; name: string; wish: string }
@@ -16,16 +15,17 @@ export default function IndungPage() {
   const [tooltip, setTooltip] = useState<{ x: number; y: number; name: string; wish: string } | null>(null)
 
   const fetchData = useCallback(async () => {
-    const res = await fetch(`/api/cyber/offering?temple_slug=${slug}&type=indung&limit=${TOTAL}`)
+    const res = await fetch(`/api/cyber/offering?temple_slug=${slug}&type=indung&limit=10000`)
     const data = await res.json()
     if (Array.isArray(data)) setItems(data)
   }, [slug])
   useEffect(() => { fetchData() }, [fetchData])
 
-  const currentRound = Math.min(MAX_ROUND, Math.floor(items.length / PER_ROUND) + 1)
-  const roundStart = (currentRound - 1) * PER_ROUND
-  const roundCount = Math.min(items.length - roundStart, PER_ROUND)
-  const pct = Math.min(100, Math.round((items.length / TOTAL) * 100))
+  const [viewRound, setViewRound] = useState(1)
+  const [touchStartX, setTouchStartX] = useState(0)
+  const totalRounds = Math.max(1, Math.ceil(items.length / PER_ROUND) + 1)
+  const roundStart = (viewRound - 1) * PER_ROUND
+  const roundCount = Math.min(Math.max(0, items.length - roundStart), PER_ROUND)
 
   const handleSubmit = async () => {
     if (!name.trim()) return; setLoading(true)
@@ -46,25 +46,18 @@ export default function IndungPage() {
         <p style={{ fontSize: 12, color: `rgba(${accentRgb},0.5)`, marginTop: 4 }}>인등을 밝혀 소원을 발원합니다</p>
       </div>
 
-      {/* 프로그레스 */}
-      <div style={{ maxWidth: 480, margin: '0 auto 8px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
-          <span style={{ color: `rgba(${accentRgb},0.7)`, fontSize: 13, minWidth: 90, textAlign: 'right' }}>{items.length.toLocaleString()} / {TOTAL.toLocaleString()}</span>
-          <div style={{ flex: 1, height: 6, background: `rgba(${accentRgb},0.1)`, borderRadius: 3, overflow: 'hidden' }}>
-            <div style={{ height: '100%', width: `${pct}%`, background: 'linear-gradient(90deg,#c9a84c,#f6e05e)', borderRadius: 3, transition: 'width 0.8s' }} />
-          </div>
-          <span style={{ color: `rgba(${accentRgb},0.7)`, fontSize: 13, minWidth: 32 }}>{pct}%</span>
-        </div>
+      {/* 차수 + 스와이프 네비 */}
+      <div style={{ textAlign: 'center', marginBottom: 8 }}>
+        <span style={{ color: `rgba(${accentRgb},0.7)`, fontSize: 13 }}>전체 {items.length.toLocaleString()}등 점등</span>
       </div>
-      <div style={{ display: 'flex', gap: 3, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 6 }}>
-        {Array.from({ length: MAX_ROUND }, (_, i) => i + 1).map(r => (
-          <span key={r} style={{ width: r === currentRound ? 12 : 8, height: r === currentRound ? 12 : 8, borderRadius: '50%', display: 'inline-block', background: r < currentRound ? accent : r === currentRound ? '#fff' : 'rgba(255,255,255,0.08)', border: r === currentRound ? `2px solid ${accent}` : 'none', boxShadow: r === currentRound ? `0 0 6px rgba(${accentRgb},0.5)` : 'none' }} />
-        ))}
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 16, marginBottom: 12 }}>
+        <button onClick={() => setViewRound(Math.max(1, viewRound - 1))} disabled={viewRound <= 1} style={{ background: 'none', border: `1px solid rgba(${accentRgb},0.2)`, color: viewRound <= 1 ? `rgba(${accentRgb},0.2)` : accent, borderRadius: 6, padding: '5px 12px', cursor: 'pointer', fontSize: 13 }}>◂</button>
+        <span style={{ color: accent, fontSize: 14, fontWeight: 600 }}>{viewRound}차 ({roundCount}/{PER_ROUND})</span>
+        <button onClick={() => setViewRound(viewRound + 1)} style={{ background: 'none', border: `1px solid rgba(${accentRgb},0.2)`, color: accent, borderRadius: 6, padding: '5px 12px', cursor: 'pointer', fontSize: 13 }}>▸</button>
       </div>
-      <p style={{ textAlign: 'center', fontSize: 12, color: `rgba(${accentRgb},0.5)`, marginBottom: 16 }}>{currentRound}차 ({roundCount} / {PER_ROUND})</p>
 
       {/* 인등 격자 — 원형 */}
-      <div style={{ display: 'grid', gridTemplateColumns: `repeat(${getMobileCols()}, 1fr)`, gap: 4, marginBottom: 20, position: 'relative' }}>
+      <div onTouchStart={e => setTouchStartX(e.touches[0].clientX)} onTouchEnd={e => { const d = touchStartX - e.changedTouches[0].clientX; if (d > 50) setViewRound(viewRound + 1); else if (d < -50) setViewRound(Math.max(1, viewRound - 1)); }} style={{ display: 'grid', gridTemplateColumns: `repeat(${COLS}, 1fr)`, gap: 6, marginBottom: 20, position: 'relative' }}>
         {Array.from({ length: PER_ROUND }).map((_, i) => {
           const gi = roundStart + i, lit = gi < items.length, c = lit ? items[gi] : null
           return (
@@ -134,7 +127,6 @@ export default function IndungPage() {
           </div>
         </div>
       )}
-      {items.length >= TOTAL && <div style={{ textAlign: 'center', padding: '20px 0' }}><p style={{ color: accent, fontSize: 16, fontWeight: 600 }}>✨ 2,000등 원만성취</p></div>}
     </div>
   )
 }

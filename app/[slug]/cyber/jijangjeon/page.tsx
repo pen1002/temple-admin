@@ -3,7 +3,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { useParams } from 'next/navigation'
 
 const RELATIONS = ['부', '모', '조부', '조모', '배우자', '자녀', '형제자매', '기타']
-const PER_ROUND = 50, MAX_ROUND = 40, TOTAL = 2000, COLS = 10
+const PER_ROUND = 30, COLS = 5
 
 interface Memorial { id: string; name: string; deceased: string; relationship: string; wish: string }
 
@@ -17,20 +17,20 @@ export default function JijangjeonPage() {
   const [contact, setContact] = useState('')
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [viewRound, setViewRound] = useState(1)
   const [tooltip, setTooltip] = useState<{ x: number; y: number; deceased: string; name: string; rel: string } | null>(null)
 
   const fetchData = useCallback(async () => {
-    const res = await fetch(`/api/cyber/offering?temple_slug=${slug}&type=memorial&limit=${TOTAL}`)
+    const res = await fetch(`/api/cyber/offering?temple_slug=${slug}&type=memorial&limit=10000`)
     const data = await res.json()
     if (Array.isArray(data)) setMemorials(data)
   }, [slug])
 
   useEffect(() => { fetchData() }, [fetchData])
 
-  const currentRound = Math.min(MAX_ROUND, Math.floor(memorials.length / PER_ROUND) + 1)
-  const roundStart = (currentRound - 1) * PER_ROUND
-  const roundCount = Math.min(memorials.length - roundStart, PER_ROUND)
-  const pct = Math.min(100, Math.round((memorials.length / TOTAL) * 100))
+  const totalRounds = Math.max(1, Math.ceil(memorials.length / PER_ROUND) + 1)
+  const roundStart = (viewRound - 1) * PER_ROUND
+  const roundCount = Math.min(Math.max(0, memorials.length - roundStart), PER_ROUND)
 
   const handleSubmit = async () => {
     if (!name.trim() || !deceased.trim()) return
@@ -58,16 +58,14 @@ export default function JijangjeonPage() {
       </div>
 
       {/* 프로그레스 */}
-      <div style={{ maxWidth: 480, margin: '0 auto 8px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
-          <span style={{ color: `rgba(${accentRgb},0.7)`, fontSize: 13, minWidth: 90, textAlign: 'right' }}>{memorials.length.toLocaleString()} / {TOTAL.toLocaleString()}</span>
-          <div style={{ flex: 1, height: 6, background: `rgba(${accentRgb},0.1)`, borderRadius: 3, overflow: 'hidden' }}>
-            <div style={{ height: '100%', width: `${pct}%`, background: `linear-gradient(90deg,${accent},#c4a0f0)`, borderRadius: 3, transition: 'width 0.8s' }} />
-          </div>
-          <span style={{ color: `rgba(${accentRgb},0.7)`, fontSize: 13, minWidth: 32 }}>{pct}%</span>
-        </div>
+      <div style={{ textAlign: 'center', marginBottom: 8 }}>
+        <span style={{ color: `rgba(${accentRgb},0.7)`, fontSize: 13 }}>전체 {memorials.length.toLocaleString()}위 봉안</span>
       </div>
-      <p style={{ textAlign: 'center', fontSize: 12, color: `rgba(${accentRgb},0.5)`, marginBottom: 16 }}>{currentRound}차 ({roundCount} / {PER_ROUND})</p>
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 16, marginBottom: 12 }}>
+        <button onClick={() => setViewRound(Math.max(1, viewRound - 1))} disabled={viewRound <= 1} style={{ background: 'none', border: `1px solid rgba(${accentRgb},0.2)`, color: viewRound <= 1 ? `rgba(${accentRgb},0.2)` : accent, borderRadius: 6, padding: '5px 12px', cursor: 'pointer', fontSize: 13 }}>◂</button>
+        <span style={{ color: accent, fontSize: 14, fontWeight: 600 }}>{viewRound}차 ({roundCount}/{PER_ROUND})</span>
+        <button onClick={() => setViewRound(viewRound + 1)} style={{ background: 'none', border: `1px solid rgba(${accentRgb},0.2)`, color: accent, borderRadius: 6, padding: '5px 12px', cursor: 'pointer', fontSize: 13 }}>▸</button>
+      </div>
 
       {/* 위패 격자 — 현재 차수 50위 (10×5) */}
       <div style={{ display: 'grid', gridTemplateColumns: `repeat(${COLS}, 1fr)`, gap: 5, marginBottom: 24 }}>
@@ -152,7 +150,7 @@ export default function JijangjeonPage() {
         </div>
       )}
 
-      {memorials.length >= TOTAL && (
+      {false && (
         <div style={{ textAlign: 'center', padding: '20px 0' }}>
           <p style={{ color: '#d4b8ff', fontSize: 16, fontWeight: 600 }}>✨ 2,000위패 원만봉안</p>
         </div>

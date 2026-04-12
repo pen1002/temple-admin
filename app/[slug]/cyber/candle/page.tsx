@@ -3,10 +3,10 @@ import { useEffect, useState, useCallback } from 'react'
 import { useParams } from 'next/navigation'
 
 const AMOUNTS = [{ label: '5천원', value: 5000 }, { label: '1만원', value: 10000 }, { label: '3만원', value: 30000 }]
-const PER_ROUND = 100
-const MAX_ROUND = 20
-const TOTAL = PER_ROUND * MAX_ROUND
-const getMobileCols = () => typeof window !== 'undefined' && window.innerWidth < 480 ? 5 : 10
+const PER_ROUND = 30
+
+
+const COLS = 5
 
 export default function CandlePage() {
   const { slug } = useParams<{ slug: string }>()
@@ -17,16 +17,20 @@ export default function CandlePage() {
   const [contact, setContact] = useState('')
   const [amount, setAmount] = useState(10000)
   const [loading, setLoading] = useState(false)
+  const [viewRound, setViewRound] = useState(1)
+  const [touchStartX2, setTouchStartX2] = useState(0)
   const [tooltip, setTooltip] = useState<{ x: number; y: number; name: string; wish: string } | null>(null)
 
-  const currentRound = Math.min(MAX_ROUND, Math.floor(candles.length / PER_ROUND) + 1)
-  const roundStart = (currentRound - 1) * PER_ROUND
-  const roundEnd = currentRound * PER_ROUND
-  const roundCount = Math.min(candles.length - roundStart, PER_ROUND)
-  const pct = Math.min(100, Math.round((candles.length / TOTAL) * 100))
+  const totalRounds = Math.max(1, Math.ceil(candles.length / PER_ROUND) + 1)
+  const roundStart = (viewRound - 1) * PER_ROUND
+  const roundCount = Math.min(Math.max(0, candles.length - roundStart), PER_ROUND)
+  
+  
+  
+  
 
   const fetchData = useCallback(async () => {
-    const res = await fetch(`/api/cyber/offering?temple_slug=${slug}&type=candle&limit=${TOTAL}`)
+    const res = await fetch(`/api/cyber/offering?temple_slug=${slug}&type=candle&limit=10000`)
     const data = await res.json()
     if (Array.isArray(data)) setCandles(data)
   }, [slug])
@@ -57,40 +61,17 @@ export default function CandlePage() {
         <p style={{ fontSize: 12, color: 'rgba(240,192,96,0.5)', marginTop: 4 }}>초를 밝혀 지혜의 빛을 공양합니다</p>
       </div>
 
-      {/* 전체 프로그레스 */}
-      <div style={{ maxWidth: 480, margin: '0 auto 8px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
-          <span style={{ color: 'rgba(240,192,96,0.7)', fontSize: 13, minWidth: 90, textAlign: 'right' }}>
-            {candles.length.toLocaleString()} / {TOTAL.toLocaleString()}
-          </span>
-          <div style={{ flex: 1, height: 6, background: 'rgba(240,192,96,0.1)', borderRadius: 3, overflow: 'hidden' }}>
-            <div style={{ height: '100%', width: `${pct}%`, background: 'linear-gradient(90deg,#c9a84c,#f6e05e)', borderRadius: 3, transition: 'width 0.8s' }} />
-          </div>
-          <span style={{ color: 'rgba(240,192,96,0.7)', fontSize: 13, minWidth: 32 }}>{pct}%</span>
-        </div>
+      <div style={{ textAlign: 'center', marginBottom: 8 }}>
+        <span style={{ color: 'rgba(240,192,96,0.7)', fontSize: 13 }}>전체 {candles.length.toLocaleString()}초 점등</span>
       </div>
-
-      {/* 차수 진행 */}
-      <div style={{ display: 'flex', gap: 3, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 6 }}>
-        {Array.from({ length: MAX_ROUND }, (_, i) => i + 1).map(r => {
-          const done = r < currentRound
-          const active = r === currentRound
-          return (
-            <span key={r} style={{
-              width: active ? 12 : 8, height: active ? 12 : 8, borderRadius: '50%', display: 'inline-block',
-              background: done ? '#c9a84c' : active ? '#fff' : 'rgba(255,255,255,0.08)',
-              border: active ? '2px solid #c9a84c' : 'none',
-              boxShadow: active ? '0 0 6px rgba(201,168,76,0.5)' : 'none',
-            }} />
-          )
-        })}
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 16, marginBottom: 12 }}>
+        <button onClick={() => setViewRound(Math.max(1, viewRound - 1))} disabled={viewRound <= 1} style={{ background: 'none', border: '1px solid rgba(240,192,96,0.2)', color: viewRound <= 1 ? 'rgba(240,192,96,0.2)' : '#f0c060', borderRadius: 6, padding: '5px 12px', cursor: 'pointer', fontSize: 13 }}>◂</button>
+        <span style={{ color: '#f0c060', fontSize: 14, fontWeight: 600 }}>{viewRound}차 ({roundCount}/{PER_ROUND})</span>
+        <button onClick={() => setViewRound(viewRound + 1)} style={{ background: 'none', border: '1px solid rgba(240,192,96,0.2)', color: '#f0c060', borderRadius: 6, padding: '5px 12px', cursor: 'pointer', fontSize: 13 }}>▸</button>
       </div>
-      <p style={{ textAlign: 'center', fontSize: 12, color: 'rgba(240,192,96,0.5)', marginBottom: 20 }}>
-        {currentRound}차 ({roundCount} / {PER_ROUND})
-      </p>
 
       {/* 현재 차수 초 그리드 10×10 */}
-      <div style={{ display: 'grid', gridTemplateColumns: `repeat(${getMobileCols()}, 1fr)`, gap: 4, marginBottom: 24 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: `repeat(${COLS}, 1fr)`, gap: 4, marginBottom: 24 }}>
         {Array.from({ length: PER_ROUND }).map((_, i) => {
           const globalIdx = roundStart + i
           const lit = globalIdx < candles.length
@@ -158,7 +139,7 @@ export default function CandlePage() {
         </div>
       )}
 
-      {!showForm && !submitDone && candles.length < TOTAL && (
+      {!showForm && !submitDone && true && (
         <div style={{ textAlign: 'center' }}>
           <button onClick={() => setShowForm(true)} style={{ background: 'rgba(240,192,96,0.15)', border: '1px solid rgba(240,192,96,0.4)', color: 'rgba(255,220,120,0.9)', borderRadius: 8, padding: '12px 28px', cursor: 'pointer', fontSize: 14 }}>
             🕯 초 밝히기
@@ -166,7 +147,7 @@ export default function CandlePage() {
         </div>
       )}
 
-      {candles.length >= TOTAL && (
+      {false && (
         <div style={{ textAlign: 'center', padding: '20px 0' }}>
           <div style={{ fontSize: 36, marginBottom: 8 }}>✨</div>
           <p style={{ color: '#f0c060', fontSize: 16, fontWeight: 600 }}>2,000초 원만성취</p>
