@@ -8,7 +8,7 @@ const items = [
   { label: '지장전', sub: '위패모십니다', icon: '🪷', href: 'jijangjeon' },
   { label: '종무소', sub: '사찰 안내', icon: '📜', href: 'jongmuso' },
   { label: '초공양', sub: '초 올리기', icon: '🕯️', href: 'candle' },
-  { label: '인등불사', sub: '인연의 등', icon: '🏮', href: 'indung' },
+  { label: '인등불사', sub: '가족건강행복', icon: '🏮', href: 'indung' },
   { label: '연등공양', sub: '연꽃 등불', icon: '🪷', href: 'yeondeung' },
   { label: '부처님말씀', sub: '오늘의 법문', icon: '📿', href: 'dharma' },
   { label: '공지사항', sub: '타종', icon: '🔔', href: 'notice' },
@@ -110,16 +110,32 @@ function CardIcon({ id, done }: { id: string; done: boolean }) {
       </svg>
     )
     case 'indung': return (
-      <svg viewBox="0 0 64 64" style={common}>
-        <rect x="29" y="4" width="6" height="6" rx="1.5" fill="#d4c8a0" />
-        <path d="M22 10 Q22 6 32 6 Q42 6 42 10 L44 26 Q46 30 46 34 L46 46 Q46 50 42 50 L22 50 Q18 50 18 46 L18 34 Q18 30 20 26 Z"
-          fill="url(#ciCeramicG)" stroke="#c8bda0" strokeWidth="0.5" />
-        <path d="M46 24 Q52 24 52 32 Q52 38 46 38" fill="none" stroke="#c8bda0" strokeWidth="2" strokeLinecap="round" />
-        <ellipse cx="28" cy="24" rx="4" ry="6" fill="rgba(255,255,255,0.12)" />
-        <text x="32" y="36" textAnchor="middle" fill="rgba(100,60,10,0.5)" fontSize="8" fontWeight="700">燈</text>
-        <ellipse cx="32" cy="6" rx="5" ry="7" fill="rgba(255,200,50,0.6)" style={{ animation: 'ci-flame 1s ease-in-out infinite alternate' }} />
-        <ellipse cx="32" cy="7" rx="2.5" ry="4" fill="rgba(255,240,150,0.8)" />
-        <defs><radialGradient id="ciCeramicG" cx="40%" cy="35%"><stop offset="0%" stopColor="#f0e8d8"/><stop offset="100%" stopColor="#c8bda0"/></radialGradient></defs>
+      <svg viewBox="0 0 78 90" style={{ ...common, overflow: 'visible' }}>
+        <defs>
+          <radialGradient id="ciCeramicG" cx="40%" cy="35%"><stop offset="0%" stopColor="#f0e8d8"/><stop offset="100%" stopColor="#c8bda0"/></radialGradient>
+        </defs>
+        {/* 3×4 인등 배열 */}
+        {Array.from({ length: 12 }).map((_, k) => {
+          const col = k % 3, row = Math.floor(k / 3)
+          const cx = 13 + col * 26, cy = 12 + row * 20
+          const delay = (k * 0.3).toFixed(1)
+          return (
+            <g key={k}>
+              {/* 불꽃 */}
+              <ellipse cx={cx} cy={cy - 6} rx="3" ry="5" fill="rgba(255,200,50,0.7)" style={{ animation: `ci-flame 2.5s ease-in-out ${delay}s infinite alternate` }} />
+              <ellipse cx={cx} cy={cy - 5} rx="1.5" ry="3" fill="rgba(255,240,150,0.85)" />
+              {/* 심지 */}
+              <rect x={cx - 1.5} y={cy - 2} width="3" height="4" rx="0.8" fill="#e8dcc0" />
+              {/* 도자기 몸통 */}
+              <path d={`M${cx - 7} ${cy + 2} Q${cx - 7} ${cy} ${cx} ${cy} Q${cx + 7} ${cy} ${cx + 7} ${cy + 2} L${cx + 8} ${cy + 10} Q${cx + 9} ${cy + 13} ${cx + 9} ${cy + 15} L${cx + 9} ${cy + 18} Q${cx + 9} ${cy + 20} ${cx + 6} ${cy + 20} L${cx - 6} ${cy + 20} Q${cx - 9} ${cy + 20} ${cx - 9} ${cy + 18} L${cx - 9} ${cy + 15} Q${cx - 9} ${cy + 13} ${cx - 8} ${cy + 10} Z`}
+                fill="url(#ciCeramicG)" stroke="#c8bda0" strokeWidth="0.4" />
+              {/* 손잡이 */}
+              <path d={`M${cx + 9} ${cy + 8} Q${cx + 13} ${cy + 8} ${cx + 13} ${cy + 13} Q${cx + 13} ${cy + 16} ${cx + 9} ${cy + 16}`} fill="none" stroke="#c8bda0" strokeWidth="1.2" strokeLinecap="round" />
+              {/* 글로우 */}
+              <circle cx={cx} cy={cy - 2} r="8" fill="none" stroke={`rgba(255,200,50,${0.08 + (k % 3) * 0.04})`} strokeWidth="3" style={{ animation: `ci-glow 3s ease-in-out ${delay}s infinite alternate` }} />
+            </g>
+          )
+        })}
       </svg>
     )
     case 'yeondeung': return (
