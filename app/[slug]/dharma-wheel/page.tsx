@@ -239,10 +239,10 @@ export default function DharmaWheelPage() {
     <div ref={rootRef} className="dw-root">
       <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&display=swap" rel="stylesheet" />
 
-      <div className="dw-title">{phase === 'done' ? '미래사 온라인법당 초전법륜지' : '미 래 사'}</div>
-      {phase !== 'done' && <div className="dw-sub">사이버법당 · 초전법륜지</div>}
+      <div className="dw-title">{phase === 'done' ? '미래사' : '미 래 사'}</div>
+      <div className="dw-sub">{phase === 'done' ? '온라인법당 초전법륜지' : '사이버법당 · 초전법륜지'}</div>
 
-      <div style={{ position: 'relative', width: cw, height: phase === 'done' ? totalH + gridY0 + 80 : wcy + wr + 60, transition: 'height 0.8s ease', overflow: phase === 'done' ? 'visible' : 'hidden' }}>
+      <div style={{ position: 'relative', width: cw, minHeight: phase === 'done' ? totalH + gridY0 + 20 : wcy + wr + 60, transition: 'min-height 0.8s ease', overflow: phase === 'done' ? 'visible' : 'hidden' }}>
 
         {/* 바퀴 뼈대 — 스핀 중 보이고 morph 시 fade out */}
         {phase !== 'done' && (
