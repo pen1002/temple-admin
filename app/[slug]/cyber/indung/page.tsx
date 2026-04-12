@@ -40,7 +40,8 @@ export default function IndungPage() {
   return (
     <div style={{ padding: '20px 20px 60px', maxWidth: 600, margin: '0 auto' }}>
       <div style={{ textAlign: 'center', marginBottom: 20 }}>
-        <div style={{ fontSize: 48, marginBottom: 8 }}>🕯</div>
+        <div style={{ fontSize: 48, marginBottom: 8, animation: 'id-pulse 2s ease-in-out infinite alternate' }}>🕯</div>
+        <style>{`@keyframes id-pulse { 0% { transform: scale(1); filter: drop-shadow(0 0 4px rgba(255,200,50,0.3)); } 100% { transform: scale(1.06); filter: drop-shadow(0 0 12px rgba(255,200,50,0.6)); } }`}</style>
         <h2 style={{ fontSize: 22, fontWeight: 600, color: accent, letterSpacing: 3, fontFamily: '"Noto Serif KR",serif' }}>인등불사</h2>
         <p style={{ fontSize: 12, color: `rgba(${accentRgb},0.5)`, marginTop: 4 }}>인등을 밝혀 소원을 발원합니다</p>
       </div>

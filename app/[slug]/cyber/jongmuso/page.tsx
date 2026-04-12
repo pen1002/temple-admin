@@ -61,7 +61,34 @@ export default function JongmusoPage() {
     return (
       <div style={{ padding: 'clamp(16px,4vw,20px) 16px 60px', maxWidth: 600, margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: 28 }}>
-          <div style={{ fontSize: 48, marginBottom: 8 }}>📿</div>
+          {/* 종무소 SVG — 목어+붓+두루마리 */}
+          <div style={{ display: 'inline-block', width: 90, height: 80, marginBottom: 8 }}>
+            <svg viewBox="0 0 90 80" style={{ width: '100%' }}>
+              {/* 두루마리 */}
+              <rect x="10" y="20" width="45" height="50" rx="3" fill="#d4c4a0" stroke="#b8a878" strokeWidth="0.8" />
+              <rect x="10" y="20" width="45" height="6" rx="2" fill="#c8b890" />
+              <line x1="18" y1="32" x2="48" y2="32" stroke="#a09070" strokeWidth="0.5" />
+              <line x1="18" y1="38" x2="48" y2="38" stroke="#a09070" strokeWidth="0.5" />
+              <line x1="18" y1="44" x2="42" y2="44" stroke="#a09070" strokeWidth="0.5" />
+              <line x1="18" y1="50" x2="45" y2="50" stroke="#a09070" strokeWidth="0.5" />
+              <line x1="18" y1="56" x2="38" y2="56" stroke="#a09070" strokeWidth="0.5" />
+              <circle cx="52" cy="67" r="2" fill="#c02020" opacity="0.7" />
+              {/* 붓 */}
+              <g style={{ animation: 'jm-brush 2.5s ease-in-out infinite' }}>
+                <rect x="62" y="8" width="4" height="40" rx="1.5" fill="#5a3a20" />
+                <path d="M62 48 Q64 56 66 48" fill="#2a1a10" />
+                <rect x="61" y="6" width="6" height="4" rx="1" fill="#8a6a40" />
+              </g>
+              {/* 목어 */}
+              <ellipse cx="76" cy="22" rx="10" ry="7" fill="#8B6914" stroke="#6a5010" strokeWidth="0.6" style={{ animation: 'jm-fish 3s ease-in-out infinite' }} />
+              <circle cx="80" cy="20" r="1.5" fill="#3a2a10" />
+              <path d="M66 22 Q64 19 66 16" fill="none" stroke="#6a5010" strokeWidth="0.8" />
+            </svg>
+          </div>
+          <style>{`
+            @keyframes jm-brush { 0%,100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } }
+            @keyframes jm-fish { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+          `}</style>
           <h2 style={{ fontSize: 22, fontWeight: 600, color: accent, letterSpacing: 3, fontFamily: '"Noto Serif KR",serif' }}>종무소</h2>
           <p style={{ fontSize: 12, color: `rgba(${accentRgb},0.5)`, marginTop: 4 }}>기도를 접수하고 불사에 동참합니다</p>
           <p style={{ fontSize: 11, color: `rgba(${accentRgb},0.35)`, marginTop: 4 }}>각 기도 1년 2,000원 · 100등×20차 = 2,000등</p>
@@ -86,7 +113,7 @@ export default function JongmusoPage() {
   return (
     <div style={{ padding: 'clamp(16px,4vw,20px) 16px 60px', maxWidth: 600, margin: '0 auto' }}>
       <div style={{ textAlign: 'center', marginBottom: 20 }}>
-        <div style={{ fontSize: 40, marginBottom: 6 }}>{selectedPrayer.icon}</div>
+        <div style={{ fontSize: 36, marginBottom: 6, animation: 'jm-fish 2s ease-in-out infinite' }}>{selectedPrayer.icon}</div>
         <h2 style={{ fontSize: 20, fontWeight: 600, color: accent, letterSpacing: 2, fontFamily: '"Noto Serif KR",serif' }}>{selectedPrayer.name}</h2>
         <button onClick={() => { setSelectedPrayer(null); setSubmitted(false) }} style={{ marginTop: 8, background: 'none', border: `1px solid rgba(${accentRgb},0.25)`, color: `rgba(${accentRgb},0.6)`, borderRadius: 6, padding: '4px 14px', cursor: 'pointer', fontSize: 11 }}>← 다른 기도 선택</button>
       </div>

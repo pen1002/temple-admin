@@ -49,7 +49,8 @@ export default function YeondeungPage() {
   return (
     <div style={{ padding: '20px 20px 60px', maxWidth: 600, margin: '0 auto' }}>
       <div style={{ textAlign: 'center', marginBottom: 20 }}>
-        <div style={{ fontSize: 48, marginBottom: 8 }}>🏮</div>
+        <div style={{ fontSize: 48, marginBottom: 8, animation: 'yd-sway 2.5s ease-in-out infinite' }}>🏮</div>
+        <style>{`@keyframes yd-sway { 0%,100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } }`}</style>
         <h2 style={{ fontSize: 22, fontWeight: 600, color: accent, letterSpacing: 3, fontFamily: '"Noto Serif KR",serif' }}>연등공양</h2>
         <p style={{ fontSize: 12, color: `rgba(${accentRgb},0.5)`, marginTop: 4 }}>부처님오신날 연등을 밝혀 공양합니다</p>
         <p style={{ fontSize: 11, color: `rgba(${accentRgb},0.4)`, marginTop: 6 }}>🏮 연등 신청자는 서울 불연암에 등을 달아드립니다</p>

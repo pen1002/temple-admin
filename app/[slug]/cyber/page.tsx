@@ -11,7 +11,7 @@ const items = [
   { label: '인등불사', sub: '인연의 등', icon: '🏮', href: 'indung' },
   { label: '연등공양', sub: '연꽃 등불', icon: '🪷', href: 'yeondeung' },
   { label: '부처님말씀', sub: '오늘의 법문', icon: '📿', href: 'dharma' },
-  { label: '공지사항', sub: '범종소식', icon: '🔔', href: 'notice' },
+  { label: '공지사항', sub: '타종', icon: '🔔', href: 'notice' },
 ];
 
 const GAP = 12;

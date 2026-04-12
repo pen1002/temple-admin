@@ -51,7 +51,8 @@ export default function CandlePage() {
   return (
     <div style={{ padding: '20px 20px 60px', maxWidth: 640, margin: '0 auto' }}>
       <div style={{ textAlign: 'center', marginBottom: 24 }}>
-        <div style={{ fontSize: 48, marginBottom: 8 }}>🕯</div>
+        <div style={{ fontSize: 48, marginBottom: 8, animation: 'cd-flicker 1.5s ease-in-out infinite alternate' }}>🕯</div>
+        <style>{`@keyframes cd-flicker { 0% { transform: scale(1); filter: brightness(1); } 100% { transform: scale(1.08); filter: brightness(1.2) drop-shadow(0 0 8px rgba(255,200,50,0.5)); } }`}</style>
         <h2 style={{ fontSize: 22, fontWeight: 600, color: '#f0c060', letterSpacing: 3, fontFamily: '"Noto Serif KR",serif' }}>초공양</h2>
         <p style={{ fontSize: 12, color: 'rgba(240,192,96,0.5)', marginTop: 4 }}>초를 밝혀 지혜의 빛을 공양합니다</p>
       </div>

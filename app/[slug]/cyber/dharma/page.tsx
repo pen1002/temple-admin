@@ -103,7 +103,8 @@ export default function DharmaPage() {
 
   return (
     <div style={{ padding: 'clamp(24px,5vw,40px) 16px 60px', maxWidth: 600, margin: '0 auto', textAlign: 'center' }}>
-      <div style={{ fontSize: 48, marginBottom: 12 }}>📿</div>
+      <div style={{ fontSize: 48, marginBottom: 12, animation: 'dm-glow 3s ease-in-out infinite alternate' }}>📿</div>
+      <style>{`@keyframes dm-glow { 0% { filter: drop-shadow(0 0 2px rgba(201,168,76,0.2)); } 100% { filter: drop-shadow(0 0 12px rgba(201,168,76,0.5)); transform: scale(1.05); } }`}</style>
       <h2 style={{ fontSize: 22, fontWeight: 600, color: '#c9a84c', letterSpacing: 3, fontFamily: '"Noto Serif KR",serif', marginBottom: 8 }}>오늘의 부처님 말씀</h2>
       <p style={{ fontSize: 11, color: 'rgba(201,168,76,0.4)', marginBottom: 28 }}>
         {new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' })}

@@ -50,7 +50,8 @@ export default function JijangjeonPage() {
   return (
     <div style={{ padding: 'clamp(16px,4vw,20px) 16px 60px', maxWidth: 640, margin: '0 auto' }}>
       <div style={{ textAlign: 'center', marginBottom: 20 }}>
-        <div style={{ fontSize: 48, marginBottom: 8 }}>🪷</div>
+        <div style={{ fontSize: 48, marginBottom: 8, animation: 'jj-float 3s ease-in-out infinite' }}>🪷</div>
+        <style>{`@keyframes jj-float { 0%,100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-6px) scale(1.05); } }`}</style>
         <h2 style={{ fontSize: 22, fontWeight: 600, color: '#d4b8ff', letterSpacing: 3, fontFamily: '"Noto Serif KR",serif' }}>지장전</h2>
         <p style={{ fontSize: 12, color: `rgba(${accentRgb},0.5)`, marginTop: 4 }}>조상 영가의 극락왕생을 발원합니다</p>
         <p style={{ fontSize: 11, color: `rgba(${accentRgb},0.35)`, marginTop: 4 }}>위패 1위 봉안 1년 5,000원</p>
