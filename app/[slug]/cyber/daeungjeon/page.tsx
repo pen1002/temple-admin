@@ -196,25 +196,27 @@ export default function DaeungjeonPage() {
         @keyframes djBow { 0%{background:transparent} 10%{background:rgba(245,208,96,0.18)} 30%{background:rgba(245,208,96,0.1)} 70%{background:rgba(245,208,96,0.05)} 100%{background:transparent} }
         .dj-altar { display:flex; align-items:flex-end; justify-content:center; gap:clamp(20px,6vw,40px); padding:0 20px; z-index:2; margin-top:-10px; }
         .dj-candle-wrap { position:relative; }
-        .dj-candle-glow { position:absolute; top:0; left:50%; transform:translateX(-50%); width:50px; height:50px; border-radius:50%; background:radial-gradient(circle,rgba(255,200,50,0.25) 0%,transparent 70%); animation:djCandleGlow 1.2s ease-in-out infinite alternate; pointer-events:none; }
-        @keyframes djCandleGlow { 0%{opacity:0.5;transform:translateX(-50%) scale(0.9)} 100%{opacity:1;transform:translateX(-50%) scale(1.2)} }
-        .dj-flame-outer { animation:djFlame1 0.6s ease-in-out infinite alternate; transform-origin:center bottom; }
-        .dj-flame-mid { animation:djFlame2 0.5s ease-in-out 0.1s infinite alternate; transform-origin:center bottom; }
-        .dj-flame-inner { animation:djFlame3 0.4s ease-in-out 0.2s infinite alternate; transform-origin:center bottom; }
-        @keyframes djFlame1 { 0%{transform:scaleX(0.85) scaleY(0.9);opacity:0.7} 100%{transform:scaleX(1.1) scaleY(1.1);opacity:1} }
-        @keyframes djFlame2 { 0%{transform:scaleX(0.9) scaleY(0.85)} 100%{transform:scaleX(1.05) scaleY(1.15)} }
-        @keyframes djFlame3 { 0%{transform:scaleY(0.8);opacity:0.6} 100%{transform:scaleY(1.2);opacity:0.9} }
+        .dj-candle-glow { position:absolute; top:0; left:50%; transform:translateX(-50%); width:50px; height:50px; border-radius:50%; background:radial-gradient(circle,rgba(255,200,50,0.25) 0%,transparent 70%); animation:djCandleGlow 3s ease-in-out infinite alternate; pointer-events:none; }
+        @keyframes djCandleGlow { 0%{opacity:0.6;transform:translateX(-50%) scale(0.95)} 100%{opacity:1;transform:translateX(-50%) scale(1.1)} }
+        .dj-flame-outer { animation:djFlame1 2.5s ease-in-out infinite alternate; transform-origin:center bottom; }
+        .dj-flame-mid { animation:djFlame2 2s ease-in-out 0.3s infinite alternate; transform-origin:center bottom; }
+        .dj-flame-inner { animation:djFlame3 1.8s ease-in-out 0.5s infinite alternate; transform-origin:center bottom; }
+        @keyframes djFlame1 { 0%{transform:scaleX(0.92) scaleY(0.95);opacity:0.8} 100%{transform:scaleX(1.05) scaleY(1.05);opacity:1} }
+        @keyframes djFlame2 { 0%{transform:scaleX(0.95) scaleY(0.92)} 100%{transform:scaleX(1.03) scaleY(1.06)} }
+        @keyframes djFlame3 { 0%{transform:scaleY(0.9);opacity:0.7} 100%{transform:scaleY(1.08);opacity:0.9} }
         .dj-incense-wrap { position:relative; }
-        .dj-smoke-container { position:absolute; top:-10px; left:50%; transform:translateX(-50%); width:40px; height:60px; pointer-events:none; }
-        .dj-smoke { position:absolute; bottom:0; border-radius:50%; background:rgba(200,190,170,0.15); filter:blur(3px); }
-        .dj-smoke-1 { left:12px; width:8px; height:8px; animation:djSmoke 3.5s ease-out infinite; }
-        .dj-smoke-2 { left:18px; width:6px; height:6px; animation:djSmoke 3.5s ease-out 0.8s infinite; }
-        .dj-smoke-3 { left:15px; width:7px; height:7px; animation:djSmoke 3.5s ease-out 1.6s infinite; }
+        .dj-smoke-container { position:absolute; top:-20px; left:50%; transform:translateX(-50%); width:50px; height:80px; pointer-events:none; }
+        .dj-smoke { position:absolute; bottom:0; border-radius:50%; filter:blur(4px); }
+        .dj-smoke-1 { left:14px; width:12px; height:12px; background:rgba(220,210,190,0.35); animation:djSmoke 5s ease-out infinite; }
+        .dj-smoke-2 { left:22px; width:10px; height:10px; background:rgba(210,200,180,0.3); animation:djSmoke 5s ease-out 1.2s infinite; }
+        .dj-smoke-3 { left:18px; width:11px; height:11px; background:rgba(215,205,185,0.25); animation:djSmoke 5s ease-out 2.5s infinite; }
         @keyframes djSmoke {
-          0% { transform:translateY(0) scale(1); opacity:0.4; }
-          30% { transform:translateY(-18px) translateX(4px) scale(1.5); opacity:0.3; }
-          60% { transform:translateY(-36px) translateX(-3px) scale(2.2); opacity:0.15; }
-          100% { transform:translateY(-55px) translateX(6px) scale(3); opacity:0; }
+          0% { transform:translateY(0) scale(1); opacity:0.5; }
+          20% { transform:translateY(-15px) translateX(5px) scale(1.4); opacity:0.4; }
+          40% { transform:translateY(-30px) translateX(-4px) scale(1.8); opacity:0.3; }
+          60% { transform:translateY(-45px) translateX(7px) scale(2.4); opacity:0.2; }
+          80% { transform:translateY(-60px) translateX(-3px) scale(3); opacity:0.1; }
+          100% { transform:translateY(-75px) translateX(5px) scale(3.5); opacity:0; }
         }
         @media(max-width:500px) { .dj-plaque{letter-spacing:8px} }
       `}</style>
