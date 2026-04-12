@@ -124,7 +124,7 @@ export default function DaeungjeonPage() {
         @keyframes sway{0%{transform:rotate(-3deg)}100%{transform:rotate(3deg)}}
         .dj-halo{position:absolute;top:140px;left:50%;transform:translateX(-50%);width:220px;height:220px;border-radius:50%;z-index:3;background:radial-gradient(circle,rgba(245,208,96,0.25) 0%,rgba(245,208,96,0.05) 50%,transparent 75%);animation:halo 3s ease-in-out infinite alternate}
         @keyframes halo{0%{transform:translateX(-50%) scale(0.95);opacity:0.6}100%{transform:translateX(-50%) scale(1.08);opacity:1}}
-        .dj-buddha-wrap{position:relative;z-index:4;width:100%;max-width:360px;height:clamp(260px,55vw,320px);margin-top:8px}
+        .dj-buddha-wrap{position:relative;z-index:4;width:calc(100% - 90px);max-width:360px;height:clamp(260px,55vw,320px);margin-top:8px}
         .dj-tilt{width:100%;height:100%;will-change:transform}.dj-iframe{width:100%;height:100%;border:none;border-radius:8px}
         .dj-loader{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:rgba(26,26,26,0.9);border-radius:8px;font-size:12px;color:rgba(245,230,184,0.5)}
         .dj-spinner{width:32px;height:32px;border:2px solid rgba(245,208,96,0.2);border-top-color:#F5D060;border-radius:50%;animation:spin 1s linear infinite}
@@ -139,7 +139,7 @@ export default function DaeungjeonPage() {
         .dj-flash{position:fixed;inset:0;z-index:100;pointer-events:none;animation:bow 5s ease-in-out forwards}
         @keyframes bow{0%{background:transparent}10%{background:rgba(245,208,96,0.18)}30%{background:rgba(245,208,96,0.1)}70%{background:rgba(245,208,96,0.05)}100%{background:transparent}}
         .dj-floor{position:absolute;bottom:0;left:0;width:100%;height:80px;z-index:1;background:linear-gradient(180deg,transparent,#5C3A1E)}
-        @media(max-width:500px){.dj-col{width:30px}.dj-col-l{left:2%}.dj-col-r{right:2%}.dj-buddha-wrap{max-width:300px}.dj-btn{padding:8px 14px;font-size:12px}.dj-btn-bow{padding:10px 20px;font-size:13px}}
+        @media(max-width:500px){.dj-col{width:24px}.dj-col-l{left:2%}.dj-col-r{right:2%}.dj-buddha-wrap{width:calc(100% - 60px);max-width:280px}.dj-btn{padding:8px 14px;font-size:12px}.dj-btn-bow{padding:10px 20px;font-size:13px}}
       `}</style>
     </div>
   );

@@ -303,31 +303,35 @@ export default function DharmaWheelPage() {
 
           const targetX = isDone ? tgtX - gp.w / 2 : sp.x - gp.w / 2;
           const targetY = isDone ? tgtY - gp.h / 2 : sp.y - gp.h / 2;
-          const targetScale = isDone ? 1 : (cw < 500 ? 0.7 : 0.65);
-          const targetOpacity = isDone ? 1 : (phase === 'spinning' ? 0.8 : 1);
-
           return (
             <motion.div key={i}
-              animate={{ x: targetX, y: targetY, scale: targetScale, opacity: targetOpacity, borderRadius: isDone ? 12 : 50 }}
-              transition={{ type: 'spring', stiffness: 35, damping: 14, delay: isDone ? i * 0.06 : 0 }}
+              animate={{
+                x: isDone ? tgtX - gp.w / 2 : sp.x - 20,
+                y: isDone ? tgtY - gp.h / 2 : sp.y - 20,
+                width: isDone ? gp.w : 40,
+                height: isDone ? gp.h : 40,
+                scale: 1,
+                opacity: 1,
+                borderRadius: isDone ? 12 : 20,
+              }}
+              transition={{ type: 'spring', stiffness: 40, damping: 16, delay: isDone ? i * 0.06 : 0 }}
               onClick={() => isDone && item.href !== '#' && router.push(`/${slug}/cyber/${item.href}`)}
               whileHover={isDone ? { scale: 1.05, boxShadow: '0 4px 16px rgba(0,0,0,0.1)' } : {}}
               style={{
                 position: 'absolute', left: 0, top: 0,
-                width: gp.w, height: gp.h,
-                background: isDone ? 'rgba(255,255,255,1)' : 'rgba(255,255,255,0.4)',
-                border: isDone ? '0.5px solid #ddd' : '0.5px solid rgba(200,150,30,0.4)',
+                background: isDone ? 'rgba(255,255,255,1)' : 'rgba(255,255,255,0.15)',
+                border: isDone ? '0.5px solid #ddd' : 'none',
                 boxShadow: isDone ? '0 1px 8px rgba(0,0,0,0.06)' : 'none',
-                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 6,
+                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: isDone ? 6 : 2,
                 cursor: isDone ? 'pointer' : 'default',
-                zIndex: 10,
+                zIndex: 10, overflow: 'hidden',
               }}
             >
-              <motion.div animate={{ width: isDone ? 64 : 40, height: isDone ? 64 : 40 }} transition={{ type: 'spring', stiffness: 50, damping: 15 }}>
+              <motion.div animate={{ width: isDone ? 64 : 28, height: isDone ? 64 : 28 }} transition={{ type: 'spring', stiffness: 50, damping: 15 }}>
                 <CardIcon id={item.href} done={isDone} />
               </motion.div>
-              <div style={{ fontSize: isDone ? 13 : 11, fontWeight: 700, letterSpacing: 1, color: '#2C2C2A', textAlign: 'center', marginTop: 4 }}>{item.label}</div>
-              <motion.div animate={{ opacity: isDone ? 1 : 0 }} transition={{ duration: 0.5, delay: isDone ? 0.3 + i * 0.05 : 0 }} style={{ fontSize: 10, color: '#888', textAlign: 'center' }}>{item.sub}</motion.div>
+              <motion.div animate={{ opacity: isDone ? 1 : 0, height: isDone ? 'auto' : 0 }} transition={{ duration: 0.4, delay: isDone ? 0.2 + i * 0.04 : 0 }} style={{ fontSize: 13, fontWeight: 700, letterSpacing: 1, color: '#2C2C2A', textAlign: 'center', overflow: 'hidden' }}>{item.label}</motion.div>
+              <motion.div animate={{ opacity: isDone ? 1 : 0, height: isDone ? 'auto' : 0 }} transition={{ duration: 0.5, delay: isDone ? 0.3 + i * 0.05 : 0 }} style={{ fontSize: 10, color: '#888', textAlign: 'center', overflow: 'hidden' }}>{item.sub}</motion.div>
             </motion.div>
           );
         })}
