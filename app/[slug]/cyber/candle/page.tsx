@@ -16,7 +16,7 @@ export default function CandlePage() {
   const [wish, setWish] = useState('')
   const [contact, setContact] = useState('')
   const [amount, setAmount] = useState(10000)
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false); const [kakaoText, setKakaoText] = useState("")
   const [viewRound, setViewRound] = useState(1)
   const [touchStartX2, setTouchStartX2] = useState(0)
   const [tooltip, setTooltip] = useState<{ x: number; y: number; name: string; wish: string } | null>(null)

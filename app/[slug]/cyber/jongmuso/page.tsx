@@ -23,7 +23,7 @@ export default function JongmusoPage() {
   const [contact, setContact] = useState('')
   const [wish, setWish] = useState('')
   const [submitted, setSubmitted] = useState(false)
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false); const [kakaoText, setKakaoText] = useState("")
   const [viewRound, setViewRound] = useState(1)
   const [copied, setCopied] = useState(false)
   const [tooltip, setTooltip] = useState<{ x: number; y: number; name: string; wish: string } | null>(null)

@@ -11,7 +11,7 @@ export default function IndungPage() {
   const { slug } = useParams<{ slug: string }>()
   const [items, setItems] = useState<Donor[]>([])
   const [name, setName] = useState(''); const [wish, setWish] = useState(''); const [contact, setContact] = useState('')
-  const [loading, setLoading] = useState(false); const [submitted, setSubmitted] = useState(false)
+  const [loading, setLoading] = useState(false); const [submitted, setSubmitted] = useState(false); const [kakaoText, setKakaoText] = useState("")
   const [tooltip, setTooltip] = useState<{ x: number; y: number; name: string; wish: string } | null>(null)
 
   const fetchData = useCallback(async () => {
@@ -29,8 +29,8 @@ export default function IndungPage() {
 
   const handleSubmit = async () => {
     if (!name.trim()) return; setLoading(true)
-    await fetch('/api/cyber/offering', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ temple_slug: slug, type: 'indung', name: name.trim(), wish: wish.trim(), contact: contact.trim(), amount: AMOUNT }) })
+    const res = await fetch("/api/cyber/offering", { method: "POST", headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ temple_slug: slug, type: "indung", name: name.trim(), wish: wish.trim(), contact: contact.trim(), amount: AMOUNT }) }); const result = await res.json(); if (result.kakaoText) setKakaoText(result.kakaoText)
     await fetchData(); setSubmitted(true); setLoading(false)
   }
 
@@ -120,7 +120,8 @@ export default function IndungPage() {
       ) : (
         <div style={{ textAlign: 'center', padding: '20px 0' }}>
           <div style={{ fontSize: 42, marginBottom: 12 }}>🕯</div>
-          <p style={{ color: 'rgba(255,235,150,0.95)', fontSize: 16, fontWeight: 500, lineHeight: 1.9 }}>인등이 점등되었습니다.</p>
+          <p style={{ color: "rgba(255,235,150,0.95)", fontSize: 16, fontWeight: 500, lineHeight: 1.9 }}>인등이 점등되었습니다.</p>
+          {kakaoText && <button onClick={() => { navigator.clipboard.writeText(kakaoText); alert("카카오톡에 붙여넣기하여 공유해 주세요.") }} style={{ marginTop: 10, background: "#FEE500", border: "none", color: "#3A1D1D", borderRadius: 8, padding: "8px 20px", fontSize: 13, cursor: "pointer", fontWeight: 700 }}>카카오톡 공유</button>}
           <div style={{ display: 'flex', gap: 10, justifyContent: 'center', marginTop: 16 }}>
             <button onClick={() => { setSubmitted(false); setName(''); setWish(''); setContact('') }} style={{ background: `rgba(${accentRgb},0.15)`, border: `1px solid rgba(${accentRgb},0.4)`, color: accent, borderRadius: 8, padding: '10px 20px', cursor: 'pointer', fontSize: 13 }}>추가 신청</button>
             <a href={`/${slug}/cyber`} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(201,168,76,0.12)', border: '1px solid rgba(201,168,76,0.3)', color: '#c9a84c', borderRadius: 8, padding: '10px 20px', fontSize: 13, textDecoration: 'none' }}>☸ 도량으로</a>

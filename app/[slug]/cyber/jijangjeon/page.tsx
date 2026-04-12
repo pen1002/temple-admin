@@ -16,7 +16,7 @@ export default function JijangjeonPage() {
   const [wish, setWish] = useState('')
   const [contact, setContact] = useState('')
   const [submitted, setSubmitted] = useState(false)
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false); const [kakaoText, setKakaoText] = useState("")
   const [viewRound, setViewRound] = useState(1)
   const [tooltip, setTooltip] = useState<{ x: number; y: number; deceased: string; name: string; rel: string } | null>(null)
 

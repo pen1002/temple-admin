@@ -21,7 +21,7 @@ export default function YeondeungPage() {
   const { slug } = useParams<{ slug: string }>()
   const [items, setItems] = useState<Donor[]>([])
   const [name, setName] = useState(''); const [wish, setWish] = useState(''); const [contact, setContact] = useState('')
-  const [amount, setAmount] = useState(50000); const [loading, setLoading] = useState(false); const [submitted, setSubmitted] = useState(false)
+  const [amount, setAmount] = useState(50000); const [loading, setLoading] = useState(false); const [submitted, setSubmitted] = useState(false); const [kakaoText, setKakaoText] = useState("")
   const [viewRound, setViewRound] = useState(1)
   const [touchStartX2, setTouchStartX2] = useState(0)
   const [tooltip, setTooltip] = useState<{ x: number; y: number; name: string; wish: string } | null>(null)
@@ -134,7 +134,8 @@ export default function YeondeungPage() {
       ) : (
         <div style={{ textAlign: 'center', padding: '20px 0' }}>
           <div style={{ fontSize: 42, marginBottom: 12 }}>🏮</div>
-          <p style={{ color: 'rgba(255,235,150,0.95)', fontSize: 16, fontWeight: 500, lineHeight: 1.9 }}>연등이 점등되었습니다.</p>
+          <p style={{ color: "rgba(255,235,150,0.95)", fontSize: 16, fontWeight: 500, lineHeight: 1.9 }}>연등이 점등되었습니다.</p>
+          {kakaoText && <button onClick={() => { navigator.clipboard.writeText(kakaoText); alert("카카오톡에 붙여넣기하여 공유해 주세요.") }} style={{ marginTop: 10, background: "#FEE500", border: "none", color: "#3A1D1D", borderRadius: 8, padding: "8px 20px", fontSize: 13, cursor: "pointer", fontWeight: 700 }}>카카오톡 공유</button>}
           <p style={{ color: `rgba(${accentRgb},0.7)`, fontSize: 13, marginTop: 8, lineHeight: 1.8, background: `rgba(${accentRgb},0.06)`, border: `1px solid rgba(${accentRgb},0.15)`, borderRadius: 8, padding: '10px 14px' }}>
             🏮 연등 신청자는 서울 불연암에 등을 달아드립니다.
           </p>
