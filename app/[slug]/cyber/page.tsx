@@ -267,7 +267,7 @@ export default function DharmaWheelPage() {
       <div className="dw-title">{phase === 'done' ? '미래사' : '미 래 사'}</div>
       <div className="dw-sub">{phase === 'done' ? '온라인법당 초전법륜지' : '사이버법당 · 초전법륜지'}</div>
 
-      {cw === 0 ? <div style={{ height: 300 }} /> : <div style={{ position: 'relative', width: '100%', maxWidth: cw, margin: '0 auto', minHeight: phase === 'done' ? totalH + gridY0 + 20 : wcy + wr + 60, transition: 'min-height 0.8s ease', overflow: 'hidden' }}>
+      {cw === 0 ? <div style={{ height: 300 }} /> : <div style={{ position: 'relative', width: '100%', maxWidth: cw, margin: '0 auto', minHeight: phase === 'done' ? totalH + gridY0 + 20 : wcy + wr + 60, transition: 'min-height 0.8s ease', overflow: 'visible' }}>
 
         {/* 바퀴 뼈대 — 스핀 중 보이고 morph 시 fade out */}
         {phase !== 'done' && (
@@ -325,14 +325,14 @@ export default function DharmaWheelPage() {
                 boxShadow: isDone ? '0 1px 8px rgba(0,0,0,0.06)' : 'none',
                 display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: isDone ? 6 : 2,
                 cursor: isDone ? 'pointer' : 'default',
-                zIndex: 10, overflow: 'hidden',
+                zIndex: 10, overflow: 'visible',
               }}
             >
               <motion.div animate={{ width: isDone ? 64 : 28, height: isDone ? 64 : 28 }} transition={{ type: 'spring', stiffness: 50, damping: 15 }}>
                 <CardIcon id={item.href} done={isDone} />
               </motion.div>
-              <motion.div animate={{ opacity: isDone ? 1 : 0, height: isDone ? 'auto' : 0 }} transition={{ duration: 0.4, delay: isDone ? 0.2 + i * 0.04 : 0 }} style={{ fontSize: 13, fontWeight: 700, letterSpacing: 1, color: '#2C2C2A', textAlign: 'center', overflow: 'hidden' }}>{item.label}</motion.div>
-              <motion.div animate={{ opacity: isDone ? 1 : 0, height: isDone ? 'auto' : 0 }} transition={{ duration: 0.5, delay: isDone ? 0.3 + i * 0.05 : 0 }} style={{ fontSize: 10, color: '#888', textAlign: 'center', overflow: 'hidden' }}>{item.sub}</motion.div>
+              <motion.div animate={{ opacity: isDone ? 1 : 0, height: isDone ? 'auto' : 0 }} transition={{ duration: 0.4, delay: isDone ? 0.2 + i * 0.04 : 0 }} style={{ fontSize: 13, fontWeight: 700, letterSpacing: 1, color: '#2C2C2A', textAlign: 'center', overflow: 'visible' }}>{item.label}</motion.div>
+              <motion.div animate={{ opacity: isDone ? 1 : 0, height: isDone ? 'auto' : 0 }} transition={{ duration: 0.5, delay: isDone ? 0.3 + i * 0.05 : 0 }} style={{ fontSize: 10, color: '#888', textAlign: 'center', overflow: 'visible' }}>{item.sub}</motion.div>
             </motion.div>
           );
         })}
