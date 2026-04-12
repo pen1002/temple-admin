@@ -320,7 +320,10 @@ export default function DharmaWheelPage() {
             y = sp.y + (tgtY - sp.y) * st;
             sc = 0.35 + 0.65 * st;
             op = 0.5 + 0.5 * st;
-            rot = (1 - st) * (wheelAngle + i * 45);
+            // 시계 방향 유지: 현재각도에서 360° 더 회전하면서 최종 0°(=360°×n)로 안착
+            const baseAngle = wheelAngle + i * 45;
+            const targetAngle = Math.ceil(baseAngle / 360) * 360; // 가장 가까운 360 배수
+            rot = baseAngle + (targetAngle - baseAngle + 360) * st;
             br = 50 - 38 * st;
           } else {
             x = tgtX; y = tgtY; sc = 1; op = 1; rot = 0; br = 12;
