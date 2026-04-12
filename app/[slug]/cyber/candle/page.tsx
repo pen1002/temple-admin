@@ -10,7 +10,7 @@ const COLS = 5
 
 export default function CandlePage() {
   const { slug } = useParams<{ slug: string }>()
-  const [candles, setCandles] = useState<{ id: string; name: string; wish: string }[]>([])
+  const [candles, setCandles] = useState<{ id: string; name: string; wish: string; created_at: string }[]>([])
   const [showForm, setShowForm] = useState(false)
   const [name, setName] = useState('')
   const [wish, setWish] = useState('')
@@ -19,7 +19,7 @@ export default function CandlePage() {
   const [loading, setLoading] = useState(false); const [kakaoText, setKakaoText] = useState("")
   const [viewRound, setViewRound] = useState(1)
   const [touchStartX2, setTouchStartX2] = useState(0)
-  const [tooltip, setTooltip] = useState<{ x: number; y: number; name: string; wish: string } | null>(null)
+  const [tooltip, setTooltip] = useState<{ x: number; y: number; name: string; wish: string; date?: string } | null>(null)
 
   const totalRounds = Math.max(1, Math.ceil(candles.length / PER_ROUND) + 1)
   const roundStart = (viewRound - 1) * PER_ROUND
@@ -79,7 +79,7 @@ export default function CandlePage() {
           return (
             <div key={i}
               onClick={() => !lit && setShowForm(true)}
-              onMouseEnter={e => c && setTooltip({ x: e.clientX, y: e.clientY, name: c.name, wish: c.wish || '' })}
+              onMouseEnter={e => c && setTooltip({ x: e.clientX, y: e.clientY, name: c.name, wish: c.wish || '', date: c.created_at })}
               onMouseLeave={() => setTooltip(null)}
               style={{
                 aspectRatio: '1', borderRadius: 6, cursor: lit ? 'default' : 'pointer',
@@ -92,7 +92,7 @@ export default function CandlePage() {
               <div style={{ fontSize: lit ? 16 : 12, filter: lit ? 'drop-shadow(0 0 4px rgba(255,200,50,0.5))' : 'grayscale(1) opacity(0.15)' }}>
                 🕯
               </div>
-              {lit && <div style={{ fontSize: 7, color: 'rgba(240,192,96,0.6)', marginTop: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%', padding: '0 2px' }}>{c!.name.slice(0, 2)}</div>}
+              {lit && <div style={{ fontSize: 7, color: 'rgba(240,192,96,0.6)', marginTop: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%', padding: '0 2px' }}>{c!.name.slice(0, 3)}</div>}
             </div>
           )
         })}

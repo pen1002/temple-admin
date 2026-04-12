@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation'
 const RELATIONS = ['부', '모', '조부', '조모', '배우자', '자녀', '형제자매', '기타']
 const PER_ROUND = 30, COLS = 5
 
-interface Memorial { id: string; name: string; deceased: string; relationship: string; wish: string }
+interface Memorial { id: string; name: string; deceased: string; relationship: string; wish: string; created_at: string }
 
 export default function JijangjeonPage() {
   const { slug } = useParams<{ slug: string }>()
@@ -18,7 +18,7 @@ export default function JijangjeonPage() {
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false); const [kakaoText, setKakaoText] = useState("")
   const [viewRound, setViewRound] = useState(1)
-  const [tooltip, setTooltip] = useState<{ x: number; y: number; deceased: string; name: string; rel: string } | null>(null)
+  const [tooltip, setTooltip] = useState<{ x: number; y: number; deceased: string; name: string; rel: string; wish?: string; date?: string } | null>(null)
 
   const fetchData = useCallback(async () => {
     const res = await fetch(`/api/cyber/offering?temple_slug=${slug}&type=memorial&limit=10000`)
@@ -75,8 +75,8 @@ export default function JijangjeonPage() {
           const m = lit ? memorials[gi] : null
           return (
             <div key={i}
-              onMouseEnter={e => m && setTooltip({ x: e.clientX, y: e.clientY, deceased: m.deceased, name: m.name, rel: m.relationship })}
-              onMouseLeave={() => setTooltip(null)}
+              onMouseEnter={e => m && setTooltip({ x: e.clientX, y: e.clientY, deceased: m.deceased, name: m.name, rel: m.relationship, wish: m.wish || '', date: m.created_at })}
+              onMouseLeave={() => setTooltip(null)} onClick={e => m && setTooltip({ x: e.clientX, y: e.clientY, deceased: m.deceased, name: m.name, rel: m.relationship, wish: m.wish || "", date: m.created_at })}
               style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '2px 0' }}>
               {/* 광배 */}
               {lit && (
@@ -104,7 +104,7 @@ export default function JijangjeonPage() {
                 {/* 영가 존함 (세로) */}
                 {lit && m && (
                   <text x="20" y="34" textAnchor="middle" fill="#c9a84c" fontSize="7" fontWeight="700" writingMode="tb" style={{ textShadow: '0 0 4px rgba(201,168,76,0.5)' }}>
-                    {m.deceased.slice(0, 3)}
+                    {m.deceased.slice(0, 4)}
                   </text>
                 )}
               </svg>
@@ -118,6 +118,8 @@ export default function JijangjeonPage() {
         <div style={{ position: 'fixed', left: tooltip.x + 10, top: tooltip.y - 60, background: 'rgba(12,4,28,0.97)', border: `1px solid rgba(${accentRgb},0.4)`, borderRadius: 8, padding: '8px 12px', pointerEvents: 'none', zIndex: 100 }}>
           <div style={{ fontSize: 13, color: 'rgba(220,200,255,0.95)', fontWeight: 700 }}>{tooltip.deceased} 영가지위</div>
           <div style={{ fontSize: 11, color: `rgba(${accentRgb},0.6)`, marginTop: 2 }}>신청: {tooltip.name} ({tooltip.rel})</div>
+          {tooltip.wish && <div style={{ fontSize: 10, color: `rgba(${accentRgb},0.45)`, marginTop: 2 }}>{tooltip.wish.slice(0, 30)}</div>}
+          {tooltip.date && <div style={{ fontSize: 10, color: `rgba(${accentRgb},0.3)`, marginTop: 2 }}>{new Date(tooltip.date).toLocaleDateString('ko-KR')}</div>}
         </div>
       )}
 

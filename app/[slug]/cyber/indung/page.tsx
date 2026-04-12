@@ -5,14 +5,14 @@ import { useParams } from 'next/navigation'
 const PER_ROUND = 30, COLS = 5
 const AMOUNT = 10000
 
-interface Donor { id: string; name: string; wish: string }
+interface Donor { id: string; name: string; wish: string; created_at: string }
 
 export default function IndungPage() {
   const { slug } = useParams<{ slug: string }>()
   const [items, setItems] = useState<Donor[]>([])
   const [name, setName] = useState(''); const [wish, setWish] = useState(''); const [contact, setContact] = useState('')
   const [loading, setLoading] = useState(false); const [submitted, setSubmitted] = useState(false); const [kakaoText, setKakaoText] = useState("")
-  const [tooltip, setTooltip] = useState<{ x: number; y: number; name: string; wish: string } | null>(null)
+  const [tooltip, setTooltip] = useState<{ x: number; y: number; name: string; wish: string; date?: string } | null>(null)
 
   const fetchData = useCallback(async () => {
     const res = await fetch(`/api/cyber/offering?temple_slug=${slug}&type=indung&limit=10000`)
@@ -61,7 +61,7 @@ export default function IndungPage() {
         {Array.from({ length: PER_ROUND }).map((_, i) => {
           const gi = roundStart + i, lit = gi < items.length, c = lit ? items[gi] : null
           return (
-            <div key={i} onMouseEnter={e => c && setTooltip({ x: e.clientX, y: e.clientY, name: c.name, wish: c.wish || '' })} onMouseLeave={() => setTooltip(null)}
+            <div key={i} onMouseEnter={e => c && setTooltip({ x: e.clientX, y: e.clientY, name: c.name, wish: c.wish || '', date: c.created_at })} onMouseLeave={() => setTooltip(null)} onClick={e => c && setTooltip({ x: e.clientX, y: e.clientY, name: c.name, wish: c.wish || "", date: c.created_at })}
               style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '2px 0' }}>
               {/* 불꽃 */}
               {lit && (
@@ -82,7 +82,7 @@ export default function IndungPage() {
                 <ellipse cx="20" cy="20" rx="4" ry="6" fill="rgba(255,255,255,0.15)" />
                 {/* 이름 */}
                 {lit && c && (
-                  <text x="22" y="33" textAnchor="middle" fill="rgba(100,70,30,0.7)" fontSize="7" fontWeight="700">{c.name.slice(0, 2)}</text>
+                  <text x="22" y="33" textAnchor="middle" fill="rgba(100,70,30,0.7)" fontSize="7" fontWeight="700">{c.name.slice(0, 3)}</text>
                 )}
                 <defs>
                   <radialGradient id="idBodyGrad" cx="40%" cy="35%">
@@ -100,7 +100,8 @@ export default function IndungPage() {
       {tooltip && (
         <div style={{ position: 'fixed', left: tooltip.x + 10, top: tooltip.y - 50, background: 'rgba(12,4,28,0.97)', border: '1px solid rgba(240,192,96,0.4)', borderRadius: 8, padding: '8px 12px', pointerEvents: 'none', zIndex: 100 }}>
           <div style={{ fontSize: 13, color: 'rgba(255,235,150,0.95)', fontWeight: 700 }}>{tooltip.name} 불자님</div>
-          {tooltip.wish && <div style={{ fontSize: 11, color: 'rgba(240,192,96,0.6)', marginTop: 2 }}>{tooltip.wish.slice(0, 30)}</div>}
+          {tooltip.wish && <div style={{ fontSize: 11, color: "rgba(240,192,96,0.6)", marginTop: 2 }}>{tooltip.wish.slice(0, 30)}</div>}
+          {tooltip.date && <div style={{ fontSize: 10, color: "rgba(240,192,96,0.35)", marginTop: 2 }}>{new Date(tooltip.date).toLocaleDateString("ko-KR")}</div>}
         </div>
       )}
 

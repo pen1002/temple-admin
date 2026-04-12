@@ -13,7 +13,7 @@ const PRAYERS = [
 const PER_ROUND = 30, COLS = 5, AMOUNT = 2000
 
 
-interface Donor { id: string; name: string; wish: string }
+interface Donor { id: string; name: string; wish: string; created_at: string }
 
 export default function JongmusoPage() {
   const { slug } = useParams<{ slug: string }>()
@@ -26,7 +26,7 @@ export default function JongmusoPage() {
   const [loading, setLoading] = useState(false); const [kakaoText, setKakaoText] = useState("")
   const [viewRound, setViewRound] = useState(1)
   const [copied, setCopied] = useState(false)
-  const [tooltip, setTooltip] = useState<{ x: number; y: number; name: string; wish: string } | null>(null)
+  const [tooltip, setTooltip] = useState<{ x: number; y: number; name: string; wish: string; date?: string } | null>(null)
 
   const fetchData = useCallback(async () => {
     if (!selectedPrayer) return
@@ -131,7 +131,7 @@ export default function JongmusoPage() {
           const gi = roundStart + i, lit = gi < items.length, c = lit ? items[gi] : null
           return (
             <div key={i}
-              onMouseEnter={e => c && setTooltip({ x: e.clientX, y: e.clientY, name: c.name, wish: c.wish || '' })}
+              onMouseEnter={e => c && setTooltip({ x: e.clientX, y: e.clientY, name: c.name, wish: c.wish || '', date: c.created_at })}
               onMouseLeave={() => setTooltip(null)}
               style={{
                 aspectRatio: '1', borderRadius: '50%',
@@ -146,7 +146,7 @@ export default function JongmusoPage() {
                 boxShadow: lit ? `0 0 5px rgba(${accentRgb},0.4)` : 'none',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
-                {lit && <span style={{ fontSize: 7, color: 'rgba(100,60,10,0.8)', fontWeight: 700 }}>{c!.name.slice(0, 2)}</span>}
+                {lit && <span style={{ fontSize: 7, color: 'rgba(100,60,10,0.8)', fontWeight: 700 }}>{c!.name.slice(0, 3)}</span>}
               </div>
             </div>
           )

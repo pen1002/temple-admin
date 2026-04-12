@@ -15,7 +15,7 @@ const LANTERN_COLORS = [
 ]
 const AMOUNTS = [{ label: '1인 5만원', value: 50000 }, { label: '가족등 10만원', value: 100000 }]
 
-interface Donor { id: string; name: string; wish: string }
+interface Donor { id: string; name: string; wish: string; created_at: string }
 
 export default function YeondeungPage() {
   const { slug } = useParams<{ slug: string }>()
@@ -24,7 +24,7 @@ export default function YeondeungPage() {
   const [amount, setAmount] = useState(50000); const [loading, setLoading] = useState(false); const [submitted, setSubmitted] = useState(false); const [kakaoText, setKakaoText] = useState("")
   const [viewRound, setViewRound] = useState(1)
   const [touchStartX2, setTouchStartX2] = useState(0)
-  const [tooltip, setTooltip] = useState<{ x: number; y: number; name: string; wish: string } | null>(null)
+  const [tooltip, setTooltip] = useState<{ x: number; y: number; name: string; wish: string; date?: string } | null>(null)
 
   const fetchData = useCallback(async () => {
     const res = await fetch(`/api/cyber/offering?temple_slug=${slug}&type=yeondeung&limit=10000`)
@@ -75,7 +75,7 @@ export default function YeondeungPage() {
           const gi = roundStart + i, lit = gi < items.length, c = lit ? items[gi] : null
           const cl = LANTERN_COLORS[gi % LANTERN_COLORS.length]
           return (
-            <div key={i} onMouseEnter={e => c && setTooltip({ x: e.clientX, y: e.clientY, name: c.name, wish: c.wish || '' })} onMouseLeave={() => setTooltip(null)}
+            <div key={i} onMouseEnter={e => c && setTooltip({ x: e.clientX, y: e.clientY, name: c.name, wish: c.wish || '', date: c.created_at })} onMouseLeave={() => setTooltip(null)} onClick={e => c && setTooltip({ x: e.clientX, y: e.clientY, name: c.name, wish: c.wish || "", date: c.created_at })}
               style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '2px 0' }}>
               <svg viewBox="0 0 50 68" style={{ width: '100%', maxWidth: 40, filter: lit ? `drop-shadow(0 0 6px ${cl.glow})` : 'grayscale(1) opacity(0.12)' }}>
                 {/* 줄 */}
@@ -102,7 +102,7 @@ export default function YeondeungPage() {
                 <rect x="20" y="55" width="10" height="12" rx="1" fill={lit ? cl.tag : '#555'} />
                 {/* 이름 */}
                 {lit && c && (
-                  <text x="25" y="33" textAnchor="middle" fill={cl.text} fontSize="7" fontWeight="700">{c.name.slice(0, 2)}</text>
+                  <text x="25" y="33" textAnchor="middle" fill={cl.text} fontSize="7" fontWeight="700">{c.name.slice(0, 3)}</text>
                 )}
               </svg>
             </div>
