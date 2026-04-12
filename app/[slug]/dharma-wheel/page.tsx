@@ -310,20 +310,16 @@ export default function DharmaWheelPage() {
 
           let x: number, y: number, sc: number, op: number, rot: number, br: number;
           if (phase === 'idle' || phase === 'spinning') {
-            x = sp.x; y = sp.y; sc = cw < 500 ? 0.7 : 0.65; op = 1; rot = wheelAngle + i * 45; br = 50;
+            x = sp.x; y = sp.y; sc = cw < 500 ? 0.7 : 0.65; op = 1; rot = 0; br = 50;
           } else if (phase === 'morphing') {
             const t = morphT;
-            // 각 아이템에 약간의 시차 (stagger)
             const stagger = Math.min(1, Math.max(0, (t - i * 0.03) / (1 - 0.03 * 7)));
             const st = 1 - Math.pow(1 - stagger, 2);
             x = sp.x + (tgtX - sp.x) * st;
             y = sp.y + (tgtY - sp.y) * st;
-            sc = 0.35 + 0.65 * st;
-            op = 0.5 + 0.5 * st;
-            // 시계 방향 유지: 현재각도에서 360° 더 회전하면서 최종 0°(=360°×n)로 안착
-            const baseAngle = wheelAngle + i * 45;
-            const targetAngle = Math.ceil(baseAngle / 360) * 360; // 가장 가까운 360 배수
-            rot = baseAngle + (targetAngle - baseAngle + 360) * st;
+            sc = (cw < 500 ? 0.7 : 0.65) + (1 - (cw < 500 ? 0.7 : 0.65)) * st;
+            op = 0.6 + 0.4 * st;
+            rot = st * 360; // 시계 방향 정확히 1회전 (360°=0° 동일)
             br = 50 - 38 * st;
           } else {
             x = tgtX; y = tgtY; sc = 1; op = 1; rot = 0; br = 12;
