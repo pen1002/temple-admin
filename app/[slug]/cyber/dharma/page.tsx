@@ -103,8 +103,90 @@ export default function DharmaPage() {
 
   return (
     <div style={{ padding: 'clamp(24px,5vw,40px) 16px 60px', maxWidth: 600, margin: '0 auto', textAlign: 'center' }}>
-      <div style={{ fontSize: 48, marginBottom: 12, animation: 'dm-glow 3s ease-in-out infinite alternate' }}>📿</div>
-      <style>{`@keyframes dm-glow { 0% { filter: drop-shadow(0 0 2px rgba(201,168,76,0.2)); } 100% { filter: drop-shadow(0 0 12px rgba(201,168,76,0.5)); transform: scale(1.05); } }`}</style>
+      {/* 장경각 SVG — 경판 책장 + 경전 나오는 애니메이션 */}
+      <div style={{ display: 'inline-block', position: 'relative', width: 120, height: 110, marginBottom: 10 }}>
+        <svg viewBox="0 0 120 110" style={{ width: '100%' }}>
+          <defs>
+            <linearGradient id="jgWood" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#6b4a2a" />
+              <stop offset="50%" stopColor="#5a3a1a" />
+              <stop offset="100%" stopColor="#4a2a10" />
+            </linearGradient>
+            <linearGradient id="jgPlate" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#d4c4a0" />
+              <stop offset="100%" stopColor="#b8a878" />
+            </linearGradient>
+          </defs>
+          {/* 책장 외곽 */}
+          <rect x="8" y="8" width="104" height="88" rx="3" fill="url(#jgWood)" stroke="#3a2210" strokeWidth="1.5" />
+          {/* 상단 처마 */}
+          <path d="M4 8 L60 2 L116 8" fill="none" stroke="#8a6a40" strokeWidth="2" strokeLinecap="round" />
+          <rect x="8" y="6" width="104" height="5" rx="1" fill="#7a5a30" />
+          {/* 선반 5단 */}
+          {[22, 36, 50, 64, 78].map((y, i) => (
+            <g key={i}>
+              <rect x="10" y={y} width="100" height="2" rx="0.5" fill="#7a5a30" />
+              {/* 경판들 — 세로로 빼곡히 */}
+              {Array.from({ length: 12 }).map((_, j) => {
+                const px = 14 + j * 8
+                const colors = ['#c8b890', '#d0c098', '#baa878', '#c4b488', '#d4c4a0', '#b8a470']
+                return (
+                  <rect key={j} x={px} y={y - 12} width="5" height="12" rx="0.5"
+                    fill={colors[j % colors.length]}
+                    stroke="#a09068" strokeWidth="0.3"
+                    opacity={0.9} />
+                )
+              })}
+            </g>
+          ))}
+          {/* 하단 받침 */}
+          <rect x="6" y="92" width="108" height="6" rx="2" fill="#5a3a1a" stroke="#3a2210" strokeWidth="0.8" />
+          {/* 다리 */}
+          <rect x="16" y="96" width="6" height="10" rx="1" fill="#4a2a10" />
+          <rect x="98" y="96" width="6" height="10" rx="1" fill="#4a2a10" />
+        </svg>
+        {/* 경전이 나오는 애니메이션 */}
+        <div style={{
+          position: 'absolute', top: '25%', left: '50%',
+          transform: 'translateX(-50%)',
+          animation: 'jg-scroll 4s ease-in-out infinite',
+          pointerEvents: 'none',
+        }}>
+          <svg viewBox="0 0 50 30" width="50" height="30">
+            {/* 경전 두루마리 */}
+            <rect x="5" y="4" width="40" height="22" rx="2" fill="#f0e8d0" stroke="#c8b890" strokeWidth="0.8" />
+            <rect x="5" y="4" width="40" height="4" rx="1" fill="#d4c4a0" />
+            <rect x="5" y="22" width="40" height="4" rx="1" fill="#d4c4a0" />
+            {/* 경전 텍스트 선 */}
+            <line x1="10" y1="11" x2="40" y2="11" stroke="#8a7a58" strokeWidth="0.5" />
+            <line x1="10" y1="14" x2="38" y2="14" stroke="#8a7a58" strokeWidth="0.5" />
+            <line x1="10" y1="17" x2="35" y2="17" stroke="#8a7a58" strokeWidth="0.5" />
+            {/* 卍 */}
+            <text x="25" y="16" textAnchor="middle" fill="#c9a84c" fontSize="6" fontWeight="700" opacity="0.5">卍</text>
+          </svg>
+        </div>
+        {/* 빛 효과 */}
+        <div style={{
+          position: 'absolute', top: '20%', left: '50%', transform: 'translateX(-50%)',
+          width: 60, height: 40, borderRadius: '50%',
+          background: 'radial-gradient(ellipse, rgba(201,168,76,0.15) 0%, transparent 70%)',
+          animation: 'jg-light 4s ease-in-out infinite',
+          pointerEvents: 'none',
+        }} />
+      </div>
+      <style>{`
+        @keyframes jg-scroll {
+          0%, 15% { transform: translateX(-50%) translateY(0) scale(0.5); opacity: 0; }
+          30% { transform: translateX(-50%) translateY(-15px) scale(0.9); opacity: 1; }
+          60% { transform: translateX(-50%) translateY(-25px) scale(1); opacity: 1; }
+          80%, 100% { transform: translateX(-50%) translateY(-35px) scale(0.8); opacity: 0; }
+        }
+        @keyframes jg-light {
+          0%, 15% { opacity: 0; }
+          30%, 60% { opacity: 1; }
+          80%, 100% { opacity: 0; }
+        }
+      `}</style>
       <h2 style={{ fontSize: 22, fontWeight: 600, color: '#c9a84c', letterSpacing: 3, fontFamily: '"Noto Serif KR",serif', marginBottom: 8 }}>오늘의 부처님 말씀</h2>
       <p style={{ fontSize: 11, color: 'rgba(201,168,76,0.4)', marginBottom: 28 }}>
         {new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' })}

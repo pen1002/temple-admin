@@ -14,12 +14,129 @@ const items = [
   { label: '공지사항', sub: '타종', icon: '🔔', href: 'notice' },
 ];
 
+function CardIcon({ id, done }: { id: string; done: boolean }) {
+  const s = done ? 64 : 40
+  const common = { width: s, height: s, display: 'block' } as const
+  switch (id) {
+    case 'daeungjeon': return (
+      <svg viewBox="0 0 64 64" style={{ ...common, animation: 'ci-glow 3s ease-in-out infinite alternate' }}>
+        <defs><radialGradient id="ciHalo"><stop offset="0%" stopColor="rgba(255,220,80,0.3)"/><stop offset="100%" stopColor="transparent"/></radialGradient></defs>
+        <circle cx="32" cy="28" r="22" fill="url(#ciHalo)" />
+        <circle cx="32" cy="28" r="16" fill="none" stroke="rgba(201,168,76,0.25)" strokeWidth="0.5" />
+        <text x="32" y="36" textAnchor="middle" fontSize="28">🙏</text>
+        <ellipse cx="32" cy="52" rx="14" ry="4" fill="rgba(201,168,76,0.15)" />
+      </svg>
+    )
+    case 'jijangjeon': return (
+      <svg viewBox="0 0 64 64" style={{ ...common, animation: 'ci-float 3s ease-in-out infinite' }}>
+        <rect x="18" y="8" width="28" height="40" rx="3" fill="#2a1a10" stroke="#c9a84c" strokeWidth="0.8" />
+        <path d="M20 10 L32 6 L44 10" fill="none" stroke="#c9a84c" strokeWidth="0.5" />
+        <rect x="20" y="10" width="24" height="3" rx="1" fill="#c9a84c" opacity="0.3" />
+        <text x="32" y="36" textAnchor="middle" fill="#c9a84c" fontSize="8" fontWeight="700">靈</text>
+        <ellipse cx="32" cy="50" rx="10" ry="3" fill="#e8a88c" />
+        <path d="M24 49 Q28 46 32 49" fill="#f0b8a0" /><path d="M32 49 Q36 46 40 49" fill="#f0b8a0" />
+        <rect x="22" y="52" width="20" height="5" rx="1" fill="#1a1a2e" stroke="#c9a84c" strokeWidth="0.4" />
+        <circle cx="32" cy="28" r="18" fill="none" stroke="rgba(201,168,76,0.1)" strokeWidth="8" style={{ animation: 'ci-halo 3s ease-in-out infinite alternate' }} />
+      </svg>
+    )
+    case 'jongmuso': return (
+      <svg viewBox="0 0 64 64" style={common}>
+        <rect x="8" y="12" width="34" height="42" rx="2" fill="#d4c4a0" stroke="#b8a878" strokeWidth="0.6" />
+        <rect x="8" y="12" width="34" height="5" rx="1.5" fill="#c8b890" />
+        {[24,30,36,42].map(y => <line key={y} x1="14" y1={y} x2="38" y2={y} stroke="#a09070" strokeWidth="0.4" />)}
+        <circle cx="40" cy="51" r="1.5" fill="#c02020" opacity="0.6" />
+        <g style={{ animation: 'ci-brush 2.5s ease-in-out infinite', transformOrigin: '52px 10px' }}>
+          <rect x="50" y="10" width="3" height="32" rx="1" fill="#5a3a20" />
+          <path d="M50 42 Q51.5 48 53 42" fill="#2a1a10" />
+        </g>
+        <ellipse cx="56" cy="18" rx="7" ry="5" fill="#8B6914" stroke="#6a5010" strokeWidth="0.4" style={{ animation: 'ci-bob 3s ease-in-out infinite' }} />
+        <circle cx="59" cy="17" r="1" fill="#3a2a10" />
+      </svg>
+    )
+    case 'candle': return (
+      <svg viewBox="0 0 64 64" style={common}>
+        <rect x="24" y="26" width="16" height="28" rx="2" fill="#f5f0e0" stroke="#d4c8a0" strokeWidth="0.6" />
+        <rect x="22" y="52" width="20" height="4" rx="1.5" fill="#d4c8a0" />
+        <rect x="30" y="20" width="4" height="8" rx="1" fill="#e8dcc0" />
+        <ellipse cx="32" cy="14" rx="6" ry="9" fill="rgba(255,200,50,0.7)" style={{ animation: 'ci-flame 0.8s ease-in-out infinite alternate' }} />
+        <ellipse cx="32" cy="16" rx="3" ry="5" fill="rgba(255,240,150,0.9)" />
+        <ellipse cx="32" cy="18" rx="1.5" ry="2.5" fill="#fff" opacity="0.7" />
+        <circle cx="32" cy="14" r="14" fill="none" stroke="rgba(255,200,50,0.08)" strokeWidth="6" style={{ animation: 'ci-glow 2s ease-in-out infinite alternate' }} />
+      </svg>
+    )
+    case 'indung': return (
+      <svg viewBox="0 0 64 64" style={common}>
+        <rect x="29" y="4" width="6" height="6" rx="1.5" fill="#d4c8a0" />
+        <path d="M22 10 Q22 6 32 6 Q42 6 42 10 L44 26 Q46 30 46 34 L46 46 Q46 50 42 50 L22 50 Q18 50 18 46 L18 34 Q18 30 20 26 Z"
+          fill="url(#ciCeramicG)" stroke="#c8bda0" strokeWidth="0.5" />
+        <path d="M46 24 Q52 24 52 32 Q52 38 46 38" fill="none" stroke="#c8bda0" strokeWidth="2" strokeLinecap="round" />
+        <ellipse cx="28" cy="24" rx="4" ry="6" fill="rgba(255,255,255,0.12)" />
+        <text x="32" y="36" textAnchor="middle" fill="rgba(100,60,10,0.5)" fontSize="8" fontWeight="700">燈</text>
+        <ellipse cx="32" cy="6" rx="5" ry="7" fill="rgba(255,200,50,0.6)" style={{ animation: 'ci-flame 1s ease-in-out infinite alternate' }} />
+        <ellipse cx="32" cy="7" rx="2.5" ry="4" fill="rgba(255,240,150,0.8)" />
+        <defs><radialGradient id="ciCeramicG" cx="40%" cy="35%"><stop offset="0%" stopColor="#f0e8d8"/><stop offset="100%" stopColor="#c8bda0"/></radialGradient></defs>
+      </svg>
+    )
+    case 'yeondeung': return (
+      <svg viewBox="0 0 64 70" style={{ ...common, animation: 'ci-sway 2.5s ease-in-out infinite' }}>
+        <line x1="32" y1="0" x2="32" y2="12" stroke="#666" strokeWidth="1" />
+        <rect x="18" y="11" width="28" height="4" rx="1.5" fill="#c0392b" />
+        <ellipse cx="32" cy="34" rx="20" ry="19" fill="#f4b8cc" />
+        <path d="M32 15 Q32 34 32 53" stroke="#e8a0b8" strokeWidth="1" fill="none" />
+        <path d="M17 18 Q13 34 17 50" stroke="#e8a0b8" strokeWidth="0.7" fill="none" />
+        <path d="M47 18 Q51 34 47 50" stroke="#e8a0b8" strokeWidth="0.7" fill="none" />
+        <ellipse cx="26" cy="30" rx="5" ry="8" fill="rgba(255,255,255,0.15)" />
+        <rect x="30" y="15" width="4" height="38" rx="1" fill="#e898b0" opacity="0.4" />
+        <rect x="18" y="51" width="28" height="4" rx="1.5" fill="#c0392b" />
+        <line x1="32" y1="55" x2="32" y2="61" stroke="#666" strokeWidth="1" />
+        <rect x="27" y="60" width="10" height="8" rx="1" fill="#f0b0c8" />
+      </svg>
+    )
+    case 'dharma': return (
+      <svg viewBox="0 0 64 64" style={common}>
+        <rect x="6" y="6" width="52" height="50" rx="2" fill="#5a3a1a" stroke="#3a2210" strokeWidth="1" />
+        <rect x="6" y="4" width="52" height="5" rx="1" fill="#7a5a30" />
+        <path d="M3 6 L32 2 L61 6" fill="none" stroke="#8a6a40" strokeWidth="1.5" strokeLinecap="round" />
+        {[18,28,38,48].map((y,i) => (
+          <g key={i}><rect x="8" y={y} width="48" height="1.5" rx="0.5" fill="#7a5a30" />
+          {Array.from({length:8}).map((_,j) => <rect key={j} x={10+j*6} y={y-8} width="4" height="8" rx="0.3" fill={['#c8b890','#d0c098','#baa878','#c4b488'][j%4]} stroke="#a09068" strokeWidth="0.2" />)}</g>
+        ))}
+        <rect x="4" y="52" width="56" height="4" rx="1.5" fill="#5a3a1a" stroke="#3a2210" strokeWidth="0.5" />
+        <g style={{ animation: 'ci-scroll 4s ease-in-out infinite' }}>
+          <rect x="20" y="20" width="24" height="14" rx="1.5" fill="#f0e8d0" stroke="#c8b890" strokeWidth="0.5" />
+          <line x1="23" y1="25" x2="41" y2="25" stroke="#8a7a58" strokeWidth="0.4" />
+          <line x1="23" y1="28" x2="39" y2="28" stroke="#8a7a58" strokeWidth="0.4" />
+          <line x1="23" y1="31" x2="36" y2="31" stroke="#8a7a58" strokeWidth="0.4" />
+          <text x="32" y="29" textAnchor="middle" fill="rgba(201,168,76,0.4)" fontSize="5">卍</text>
+        </g>
+        <circle cx="32" cy="30" r="16" fill="none" stroke="rgba(201,168,76,0.08)" strokeWidth="4" style={{ animation: 'ci-glow 4s ease-in-out infinite alternate' }} />
+      </svg>
+    )
+    case 'notice': return (
+      <svg viewBox="0 0 64 72" style={{ ...common, animation: 'ci-bell 3s ease-in-out infinite' }}>
+        <ellipse cx="32" cy="8" rx="6" ry="4" fill="#4a5038" stroke="#3a4030" strokeWidth="0.6" />
+        <rect x="29" y="10" width="6" height="5" rx="1.5" fill="#4a5038" />
+        <path d="M18 15 Q18 10 32 10 Q46 10 46 15 L48 60 Q50 66 52 70 L12 70 Q14 66 16 60 Z" fill="url(#ciBellG)" stroke="#5a584a" strokeWidth="0.6" />
+        <rect x="22" y="18" width="20" height="12" rx="1.5" fill="none" stroke="#8a8070" strokeWidth="0.4" />
+        {[0,1,2,3,4,5,6,7,8].map(k => <circle key={k} cx={26+(k%3)*6} cy={22+Math.floor(k/3)*3.5} r="1.3" fill="#7a7868" />)}
+        <path d="M28 42 Q30 36 34 40 Q36 36 38 42 Q35 46 32 44 Q29 46 28 42" fill="#7a7868" stroke="#6a6858" strokeWidth="0.3" />
+        <circle cx="32" cy="56" r="4" fill="#6a6858" /><circle cx="32" cy="56" r="2.5" fill="#7a7868" />
+        <path d="M14 68 Q22 65 32 64 Q42 65 50 68" fill="none" stroke="#8a8070" strokeWidth="0.5" />
+        {[0,1,2,3,4,5].map(k => <path key={k} d={`M${16+k*6} 70 Q${19+k*6} 67 ${22+k*6} 70`} fill="#6a6858" />)}
+        <defs><linearGradient id="ciBellG" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stopColor="#8a8878"/><stop offset="50%" stopColor="#6b695a"/><stop offset="100%" stopColor="#5a584a"/></linearGradient></defs>
+        <circle cx="32" cy="40" r="20" fill="none" stroke="rgba(201,168,76,0.06)" strokeWidth="5" style={{ animation: 'ci-wave 3s ease-out infinite' }} />
+      </svg>
+    )
+    default: return <div style={{ fontSize: 32 }}>☸</div>
+  }
+}
+
 const GAP = 12;
 
 function getGridPos(i: number, cw: number) {
   const cols = cw < 500 ? 2 : 4;
-  const cardW = cw < 500 ? (cw - GAP * 3) / 2 : 130;
-  const cardH = cw < 500 ? 100 : 120;
+  const cardW = cw < 500 ? (cw - GAP * 3) / 2 : 140;
+  const cardH = cw < 500 ? 140 : 180;
   const totalW = cols * cardW + (cols - 1) * GAP;
   const startX = (cw - totalW) / 2;
   const col = i % cols, row = Math.floor(i / cols);
@@ -170,8 +287,10 @@ export default function DharmaWheelPage() {
               onMouseEnter={e => { if (phase === 'done') { e.currentTarget.style.transform = 'scale(1.05)'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.1)'; } }}
               onMouseLeave={e => { if (phase === 'done') { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 1px 8px rgba(0,0,0,0.06)'; } }}
             >
-              <div style={{ fontSize: phase === 'idle' || phase === 'spinning' ? 32 : 30, lineHeight: 1 }}>{item.icon}</div>
-              <div style={{ fontSize: phase === 'idle' || phase === 'spinning' ? 12 : 13, fontWeight: 700, letterSpacing: 1, color: '#2C2C2A', textAlign: 'center', opacity: 1, transition: 'font-size 0.5s' }}>{item.label}</div>
+              <div style={{ width: phase === 'done' ? 64 : 40, height: phase === 'done' ? 64 : 40, transition: 'width 0.5s, height 0.5s' }}>
+                <CardIcon id={item.href} done={phase === 'done'} />
+              </div>
+              <div style={{ fontSize: phase === 'idle' || phase === 'spinning' ? 11 : 13, fontWeight: 700, letterSpacing: 1, color: '#2C2C2A', textAlign: 'center', opacity: 1, transition: 'font-size 0.5s', marginTop: 4 }}>{item.label}</div>
               <div style={{ fontSize: 10, color: '#888', textAlign: 'center', opacity: morphT > 0.6 || phase === 'done' ? 1 : 0, display: phase === 'idle' || phase === 'spinning' ? 'none' : 'block', transition: 'opacity 0.3s' }}>{item.sub}</div>
             </div>
           );
@@ -200,6 +319,16 @@ export default function DharmaWheelPage() {
         .dw-bounce { font-size:24px; color:#888; animation:dwB 1.5s infinite; }
         @keyframes dwB { 0%,100%{transform:translateY(0)} 50%{transform:translateY(7px)} }
         .dw-reset { margin:20px 0 40px; background:linear-gradient(135deg,#8B6914,#C8961E); color:#fff; border:none; border-radius:12px; padding:12px 36px; font-size:15px; font-weight:700; letter-spacing:2px; cursor:pointer; font-family:'Noto Serif KR',serif; box-shadow:0 2px 10px rgba(139,105,20,0.25); }
+        @keyframes ci-glow { 0%{filter:drop-shadow(0 0 2px rgba(255,200,50,0.2))} 100%{filter:drop-shadow(0 0 12px rgba(255,200,50,0.5))} }
+        @keyframes ci-float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
+        @keyframes ci-brush { 0%,100%{transform:rotate(-5deg)} 50%{transform:rotate(5deg)} }
+        @keyframes ci-bob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-2px)} }
+        @keyframes ci-flame { 0%{transform:scaleY(0.85);opacity:0.8} 100%{transform:scaleY(1.1);opacity:1} }
+        @keyframes ci-sway { 0%,100%{transform:rotate(-3deg)} 50%{transform:rotate(3deg)} }
+        @keyframes ci-scroll { 0%,15%{transform:translateY(0) scale(0.7);opacity:0} 30%{transform:translateY(-8px) scale(1);opacity:1} 60%{transform:translateY(-14px);opacity:1} 80%,100%{transform:translateY(-20px) scale(0.8);opacity:0} }
+        @keyframes ci-bell { 0%,100%{transform:rotate(-1.5deg)} 50%{transform:rotate(1.5deg)} }
+        @keyframes ci-wave { 0%{transform:scale(0.8);opacity:0.4} 100%{transform:scale(1.6);opacity:0} }
+        @keyframes ci-halo { 0%{opacity:0.05} 100%{opacity:0.15} }
         @media(max-width:500px) { .dw-title{font-size:22px} }
       `}</style>
     </div>
