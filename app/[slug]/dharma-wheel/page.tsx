@@ -132,7 +132,7 @@ export default function DharmaWheelPage() {
 
           let x: number, y: number, sc: number, op: number, rot: number, br: number;
           if (phase === 'idle' || phase === 'spinning') {
-            x = sp.x; y = sp.y; sc = 0.35; op = phase === 'spinning' ? 0.7 : 0; rot = wheelAngle + i * 45; br = 50;
+            x = sp.x; y = sp.y; sc = 0.45; op = 1; rot = wheelAngle + i * 45; br = 50;
           } else if (phase === 'morphing') {
             const t = morphT;
             // 각 아이템에 약간의 시차 (stagger)
@@ -171,8 +171,8 @@ export default function DharmaWheelPage() {
               onMouseLeave={e => { if (phase === 'done') { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 1px 8px rgba(0,0,0,0.06)'; } }}
             >
               <div style={{ fontSize: 28 + (phase === 'done' ? 2 : morphT * 2), lineHeight: 1 }}>{item.icon}</div>
-              <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: 1, color: '#2C2C2A', textAlign: 'center', opacity: morphT > 0.3 || phase === 'done' ? 1 : 0 }}>{item.label}</div>
-              <div style={{ fontSize: 10, color: '#888', textAlign: 'center', opacity: morphT > 0.5 || phase === 'done' ? 1 : 0 }}>{item.sub}</div>
+              <div style={{ fontSize: phase === 'idle' || phase === 'spinning' ? 9 : 13, fontWeight: 700, letterSpacing: 1, color: '#2C2C2A', textAlign: 'center', opacity: 1, transition: 'font-size 0.5s' }}>{item.label}</div>
+              <div style={{ fontSize: 10, color: '#888', textAlign: 'center', opacity: morphT > 0.6 || phase === 'done' ? 1 : 0, display: phase === 'idle' || phase === 'spinning' ? 'none' : 'block', transition: 'opacity 0.3s' }}>{item.sub}</div>
             </div>
           );
         })}
