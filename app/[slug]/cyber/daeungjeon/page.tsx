@@ -51,7 +51,7 @@ export default function DaeungjeonPage() {
     setTimeout(() => { setBowing(false); window.location.href = `/${slug}/cyber` }, 5000);
   }, [bowing, slug, fetchData]);
 
-  const doCandle = () => { if (candlesLit < 2) setCandlesLit(p => p + 1); };
+  const doCandle = () => { if (candlesLit < 2) setCandlesLit(2); };
   const doIncense = () => { setIncenseBurning(true); };
   const doLantern = () => { if (lanternCount < 8) setLanternCount(p => p + 1); };
 

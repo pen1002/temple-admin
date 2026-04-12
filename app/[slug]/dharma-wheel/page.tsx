@@ -219,7 +219,8 @@ export default function DharmaWheelPage() {
     return () => window.removeEventListener('resize', u);
   }, []);
 
-  const wcx = cw / 2, wcy = cw < 500 ? 190 : 210, wr = cw < 500 ? 145 : 165;
+  const wr = cw < 500 ? 120 : 165;
+  const wcx = cw / 2, wcy = wr + 20;
 
   function spokeXY(i: number) {
     const a = (i * 45 + 22.5 - 90 + wheelAngle) * Math.PI / 180;
