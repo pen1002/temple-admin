@@ -211,10 +211,10 @@ export default function DharmaWheelPage() {
   const rootRef = useRef<HTMLDivElement>(null);
   const [phase, setPhase] = useState<'idle' | 'spinning' | 'done'>('idle');
   const [wheelAngle, setWheelAngle] = useState(0);
-  const [cw, setCw] = useState(600);
+  const [cw, setCw] = useState(0);
 
   useEffect(() => {
-    const u = () => setCw(Math.min(rootRef.current?.clientWidth || 600, 600));
+    const u = () => setCw(Math.min(rootRef.current?.clientWidth || 360, 600));
     u(); window.addEventListener('resize', u);
     return () => window.removeEventListener('resize', u);
   }, []);
@@ -267,11 +267,11 @@ export default function DharmaWheelPage() {
       <div className="dw-title">{phase === 'done' ? '미래사' : '미 래 사'}</div>
       <div className="dw-sub">{phase === 'done' ? '온라인법당 초전법륜지' : '사이버법당 · 초전법륜지'}</div>
 
-      <div style={{ position: 'relative', width: cw, minHeight: phase === 'done' ? totalH + gridY0 + 20 : wcy + wr + 60, transition: 'min-height 0.8s ease', overflow: phase === 'done' ? 'visible' : 'hidden' }}>
+      {cw === 0 ? <div style={{ height: 300 }} /> : <div style={{ position: 'relative', width: '100%', maxWidth: cw, margin: '0 auto', minHeight: phase === 'done' ? totalH + gridY0 + 20 : wcy + wr + 60, transition: 'min-height 0.8s ease', overflow: 'hidden' }}>
 
         {/* 바퀴 뼈대 — 스핀 중 보이고 morph 시 fade out */}
         {phase !== 'done' && (
-          <motion.svg animate={{ opacity: wheelOpacity }} transition={{ duration: 0.8 }} style={{ position: 'absolute', top: 0, left: 0, width: cw, height: wcy + wr + 30, pointerEvents: 'none' }}
+          <motion.svg animate={{ opacity: wheelOpacity }} transition={{ duration: 0.8 }} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: wcy + wr + 30, pointerEvents: 'none' }}
             viewBox={`0 0 ${cw} ${wcy + wr + 30}`}>
             <defs>
               <linearGradient id="dwG" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -336,7 +336,7 @@ export default function DharmaWheelPage() {
             </motion.div>
           );
         })}
-      </div>
+      </div>}
 
       {phase === 'idle' && (
         <div className="dw-cta" onClick={doSpin}>
