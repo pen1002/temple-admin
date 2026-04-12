@@ -344,7 +344,7 @@ export default function DharmaWheelPage() {
                 boxShadow: phase === 'done' ? '0 1px 8px rgba(0,0,0,0.06)' : 'none',
                 display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 6,
                 cursor: phase === 'done' ? 'pointer' : 'default',
-                transition: phase === 'done' ? 'transform 0.2s, box-shadow 0.2s' : 'none',
+                transition: 'none',
                 zIndex: 10,
                 willChange: 'transform, opacity, left, top',
               }}
