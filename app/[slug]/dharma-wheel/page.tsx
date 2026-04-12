@@ -239,10 +239,10 @@ export default function DharmaWheelPage() {
     <div ref={rootRef} className="dw-root">
       <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&display=swap" rel="stylesheet" />
 
-      <div className="dw-title">{phase === 'done' ? '사이버법당' : '미 래 사'}</div>
+      <div className="dw-title">{phase === 'done' ? '온라인법당 초전법륜지' : '미 래 사'}</div>
       {phase !== 'done' && <div className="dw-sub">사이버법당 · 초전법륜지</div>}
 
-      <div style={{ position: 'relative', width: cw, height: phase === 'done' ? totalH + gridY0 + 40 : wcy + wr + 60, transition: 'height 0.8s ease' }}>
+      <div style={{ position: 'relative', width: cw, height: phase === 'done' ? totalH + gridY0 + 40 : wcy + wr + 60, transition: 'height 0.8s ease', overflow: 'hidden' }}>
 
         {/* 바퀴 뼈대 — 스핀 중 보이고 morph 시 fade out */}
         {phase !== 'done' && (
@@ -328,7 +328,7 @@ export default function DharmaWheelPage() {
 
       {phase === 'idle' && (
         <div className="dw-cta" onClick={doSpin}>
-          <span>법륜을 굴려 사이버법당에 들어갑니다</span>
+          <span>법륜을 굴려 온라인법당에 들어갑니다</span>
           <div className="dw-bounce">⌄</div>
         </div>
       )}
