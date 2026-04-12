@@ -131,7 +131,7 @@ export default async function TemplePage(
           dailyWisdom={dailyWisdom}
         />
       ))}
-      <FooterBlock temple={templeData} />
+      {temple.code !== 'jinsimsa' && <FooterBlock temple={templeData} />}
     </div>
   )
 }
