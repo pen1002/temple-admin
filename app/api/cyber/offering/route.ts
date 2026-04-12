@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
     if (!temple_slug || !type || !name?.trim()) {
       return NextResponse.json({ error: 'temple_slug, type, name 필수' }, { status: 400 })
     }
-    const isValidType = VALID_TYPES.includes(type) || type.startsWith('prayer_')
+    const isValidType = VALID_TYPES.includes(type) || type.startsWith('prayer_') || type === 'notice'
     if (!isValidType) {
       return NextResponse.json({ error: `type은 ${VALID_TYPES.join('/')} 또는 prayer_* 형식` }, { status: 400 })
     }
