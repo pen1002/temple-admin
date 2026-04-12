@@ -19,12 +19,41 @@ function CardIcon({ id, done }: { id: string; done: boolean }) {
   const common = { width: s, height: s, display: 'block' } as const
   switch (id) {
     case 'daeungjeon': return (
-      <svg viewBox="0 0 64 64" style={{ ...common, animation: 'ci-glow 3s ease-in-out infinite alternate' }}>
-        <defs><radialGradient id="ciHalo"><stop offset="0%" stopColor="rgba(255,220,80,0.3)"/><stop offset="100%" stopColor="transparent"/></radialGradient></defs>
-        <circle cx="32" cy="28" r="22" fill="url(#ciHalo)" />
-        <circle cx="32" cy="28" r="16" fill="none" stroke="rgba(201,168,76,0.25)" strokeWidth="0.5" />
-        <text x="32" y="36" textAnchor="middle" fontSize="28">🙏</text>
-        <ellipse cx="32" cy="52" rx="14" ry="4" fill="rgba(201,168,76,0.15)" />
+      <svg viewBox="0 0 80 80" style={{ ...common, overflow: 'visible' }}>
+        <defs>
+          <linearGradient id="ciRoof" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stopColor="#4a3020"/><stop offset="100%" stopColor="#3a2010"/></linearGradient>
+          <linearGradient id="ciWall" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stopColor="#e8dcc8"/><stop offset="100%" stopColor="#d4c8a8"/></linearGradient>
+          <radialGradient id="ciInner"><stop offset="0%" stopColor="rgba(255,220,80,0.4)"/><stop offset="100%" stopColor="rgba(40,20,5,0.95)"/></radialGradient>
+        </defs>
+        {/* 지붕 */}
+        <path d="M4 28 L40 8 L76 28" fill="url(#ciRoof)" stroke="#2a1508" strokeWidth="1" />
+        <path d="M8 28 L40 12 L72 28" fill="none" stroke="#c9a84c" strokeWidth="0.5" opacity="0.4" />
+        <rect x="36" y="10" width="8" height="4" rx="1" fill="#c9a84c" opacity="0.6" />
+        {/* 벽체 */}
+        <rect x="10" y="28" width="60" height="44" fill="url(#ciWall)" stroke="#b8a888" strokeWidth="0.5" />
+        {/* 기둥 */}
+        <rect x="10" y="28" width="4" height="44" fill="#8a6a40" /><rect x="66" y="28" width="4" height="44" fill="#8a6a40" />
+        <rect x="28" y="28" width="3" height="44" fill="#9a7a50" opacity="0.6" /><rect x="49" y="28" width="3" height="44" fill="#9a7a50" opacity="0.6" />
+        {/* 어간문 — 좌우 열림 애니메이션 */}
+        <g style={{ animation: 'ci-doorL 4s ease-in-out infinite' }}>
+          <rect x="18" y="32" width="12" height="38" fill="#6a4a28" stroke="#4a3018" strokeWidth="0.5" />
+          <line x1="24" y1="32" x2="24" y2="70" stroke="#8a6a40" strokeWidth="0.3" />
+          <circle cx="28" cy="51" r="1" fill="#c9a84c" />
+        </g>
+        <g style={{ animation: 'ci-doorR 4s ease-in-out infinite' }}>
+          <rect x="50" y="32" width="12" height="38" fill="#6a4a28" stroke="#4a3018" strokeWidth="0.5" />
+          <line x1="56" y1="32" x2="56" y2="70" stroke="#8a6a40" strokeWidth="0.3" />
+          <circle cx="52" cy="51" r="1" fill="#c9a84c" />
+        </g>
+        {/* 문 안쪽 — 불상 실루엣 + 후광 */}
+        <rect x="30" y="32" width="20" height="38" fill="url(#ciInner)" />
+        <ellipse cx="40" cy="48" rx="8" ry="8" fill="rgba(255,220,80,0.15)" />
+        <ellipse cx="40" cy="50" rx="5" ry="7" fill="#c9a84c" opacity="0.6" />
+        <ellipse cx="40" cy="46" rx="3" ry="2.5" fill="#c9a84c" opacity="0.7" />
+        <ellipse cx="40" cy="62" rx="7" ry="3" fill="#8B6810" opacity="0.5" />
+        {/* 현판 */}
+        <rect x="26" y="24" width="28" height="7" rx="1" fill="#3a2010" stroke="#c9a84c" strokeWidth="0.4" />
+        <text x="40" y="30" textAnchor="middle" fill="#c9a84c" fontSize="5" fontWeight="700">大 雄 殿</text>
       </svg>
     )
     case 'jijangjeon': return (
@@ -319,6 +348,8 @@ export default function DharmaWheelPage() {
         .dw-bounce { font-size:24px; color:#888; animation:dwB 1.5s infinite; }
         @keyframes dwB { 0%,100%{transform:translateY(0)} 50%{transform:translateY(7px)} }
         .dw-reset { margin:20px 0 40px; background:linear-gradient(135deg,#8B6914,#C8961E); color:#fff; border:none; border-radius:12px; padding:12px 36px; font-size:15px; font-weight:700; letter-spacing:2px; cursor:pointer; font-family:'Noto Serif KR',serif; box-shadow:0 2px 10px rgba(139,105,20,0.25); }
+        @keyframes ci-doorL { 0%,20%{transform:translateX(0)} 40%,70%{transform:translateX(-8px)} 90%,100%{transform:translateX(0)} }
+        @keyframes ci-doorR { 0%,20%{transform:translateX(0)} 40%,70%{transform:translateX(8px)} 90%,100%{transform:translateX(0)} }
         @keyframes ci-glow { 0%{filter:drop-shadow(0 0 2px rgba(255,200,50,0.2))} 100%{filter:drop-shadow(0 0 12px rgba(255,200,50,0.5))} }
         @keyframes ci-float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
         @keyframes ci-brush { 0%,100%{transform:rotate(-5deg)} 50%{transform:rotate(5deg)} }
