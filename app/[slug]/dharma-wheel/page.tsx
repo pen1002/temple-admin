@@ -5,7 +5,7 @@ import { useRouter, useParams } from 'next/navigation';
 
 const items = [
   { label: '대웅전', sub: '본존불 친견', icon: '🏛️', href: 'daeungjeon' },
-  { label: '지장전', sub: '명부전', icon: '🪷', href: 'jijangjeon' },
+  { label: '지장전', sub: '위패모십니다', icon: '🪷', href: 'jijangjeon' },
   { label: '종무소', sub: '사찰 안내', icon: '📜', href: 'jongmuso' },
   { label: '초공양', sub: '초 올리기', icon: '🕯️', href: 'candle' },
   { label: '인등불사', sub: '인연의 등', icon: '🏮', href: 'indung' },
@@ -57,15 +57,31 @@ function CardIcon({ id, done }: { id: string; done: boolean }) {
       </svg>
     )
     case 'jijangjeon': return (
-      <svg viewBox="0 0 64 64" style={{ ...common, animation: 'ci-float 3s ease-in-out infinite' }}>
-        <rect x="18" y="8" width="28" height="40" rx="3" fill="#2a1a10" stroke="#c9a84c" strokeWidth="0.8" />
-        <path d="M20 10 L32 6 L44 10" fill="none" stroke="#c9a84c" strokeWidth="0.5" />
-        <rect x="20" y="10" width="24" height="3" rx="1" fill="#c9a84c" opacity="0.3" />
-        <text x="32" y="36" textAnchor="middle" fill="#c9a84c" fontSize="8" fontWeight="700">靈</text>
-        <ellipse cx="32" cy="50" rx="10" ry="3" fill="#e8a88c" />
-        <path d="M24 49 Q28 46 32 49" fill="#f0b8a0" /><path d="M32 49 Q36 46 40 49" fill="#f0b8a0" />
-        <rect x="22" y="52" width="20" height="5" rx="1" fill="#1a1a2e" stroke="#c9a84c" strokeWidth="0.4" />
-        <circle cx="32" cy="28" r="18" fill="none" stroke="rgba(201,168,76,0.1)" strokeWidth="8" style={{ animation: 'ci-halo 3s ease-in-out infinite alternate' }} />
+      <svg viewBox="0 0 70 90" style={{ ...common, overflow: 'visible' }}>
+        <defs>
+          <linearGradient id="ciGoldFrame" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stopColor="#F5D060"/><stop offset="40%" stopColor="#D4A017"/><stop offset="100%" stopColor="#B8860B"/></linearGradient>
+          <linearGradient id="ciGoldBase" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stopColor="#E8C840"/><stop offset="100%" stopColor="#B8960A"/></linearGradient>
+          <filter id="ciGlow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        </defs>
+        {/* 빛남 후광 */}
+        <ellipse cx="35" cy="35" rx="28" ry="32" fill="none" stroke="rgba(245,208,96,0.12)" strokeWidth="6" style={{ animation: 'ci-halo 3s ease-in-out infinite alternate' }} />
+        {/* 위패 본체 — 상단 아치형 + 금테 */}
+        <path d="M18 70 L18 22 Q18 6 35 6 Q52 6 52 22 L52 70 Z" fill="#0a0a0a" stroke="url(#ciGoldFrame)" strokeWidth="2.5" filter="url(#ciGlow)" />
+        {/* 안쪽 금테 */}
+        <path d="M22 66 L22 24 Q22 10 35 10 Q48 10 48 24 L48 66 Z" fill="none" stroke="#D4A017" strokeWidth="0.8" opacity="0.6" />
+        {/* 영가 텍스트 */}
+        <text x="35" y="32" textAnchor="middle" fill="#D4A017" fontSize="7" fontWeight="700" style={{ animation: 'ci-glow 3s ease-in-out infinite alternate' }}>亡</text>
+        <text x="35" y="44" textAnchor="middle" fill="#C9A84C" fontSize="6">靈 駕</text>
+        {/* 연꽃 대좌 — 금색 */}
+        <ellipse cx="35" cy="72" rx="16" ry="4" fill="url(#ciGoldBase)" />
+        {[0,1,2,3,4,5].map(k => <path key={k} d={`M${19+k*5.5} 71 Q${21.5+k*5.5} 66 ${24+k*5.5} 71`} fill="#E8C840" stroke="#B8960A" strokeWidth="0.3" />)}
+        <ellipse cx="35" cy="71" rx="14" ry="2.5" fill="#D4A017" opacity="0.5" />
+        {/* 검정 받침대 */}
+        <rect x="16" y="76" width="38" height="8" rx="2" fill="#0a0a0a" stroke="url(#ciGoldFrame)" strokeWidth="1" />
+        {/* 받침 다리 */}
+        <path d="M20 84 Q18 88 16 88" stroke="#D4A017" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+        <path d="M50 84 Q52 88 54 88" stroke="#D4A017" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+        <path d="M35 84 L35 88" stroke="#D4A017" strokeWidth="1" />
       </svg>
     )
     case 'jongmuso': return (
