@@ -97,11 +97,11 @@ export default function DharmaWheelPage() {
       <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&display=swap" rel="stylesheet" />
 
       <div className="dw-title">
-        {phase === 'grid' ? '사이버법당' : '未 來 寺'}
+        {phase === 'grid' ? '사이버법당' : '미 래 사'}
       </div>
 
       {phase !== 'grid' && (
-        <div className="dw-sub">사이버법당 · 팔정도</div>
+        <div className="dw-sub">사이버법당 · 초전법륜지</div>
       )}
 
       {phase !== 'grid' && (
