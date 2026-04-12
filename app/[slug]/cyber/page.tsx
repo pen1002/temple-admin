@@ -364,11 +364,6 @@ export default function DharmaWheelPage() {
         </div>
       )}
 
-      {phase === 'done' && (
-        <button className="dw-reset" onClick={() => { setPhase('idle'); setWheelAngle(0); setMorphT(0); }}>
-          ☸ 법륜 다시 굴리기
-        </button>
-      )}
 
       <style>{`
         .dw-root { width:100%; min-height:100vh; display:flex; flex-direction:column; align-items:center; overflow:hidden; font-family:'Noto Serif KR',serif; padding-top:20px; background:linear-gradient(180deg,#FFFEF5,#FFF9E6); }
@@ -378,7 +373,6 @@ export default function DharmaWheelPage() {
         .dw-cta span { font-size:14px; color:#888; letter-spacing:1px; }
         .dw-bounce { font-size:24px; color:#888; animation:dwB 1.5s infinite; }
         @keyframes dwB { 0%,100%{transform:translateY(0)} 50%{transform:translateY(7px)} }
-        .dw-reset { margin:20px 0 40px; background:linear-gradient(135deg,#8B6914,#C8961E); color:#fff; border:none; border-radius:12px; padding:12px 36px; font-size:15px; font-weight:700; letter-spacing:2px; cursor:pointer; font-family:'Noto Serif KR',serif; box-shadow:0 2px 10px rgba(139,105,20,0.25); }
         @keyframes ci-doorL { 0%,20%{transform:translateX(0)} 40%,70%{transform:translateX(-8px)} 90%,100%{transform:translateX(0)} }
         @keyframes ci-doorR { 0%,20%{transform:translateX(0)} 40%,70%{transform:translateX(8px)} 90%,100%{transform:translateX(0)} }
         @keyframes ci-glow { 0%{filter:drop-shadow(0 0 2px rgba(255,200,50,0.2))} 100%{filter:drop-shadow(0 0 12px rgba(255,200,50,0.5))} }
