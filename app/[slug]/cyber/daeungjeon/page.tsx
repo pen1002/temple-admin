@@ -160,7 +160,7 @@ export default function DaeungjeonPage() {
 
       <div className="dj-bow-area">
         <button className={`dj-bow-btn ${bowing ? 'bowing' : ''}`} onClick={doBow} disabled={bowing}>
-          {bowing ? '🙏 참배 중...' : '🙏 참배하기'}
+          {bowing ? '🙏 삼배 올리는 중...' : '🙏 부처님께 삼배올립니다'}
         </button>
         {bowCount > 0 && (
           <div className="dj-bow-count">오늘 {bowCount}배 참배하셨습니다</div>
