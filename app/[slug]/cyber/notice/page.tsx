@@ -56,9 +56,61 @@ export default function NoticePage() {
   return (
     <div style={{ padding: 'clamp(20px,4vw,32px) 16px 60px', maxWidth: 600, margin: '0 auto' }}>
       <div style={{ textAlign: 'center', marginBottom: 24 }}>
-        <div style={{ fontSize: 48, marginBottom: 8 }}>📋</div>
+        {/* 에밀레종 SVG + 울림 애니메이션 */}
+        <div style={{ display: 'inline-block', position: 'relative', width: 100, height: 120, marginBottom: 8 }}>
+          <svg viewBox="0 0 100 130" style={{ width: '100%', animation: 'bell-swing 3s ease-in-out infinite' }}>
+            <defs>
+              <linearGradient id="bellBody" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#8a8878" />
+                <stop offset="30%" stopColor="#6b695a" />
+                <stop offset="60%" stopColor="#7d7b6c" />
+                <stop offset="100%" stopColor="#5a584a" />
+              </linearGradient>
+              <linearGradient id="bellTop" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor="#4a5038" />
+                <stop offset="100%" stopColor="#5a6048" />
+              </linearGradient>
+            </defs>
+            {/* 고리 (용뉴) */}
+            <ellipse cx="50" cy="8" rx="8" ry="5" fill="#4a5038" stroke="#3a4030" strokeWidth="0.8" />
+            <rect x="46" y="10" width="8" height="6" rx="2" fill="#4a5038" />
+            {/* 종 상단 어깨 */}
+            <path d="M30 16 Q30 12 50 12 Q70 12 70 16 L72 28 Q73 32 73 36 L73 36" fill="url(#bellTop)" stroke="#3a4030" strokeWidth="0.5" />
+            <path d="M27 16 Q27 10 50 10 Q73 10 73 16" fill="none" stroke="#6a6858" strokeWidth="1" />
+            {/* 유곽 (9개 돌기) */}
+            <rect x="33" y="20" width="34" height="18" rx="2" fill="none" stroke="#8a8070" strokeWidth="0.6" />
+            {Array.from({length: 9}).map((_, i) => (
+              <circle key={i} cx={38 + (i % 3) * 10} cy={25 + Math.floor(i / 3) * 5} r="2" fill="#7a7868" stroke="#6a6858" strokeWidth="0.3" />
+            ))}
+            {/* 종 몸통 */}
+            <path d="M27 16 L24 95 Q22 105 18 112 L82 112 Q78 105 76 95 L73 16" fill="url(#bellBody)" stroke="#5a584a" strokeWidth="0.8" />
+            {/* 비천상 (천녀 부조) */}
+            <path d="M42 55 Q44 48 48 50 Q52 45 54 52 Q56 48 58 55 Q55 60 50 58 Q45 60 42 55" fill="#7a7868" stroke="#6a6858" strokeWidth="0.4" />
+            <path d="M44 58 Q46 68 50 70 Q54 68 56 58" fill="none" stroke="#6a6858" strokeWidth="0.5" />
+            {/* 당좌 (타종점) */}
+            <circle cx="50" cy="85" r="6" fill="#6a6858" stroke="#5a584a" strokeWidth="0.5" />
+            <circle cx="50" cy="85" r="3.5" fill="#7a7868" />
+            {/* 하대 문양 */}
+            <path d="M20 108 Q30 104 50 104 Q70 104 80 108" fill="none" stroke="#8a8070" strokeWidth="0.8" />
+            <path d="M18 112 Q20 108 50 106 Q80 108 82 112" fill="#5a584a" stroke="#4a4838" strokeWidth="0.5" />
+            {/* 연꽃 하대 */}
+            {Array.from({length: 7}).map((_, i) => (
+              <path key={i} d={`M${22 + i * 9} 112 Q${26 + i * 9} 108 ${30 + i * 9} 112`} fill="#6a6858" stroke="#5a584a" strokeWidth="0.3" />
+            ))}
+          </svg>
+          {/* 울림 파장 */}
+          <div style={{ position: 'absolute', top: '40%', left: '-15%', width: '130%', height: '40%', pointerEvents: 'none' }}>
+            <div style={{ position: 'absolute', inset: 0, border: '1px solid rgba(201,168,76,0.15)', borderRadius: '50%', animation: 'bell-wave 3s ease-out infinite' }} />
+            <div style={{ position: 'absolute', inset: 0, border: '1px solid rgba(201,168,76,0.1)', borderRadius: '50%', animation: 'bell-wave 3s ease-out 0.5s infinite' }} />
+            <div style={{ position: 'absolute', inset: 0, border: '1px solid rgba(201,168,76,0.05)', borderRadius: '50%', animation: 'bell-wave 3s ease-out 1s infinite' }} />
+          </div>
+        </div>
         <h2 style={{ fontSize: 22, fontWeight: 600, color: '#c9a84c', letterSpacing: 3, fontFamily: '"Noto Serif KR",serif' }}>공지사항</h2>
         <p style={{ fontSize: 12, color: 'rgba(201,168,76,0.4)', marginTop: 4 }}>미래사 소식을 전합니다</p>
+        <style>{`
+          @keyframes bell-swing { 0%,100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } }
+          @keyframes bell-wave { 0% { transform: scale(0.8); opacity: 0.6; } 100% { transform: scale(1.8); opacity: 0; } }
+        `}</style>
       </div>
 
       {/* 스와이프 영역 */}
