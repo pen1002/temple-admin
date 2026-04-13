@@ -53,10 +53,17 @@ export default function CandlePage() {
   const inp: React.CSSProperties = { background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(240,192,96,0.25)', borderRadius: 8, padding: '10px 14px', color: 'rgba(255,220,120,0.9)', fontSize: 14, outline: 'none', width: '100%' }
 
   return (
-    <div style={{ padding: '20px 20px 60px', maxWidth: 640, margin: '0 auto' }}>
+    <div style={{ padding: '20px 20px 60px', maxWidth: 640, margin: '0 auto' }}
+      onTouchStart={e => setTouchStartX2(e.touches[0].clientX)}
+      onTouchEnd={e => { const dx = e.changedTouches[0].clientX - touchStartX2; if (Math.abs(dx) > 50) { if (dx < 0 && viewRound < totalRounds) setViewRound(viewRound + 1); if (dx > 0 && viewRound > 1) setViewRound(viewRound - 1) } }}
+    >
+      <style>{`
+        @keyframes cardHalo { 0%,100%{opacity:0.5} 50%{opacity:0.9} }
+        @keyframes cardFlame { 0%,100%{transform:scaleY(1) scaleX(1)} 50%{transform:scaleY(1.2) scaleX(0.85)} }
+      `}</style>
       <div style={{ textAlign: 'center', marginBottom: 24 }}>
-        <div style={{ width: 80, height: 80, margin: '0 auto 8px', borderRadius: '50%', overflow: 'hidden', background: 'radial-gradient(circle, rgba(201,168,76,0.15) 0%, transparent 70%)', display: 'flex', alignItems: 'center', justifyContent: 'center', animation: 'cd-flicker 3s ease-in-out infinite alternate' }}>
-          <img src="https://res.cloudinary.com/db3izttcy/image/upload/bodisatt_quikgz" alt="관세음보살" style={{ height: 70, objectFit: 'contain', mixBlendMode: 'multiply', filter: 'brightness(0.9) contrast(1.1)' }} />
+        <div style={{ width: 80, height: 80, margin: '0 auto 8px', borderRadius: '50%', overflow: 'hidden', background: 'radial-gradient(circle, rgba(201,168,76,0.15) 0%, #0a0205 70%)', display: 'flex', alignItems: 'center', justifyContent: 'center', animation: 'cd-flicker 3s ease-in-out infinite alternate' }}>
+          <img src="https://res.cloudinary.com/db3izttcy/image/upload/bodisatt_quikgz" alt="관세음보살" style={{ height: 70, objectFit: 'contain', mixBlendMode: 'lighten', filter: 'drop-shadow(0 0 16px rgba(255,200,80,0.5)) brightness(1.05)' }} />
         </div>
         <style>{`@keyframes cd-flicker { 0% { filter: drop-shadow(0 0 4px rgba(201,168,76,0.2)); } 100% { filter: drop-shadow(0 0 12px rgba(201,168,76,0.5)); } }`}</style>
         <h2 style={{ fontSize: 22, fontWeight: 600, color: '#f0c060', letterSpacing: 3, fontFamily: '"Noto Serif KR",serif' }}>원불모시기</h2>
@@ -89,28 +96,27 @@ export default function CandlePage() {
                 border: `1px solid ${lit ? 'rgba(201,168,76,0.2)' : 'rgba(255,255,255,0.04)'}`,
               }}
             >
-              {/* 단청 천장 */}
-              <div style={{ position:'absolute',top:0,left:0,right:0,height:'20%',background:'linear-gradient(180deg,#1a0408,#2d0a10)',opacity:lit?1:0.4,zIndex:2 }}>
-                <div style={{ position:'absolute',bottom:0,left:0,right:0,height:2,background:'linear-gradient(90deg,#8B2200,#C9A84C,#8B2200)' }} />
-              </div>
-              {/* 기둥 */}
-              <div style={{ position:'absolute',top:0,bottom:0,left:0,width:'9%',background:'#8B2200',opacity:lit?1:0.3,zIndex:3,borderRight:'1px solid rgba(201,168,76,0.2)' }} />
-              <div style={{ position:'absolute',top:0,bottom:0,right:0,width:'9%',background:'#8B2200',opacity:lit?1:0.3,zIndex:3,borderLeft:'1px solid rgba(201,168,76,0.2)' }} />
-              {/* 관세음보살 */}
-              <div style={{ position:'absolute',top:'16%',left:'50%',transform:'translateX(-50%)',width:'60%',zIndex:5,display:'flex',justifyContent:'center' }}>
-                <img src="https://res.cloudinary.com/db3izttcy/image/upload/bodisatt_quikgz" alt="" style={{ width:'100%',objectFit:'contain',mixBlendMode:'multiply',filter:lit?'brightness(0.95) contrast(1.1)':'brightness(0.3)',opacity:lit?1:0.12 }} />
-              </div>
-              {/* 촛불+향로 (점등 시) */}
-              {lit && (
-                <div style={{ position:'absolute',bottom:'12%',left:0,right:0,display:'flex',justifyContent:'center',alignItems:'flex-end',gap:4,zIndex:8 }}>
-                  <svg viewBox="0 0 14 42" width="10" height="32"><rect x="4" y="10" width="6" height="26" rx="2" fill="#f5f0e0"/><rect x="6" y="6" width="2" height="5" fill="#e8dcc0"/><ellipse cx="7" cy="4" rx="3" ry="5" fill="#FFD700" opacity="0.9"><animate attributeName="ry" values="4;6;4" dur="2s" repeatCount="indefinite"/></ellipse><ellipse cx="7" cy="3" rx="1.5" ry="3" fill="#fff" opacity="0.8"/><rect x="2" y="36" width="10" height="3" rx="1" fill="#C9A84C"/></svg>
-                  <svg viewBox="0 0 16 28" width="10" height="20"><rect x="7" y="10" width="1.5" height="10" fill="#7a5c1e"/><ellipse cx="8" cy="21" rx="6" ry="3" fill="#C9A84C" opacity="0.8"/><path d="M6 10 Q5 5 7 0" stroke="rgba(200,180,140,0.5)" strokeWidth="0.6" fill="none"><animate attributeName="d" values="M6 10 Q5 5 7 0;M6 10 Q8 5 6 0;M6 10 Q5 5 7 0" dur="2.5s" repeatCount="indefinite"/></path><path d="M10 10 Q11 5 9 0" stroke="rgba(200,180,140,0.4)" strokeWidth="0.6" fill="none"><animate attributeName="d" values="M10 10 Q11 5 9 0;M10 10 Q8 5 10 0;M10 10 Q11 5 9 0" dur="3s" repeatCount="indefinite"/></path></svg>
-                  <svg viewBox="0 0 14 42" width="10" height="32"><rect x="4" y="10" width="6" height="26" rx="2" fill="#f5f0e0"/><rect x="6" y="6" width="2" height="5" fill="#e8dcc0"/><ellipse cx="7" cy="4" rx="3" ry="5" fill="#FFD700" opacity="0.9"><animate attributeName="ry" values="4;6;4" dur="2.2s" repeatCount="indefinite"/></ellipse><ellipse cx="7" cy="3" rx="1.5" ry="3" fill="#fff" opacity="0.8"/><rect x="2" y="36" width="10" height="3" rx="1" fill="#C9A84C"/></svg>
+              {/* 천장 + 단청 + 수막새 */}
+              <div style={{ position:'absolute',top:0,left:0,right:0,height:'12%',background:lit?'linear-gradient(180deg,#1a0408,#2d0a10)':'linear-gradient(180deg,#0f0206,#1a0408)',borderBottom:lit?'1.5px solid #C9A84C':'1px solid rgba(201,168,76,0.25)',zIndex:6,overflow:'visible' }}>
+                <div style={{ position:'absolute',inset:0,background:lit?'repeating-linear-gradient(90deg,#8B1A00 0,#8B1A00 4px,#C9A84C 4px,#C9A84C 7px,#1a5c20 7px,#1a5c20 11px,#1a3a8c 11px,#1a3a8c 15px,#C9A84C 15px,#C9A84C 18px)':'repeating-linear-gradient(90deg,#3a0800 0,#3a0800 4px,#5a4010 4px,#5a4010 7px,#0a2010 7px,#0a2010 11px,#0a1040 11px,#0a1040 15px,#5a4010 15px,#5a4010 18px)',opacity:lit?0.8:0.45 }} />
+                <div style={{ position:'absolute',bottom:-4,left:'8%',right:'8%',display:'flex',justifyContent:'space-around',zIndex:7 }}>
+                  {[0,1,2,3,4].map(k => <svg key={k} viewBox="0 0 10 10" width="7" height="7"><circle cx="5" cy="5" r="4.5" fill={lit?'#C9A84C':'#5a4010'} stroke={lit?'#FFD700':'#8B6914'} strokeWidth=".8"/><circle cx="5" cy="5" r="2" fill={lit?'#8B5C00':'#3a2808'}/></svg>)}
                 </div>
-              )}
-              {/* 이름 or 빈자리 */}
-              <div style={{ position:'absolute',bottom:'3%',left:0,right:0,textAlign:'center',zIndex:10,fontSize:7,color:lit?'rgba(255,210,100,0.9)':'rgba(255,255,255,0.2)',background:'rgba(0,0,0,0.4)',padding:'1px 4px',borderRadius:3,width:'fit-content',margin:'0 auto' }}>
-                {lit ? c!.name.slice(0,3) : '초공양'}
+              </div>
+              {/* 기둥+중앙 */}
+              <div style={{ display:'flex',width:'100%',height:'88%',marginTop:'12%',position:'relative' }}>
+                <div style={{ width:'9%',flexShrink:0,background:lit?'linear-gradient(90deg,#5C1010,#8B2200,#5C1010)':'linear-gradient(90deg,#200808,#350e0e,#200808)',borderRight:lit?'1px solid rgba(201,168,76,0.45)':'1px solid rgba(201,168,76,0.1)',zIndex:5 }} />
+                <div style={{ flex:1,position:'relative' }}>
+                  {lit && <div style={{ position:'absolute',top:'8%',left:'50%',transform:'translateX(-50%)',width:36,height:36,borderRadius:'50%',background:'radial-gradient(circle,rgba(255,210,80,0.3) 0%,transparent 70%)',animation:'cardHalo 3s ease-in-out infinite',zIndex:3 }} />}
+                  <img src="https://res.cloudinary.com/db3izttcy/image/upload/bodisatt_quikgz" alt="" style={{ position:'absolute',top:'2%',left:0,right:0,width:'100%',height:'79%',objectFit:'contain',mixBlendMode:'lighten',filter:lit?'drop-shadow(0 0 5px rgba(255,200,80,0.65)) brightness(1.1)':'none',opacity:lit?1:0.1,zIndex:4 }} />
+                  <div style={{ position:'absolute',top:'3%',left:0,right:0,textAlign:'center',fontSize:'6.5px',color:lit?'rgba(201,168,76,0.85)':'rgba(201,168,76,0.3)',letterSpacing:'0.04em',zIndex:8 }}>초공양</div>
+                  {lit && <div style={{ position:'absolute',bottom:'5%',left:0,right:0,display:'flex',justifyContent:'space-around',padding:'0 14%',zIndex:8 }}>
+                    {[0,1].map(k => <div key={k} style={{ display:'flex',flexDirection:'column',alignItems:'center' }}><div style={{ width:4,height:6,background:'linear-gradient(180deg,#fff8e0,#FFD700,#FF6600)',borderRadius:'50% 50% 30% 30%',boxShadow:'0 0 3px rgba(255,200,50,0.9)',animation:`cardFlame ${1.1+k*0.2}s ease-in-out infinite ${k*0.2}s` }} /><div style={{ width:3,height:9,background:'linear-gradient(90deg,#e0c880,#fff8e0)',borderRadius:1 }} /><div style={{ width:5,height:2,background:'#C9A84C',borderRadius:1 }} /></div>)}
+                  </div>}
+                  {lit ? <div style={{ position:'absolute',bottom:'1%',left:0,right:0,textAlign:'center',zIndex:8,fontSize:'6.5px',color:'rgba(255,210,100,0.9)' }}><span style={{ background:'rgba(0,0,0,0.5)',padding:'1px 3px',borderRadius:2 }}>{c!.name.slice(0,3)}</span></div>
+                    : <div style={{ position:'absolute',bottom:'8%',left:0,right:0,textAlign:'center',fontSize:6,color:'rgba(255,255,255,0.2)',zIndex:8 }}>신청하기</div>}
+                </div>
+                <div style={{ width:'9%',flexShrink:0,background:lit?'linear-gradient(270deg,#5C1010,#8B2200,#5C1010)':'linear-gradient(270deg,#200808,#350e0e,#200808)',borderLeft:lit?'1px solid rgba(201,168,76,0.45)':'1px solid rgba(201,168,76,0.1)',zIndex:5 }} />
               </div>
             </div>
           )
