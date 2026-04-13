@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
     })
 
     const TYPE_LABELS: Record<string, string> = {
-      indung: '인등불사', yeondeung: '연등공양', candle: '초공양',
+      indung: '인등불사', yeondeung: '연등공양', avalokiteshvara: '원불모시기',
       memorial: '위패봉안', bow: '참배',
       'prayer_PR-01': '초하루기도', 'prayer_PR-02': '백일기도',
       'prayer_PR-06': '49재', 'prayer_PR-07': '천도재',

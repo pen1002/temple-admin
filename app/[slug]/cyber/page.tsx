@@ -13,7 +13,7 @@ const items = [
   { label: '인등불사', sub: '가족건강행복', icon: '🏮', href: 'indung' },
   { label: '연등공양', sub: '연꽃 등불', icon: '🪷', href: 'yeondeung' },
   // 2열
-  { label: '원불모시기', sub: '관세음보살', icon: '🕯️', href: 'candle' },
+  { label: '원불모시기', sub: '관세음보살', icon: '🕯️', href: 'avalokiteshvara' },
   { label: '스님과 소통', sub: '카카오톡 상담', icon: '💬', href: '_kakao' },
   { label: '종무소', sub: '디지털 종무소', icon: '📜', href: 'jongmuso' },
   { label: '부처님말씀', sub: '오늘의 법문', icon: '📿', href: 'dharma' },
@@ -103,7 +103,7 @@ function CardIcon({ id, done }: { id: string; done: boolean }) {
         <circle cx="59" cy="17" r="1" fill="#3a2a10" />
       </svg>
     )
-    case 'candle': return (
+    case 'avalokiteshvara': return (
       <svg viewBox="0 0 64 64" style={common}>
         <rect x="24" y="26" width="16" height="28" rx="2" fill="#f5f0e0" stroke="#d4c8a0" strokeWidth="0.6" />
         <rect x="22" y="52" width="20" height="4" rx="1.5" fill="#d4c8a0" />

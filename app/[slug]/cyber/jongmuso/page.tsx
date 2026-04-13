@@ -6,7 +6,7 @@ import { useParams } from 'next/navigation';
 const GIDO_ITEMS = [
   { name: '초파일봉축연등', icon: '🏮', price: '개인등 5만 / 가족등 10만' },
   { name: '인등기도', icon: '🕯️', price: '1만원 (1년)' },
-  { name: '초공양', icon: '🕯️', price: '5천원 (1년)' },
+  { name: '원불모시기', icon: '🕯️', price: '5천원 (1년)' },
   { name: '초하루기도', icon: '🌙', price: '1년 2,000원' },
   { name: '백일기도', icon: '🌸', price: '1년 2,000원' },
   { name: '49재', icon: '🍀', price: '1년 2,000원' },
@@ -18,7 +18,7 @@ const GIDO_ITEMS = [
 const STATUS_DATA = [
   { name: '초파일봉축연등', current: 25, total: 100 },
   { name: '인등기도', current: 2, total: 30 },
-  { name: '초공양', current: 1, total: 30 },
+  { name: '원불모시기', current: 1, total: 30 },
   { name: '초하루기도', current: 18, total: 100 },
   { name: '백일기도', current: 42, total: 100 },
   { name: '49재', current: 7, total: 100 },

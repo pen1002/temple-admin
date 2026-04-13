@@ -10,7 +10,7 @@ const items = [
   // 1열
   { label: '대웅전', sub: '본존불 친견', icon: '🏛️', href: 'daeungjeon' },
   { label: '지장전', sub: '위패모십니다', icon: '🪷', href: 'jijangjeon' },
-  { label: '원불모시기', sub: '관세음보살', icon: '🕯️', href: 'candle' },
+  { label: '원불모시기', sub: '관세음보살', icon: '🕯️', href: 'avalokiteshvara' },
   { label: '부처님말씀', sub: '오늘의 법문', icon: '📿', href: 'dharma' },
   // 2열
   { label: '연등공양', sub: '연꽃 등불', icon: '🪷', href: 'yeondeung' },
@@ -103,7 +103,7 @@ function CardIcon({ id, done }: { id: string; done: boolean }) {
         <circle cx="59" cy="17" r="1" fill="#3a2a10" />
       </svg>
     )
-    case 'candle': return (
+    case 'avalokiteshvara': return (
       <div style={{ ...common, borderRadius: 4, background: '#0d0608', position: 'relative', overflow: 'hidden', border: '1px solid rgba(201,168,76,0.2)', aspectRatio: '3/4' }}>
         {/* 천장 + 단청 + 수막새 */}
         <div style={{ position:'absolute',top:0,left:0,right:0,height:'12%',background:'linear-gradient(180deg,#1a0408,#2d0a10)',borderBottom:'1.5px solid #C9A84C',zIndex:6,overflow:'visible' }}>

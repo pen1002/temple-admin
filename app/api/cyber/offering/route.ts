@@ -5,11 +5,11 @@ const globalForPrisma = global as unknown as { prismaCyber?: PrismaClient }
 const prisma = globalForPrisma.prismaCyber ?? new PrismaClient()
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prismaCyber = prisma
 
-const VALID_TYPES = ['bow', 'memorial', 'prayer', 'candle', 'indung', 'yeondeung'] as const
+const VALID_TYPES = ['bow', 'memorial', 'prayer', 'avalokiteshvara', 'indung', 'yeondeung'] as const
 const SHEETS_URL = process.env.GOOGLE_SHEET_SCRIPT_URL || ''
 
 const TYPE_LABELS: Record<string, string> = {
-  indung: '인등불사', yeondeung: '연등공양', candle: '초공양',
+  indung: '인등불사', yeondeung: '연등공양', avalokiteshvara: '원불모시기',
   memorial: '위패봉안', bow: '참배',
 }
 
@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
     // 구글 시트 기록 (참배 제외)
     if (SHEETS_URL && type !== 'bow') {
       const label = getPrayerLabel(type)
-      const isIndungType = ['indung', 'yeondeung', 'candle'].includes(type)
+      const isIndungType = ['indung', 'yeondeung', 'avalokiteshvara'].includes(type)
       fetch(SHEETS_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

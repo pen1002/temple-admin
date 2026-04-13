@@ -30,7 +30,7 @@ export default function CandlePage() {
   
 
   const fetchData = useCallback(async () => {
-    const res = await fetch(`/api/cyber/offering?temple_slug=${slug}&type=candle&limit=10000`)
+    const res = await fetch(`/api/cyber/offering?temple_slug=${slug}&type=avalokiteshvara&limit=10000`)
     const data = await res.json()
     if (Array.isArray(data)) setCandles(data)
   }, [slug])
@@ -42,7 +42,7 @@ export default function CandlePage() {
     setLoading(true)
     await fetch('/api/cyber/offering', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ temple_slug: slug, type: 'candle', name: name.trim(), wish: wish.trim(), contact: contact.trim(), amount }),
+      body: JSON.stringify({ temple_slug: slug, type: 'avalokiteshvara', name: name.trim(), wish: wish.trim(), contact: contact.trim(), amount }),
     })
     await fetchData()
     setShowForm(false); setSubmitDone(true); setName(''); setWish(''); setContact('')
@@ -128,7 +128,7 @@ export default function CandlePage() {
                 <div style={{ flex:1,position:'relative' }}>
                   {lit && <div style={{ position:'absolute',top:'8%',left:'50%',transform:'translateX(-50%)',width:36,height:36,borderRadius:'50%',background:'radial-gradient(circle,rgba(255,210,80,0.3) 0%,transparent 70%)',animation:'cardHalo 3s ease-in-out infinite',zIndex:3 }} />}
                   <img src="https://res.cloudinary.com/db3izttcy/image/upload/bodisatt_quikgz" alt="" style={{ position:'absolute',top:'2%',left:0,right:0,width:'100%',height:'79%',objectFit:'contain',mixBlendMode:'lighten',filter:lit?'drop-shadow(0 0 5px rgba(255,200,80,0.65)) brightness(1.1)':'none',opacity:lit?1:0.1,zIndex:4 }} />
-                  <div style={{ position:'absolute',top:'3%',left:0,right:0,textAlign:'center',fontSize:'6.5px',color:lit?'rgba(201,168,76,0.85)':'rgba(201,168,76,0.3)',letterSpacing:'0.04em',zIndex:8 }}>초공양</div>
+                  <div style={{ position:'absolute',top:'3%',left:0,right:0,textAlign:'center',fontSize:'6.5px',color:lit?'rgba(201,168,76,0.85)':'rgba(201,168,76,0.3)',letterSpacing:'0.04em',zIndex:8 }}>원불모시기</div>
                   {lit && <div style={{ position:'absolute',bottom:'5%',left:0,right:0,display:'flex',justifyContent:'space-around',padding:'0 14%',zIndex:8 }}>
                     {[0,1].map(k => <div key={k} style={{ display:'flex',flexDirection:'column',alignItems:'center' }}><div style={{ width:4,height:6,background:'linear-gradient(180deg,#fff8e0,#FFD700,#FF6600)',borderRadius:'50% 50% 30% 30%',boxShadow:'0 0 3px rgba(255,200,50,0.9)',animation:`cardFlame ${1.1+k*0.2}s ease-in-out infinite ${k*0.2}s` }} /><div style={{ width:3,height:9,background:'linear-gradient(90deg,#e0c880,#fff8e0)',borderRadius:1 }} /><div style={{ width:5,height:2,background:'#C9A84C',borderRadius:1 }} /></div>)}
                   </div>}
