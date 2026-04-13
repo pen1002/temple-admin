@@ -90,6 +90,10 @@ export default function JongmusoPage() {
           ))}
         </div>
         <div className="shelf-plank" />
+        <div className="shelf-row">
+          <div className="shelf-slot" onClick={() => window.location.href = `/${slug}/cyber/notice`}><div className="slot-icon">🔔</div><div className="slot-label">공지사항</div><div className="slot-sub">미래사 소식</div></div>
+        </div>
+        <div className="shelf-plank" />
       </div>
 
       {activePanel === 'sido' && (<div className="panel"><button className="panel-close" onClick={closePanel}>&times;</button><div className="panel-title">신도카드</div>
