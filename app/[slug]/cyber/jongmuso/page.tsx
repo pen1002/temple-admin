@@ -45,7 +45,7 @@ export default function JongmusoPage() {
   const [regTel, setRegTel] = useState('');
   const [regSuccess, setRegSuccess] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<{id:string;name:string;contact:string;beopMyeong:string;address:string;date:string;familyNames:string[];familySummary:Record<string,Record<string,number>>;totalSummary:Record<string,number>}[]>([]);
+  const [searchResults, setSearchResults] = useState<{id:string;name:string;contact:string;beopMyeong:string;address:string;date:string;familyNames:string[];offeringDetails:{id:string;name:string;type:string;label:string;amount:number;paid:boolean;date:string;wish:string|null}[];totalAmount:number;paidAmount:number}[]>([]);
   const [searching, setSearching] = useState(false);
   const [copied, setCopied] = useState(false);
   const [sidoPin, setSidoPin] = useState('');
@@ -134,23 +134,27 @@ export default function JongmusoPage() {
             <div key={r.id} style={{ background:'rgba(200,150,30,0.06)',borderRadius:8,padding:12,marginBottom:8 }}>
               <div style={{ fontWeight:700,color:'#F5D060',fontSize:14 }}>{r.name} 불자님</div>
               <div style={{ fontSize:11,color:'rgba(245,230,184,0.5)',marginTop:2 }}>법명: {r.beopMyeong} | 연락처: {r.contact} | 등록: {new Date(r.date).toLocaleDateString('ko-KR')}</div>
-              {/* 가족 전체 합산 */}
-              {Object.keys(r.totalSummary).length > 0 && (
+              {/* 동참 내역 상세 (금액, 날짜, 납부여부) */}
+              {r.offeringDetails.length > 0 && (
                 <div style={{ marginTop:10 }}>
-                  <div style={{ fontSize:11,color:'rgba(245,230,184,0.4)',marginBottom:4 }}>가족 전체 동참 내역</div>
-                  {Object.entries(r.totalSummary).map(([k,v]) => <div key={k} className="preview-row"><span>{k}</span><span style={{ color:'#F5D060' }}>{v}건</span></div>)}
-                </div>
-              )}
-              {/* 가족별 상세 */}
-              {r.familyNames.length > 1 && Object.keys(r.familySummary).length > 0 && (
-                <div style={{ marginTop:10 }}>
-                  <div style={{ fontSize:11,color:'rgba(245,230,184,0.4)',marginBottom:4 }}>가족별 상세</div>
-                  {Object.entries(r.familySummary).map(([name, items]) => (
-                    <div key={name} style={{ marginBottom:6 }}>
-                      <div style={{ fontSize:12,color:'#F5E6B8',fontWeight:600 }}>{name}</div>
-                      {Object.entries(items).map(([k,v]) => <div key={k} className="preview-row" style={{ paddingLeft:8 }}><span>{k}</span><span>{v}건</span></div>)}
+                  <div style={{ fontSize:11,color:'rgba(245,230,184,0.4)',marginBottom:6 }}>동참 내역</div>
+                  {r.offeringDetails.map(o => (
+                    <div key={o.id} style={{ display:'flex',alignItems:'center',gap:6,padding:'5px 0',borderBottom:'1px solid rgba(245,230,184,0.06)',fontSize:11 }}>
+                      <span style={{ flex:'0 0 auto',color:'#F5E6B8',fontWeight:600,minWidth:24 }}>{o.name}</span>
+                      <span style={{ flex:1,color:'rgba(245,230,184,0.6)' }}>{o.label}</span>
+                      <span style={{ flex:'0 0 auto',color:'rgba(245,230,184,0.4)',fontSize:10 }}>{new Date(o.date).toLocaleDateString('ko-KR')}</span>
+                      <span style={{ flex:'0 0 auto',color:'#F5D060',fontWeight:700,minWidth:52,textAlign:'right' }}>{o.amount > 0 ? `${o.amount.toLocaleString()}원` : '-'}</span>
+                      <button onClick={async () => { await fetch('/api/cyber/sido', { method:'PATCH', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ id:o.id, paid:!o.paid }) }); doSearch(searchQuery); }} style={{ flex:'0 0 auto',padding:'2px 8px',borderRadius:4,border:'none',fontSize:10,fontWeight:700,cursor:'pointer',background:o.paid?'rgba(34,197,94,0.2)':'rgba(239,68,68,0.2)',color:o.paid?'#22c55e':'#ef4444' }}>{o.paid?'납부':'미납'}</button>
                     </div>
                   ))}
+                  {/* 합계 */}
+                  <div style={{ display:'flex',justifyContent:'space-between',alignItems:'center',marginTop:8,paddingTop:8,borderTop:'1px solid rgba(245,230,184,0.15)' }}>
+                    <span style={{ fontSize:12,color:'rgba(245,230,184,0.6)' }}>합계 {r.offeringDetails.length}건</span>
+                    <div style={{ textAlign:'right' }}>
+                      <div style={{ fontSize:13,color:'#F5D060',fontWeight:700 }}>{r.totalAmount.toLocaleString()}원</div>
+                      <div style={{ fontSize:10,color:'rgba(245,230,184,0.4)' }}>납부 {r.paidAmount.toLocaleString()}원 / 미납 {(r.totalAmount - r.paidAmount).toLocaleString()}원</div>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>

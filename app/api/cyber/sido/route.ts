@@ -48,17 +48,21 @@ export async function GET(req: NextRequest) {
         orderBy: { created_at: 'desc' }, take: 200,
       })
 
-      // 가족별 + 유형별 집계
-      const familySummary: Record<string, Record<string, number>> = {}
-      const totalSummary: Record<string, number> = {}
-      familyOfferings.forEach(o => {
-        const label = TYPE_LABELS[o.type] || o.type
-        totalSummary[label] = (totalSummary[label] || 0) + 1
-        // 어느 가족 이름인지
-        const matchedName = familyNames.find(fn => o.name.includes(fn)) || o.name
-        if (!familySummary[matchedName]) familySummary[matchedName] = {}
-        familySummary[matchedName][label] = (familySummary[matchedName][label] || 0) + 1
-      })
+      // 개별 offering 상세 (금액, 날짜, 납부여부 포함)
+      const offeringDetails = familyOfferings.map(o => ({
+        id: o.id.toString(),
+        name: o.name,
+        type: o.type,
+        label: TYPE_LABELS[o.type] || o.type,
+        amount: o.amount,
+        paid: o.bank_confirmed,
+        date: o.created_at,
+        wish: o.wish,
+      }))
+
+      // 전체 합산 금액
+      const totalAmount = familyOfferings.reduce((s, o) => s + o.amount, 0)
+      const paidAmount = familyOfferings.filter(o => o.bank_confirmed).reduce((s, o) => s + o.amount, 0)
 
       return {
         id: s.id.toString(),
@@ -68,8 +72,9 @@ export async function GET(req: NextRequest) {
         address: parsed['주소'] || '-',
         date: s.created_at,
         familyNames,
-        familySummary,
-        totalSummary,
+        offeringDetails,
+        totalAmount,
+        paidAmount,
       }
     }))
 
@@ -118,6 +123,21 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({ ok: true, id: row.id.toString() })
+  } catch (e: unknown) {
+    return NextResponse.json({ error: e instanceof Error ? e.message : 'unknown' }, { status: 500 })
+  }
+}
+
+// PATCH /api/cyber/sido — 납부 확인 토글
+export async function PATCH(req: NextRequest) {
+  try {
+    const { id, paid } = await req.json()
+    if (!id) return NextResponse.json({ error: 'id 필수' }, { status: 400 })
+    await prisma.cyberOffering.update({
+      where: { id: BigInt(id) },
+      data: { bank_confirmed: Boolean(paid) },
+    })
+    return NextResponse.json({ ok: true })
   } catch (e: unknown) {
     return NextResponse.json({ error: e instanceof Error ? e.message : 'unknown' }, { status: 500 })
   }
