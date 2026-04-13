@@ -35,6 +35,9 @@ export default function AddTempleForm() {
   const [themeColor, setThemeColor] = useState('golden-lotus')
   const [pageTemplate, setPageTemplate] = useState('standard')
 
+  const [templeType, setTempleType] = useState<'offline' | 'cyber'>('offline')
+  const [kakaoNotifyTel, setKakaoNotifyTel] = useState('')
+
   const [form, setForm] = useState({
     code: '', name: '', nameEn: '', description: '', address: '',
     phone: '', denomination: '대한불교 조계종', abbotName: '',
@@ -69,6 +72,8 @@ export default function AddTempleForm() {
         themeColor,
         pageTemplate,
         tier: Number(form.tier),
+        temple_type: templeType,
+        kakao_notify_tel: kakaoNotifyTel || undefined,
       },
       blocks: selectedBlocks.map((id, i) => {
         const config: Record<string, unknown> = id === 'H-01' ? {
@@ -160,6 +165,24 @@ export default function AddTempleForm() {
         {error && (
           <div className="bg-red-50 border-2 border-red-300 rounded-xl p-4 text-red-700 text-base">⚠️ {error}</div>
         )}
+
+        {/* 사찰 유형 토글 */}
+        <section>
+          <h2 className="text-temple-brown font-bold text-lg mb-3">사찰 유형</h2>
+          <div className="flex items-center gap-3 mb-3">
+            <button onClick={() => setTempleType('offline')} style={{ padding: '10px 20px', borderRadius: 10, fontSize: 14, fontWeight: 700, border: '2px solid', borderColor: templeType === 'offline' ? '#8B5E3C' : '#ddd', background: templeType === 'offline' ? '#8B5E3C' : '#fff', color: templeType === 'offline' ? '#fff' : '#888', cursor: 'pointer' }}>🏛 오프라인 사찰</button>
+            <button onClick={() => setTempleType('cyber')} style={{ padding: '10px 20px', borderRadius: 10, fontSize: 14, fontWeight: 700, border: '2px solid', borderColor: templeType === 'cyber' ? '#4338CA' : '#ddd', background: templeType === 'cyber' ? '#4338CA' : '#fff', color: templeType === 'cyber' ? '#fff' : '#888', cursor: 'pointer' }}>💻 사이버 법당</button>
+          </div>
+          {templeType === 'cyber' && (
+            <div className="space-y-3">
+              <div>
+                <label className="block text-temple-brown font-bold text-base mb-1">카카오 알림 수신 전화번호</label>
+                <input type="tel" value={kakaoNotifyTel} onChange={e => setKakaoNotifyTel(e.target.value)} placeholder="010-0000-0000" className="input-field" />
+                <p className="text-gray-400 text-sm mt-1">기도/공양 접수 시 카카오톡 알림을 받을 번호</p>
+              </div>
+            </div>
+          )}
+        </section>
 
         {/* ① 기본 정보 ──────────────────────────────────────────────────────── */}
         <section>
