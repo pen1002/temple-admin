@@ -233,11 +233,9 @@ export default function DharmaWheelPage() {
   const { slug } = useParams<{ slug: string }>();
   const searchParams = useSearchParams();
   const rootRef = useRef<HTMLDivElement>(null);
-  const [phase, setPhase] = useState<'idle' | 'spinning' | 'done'>(() => {
-    if (searchParams.get('grid') === '1') return 'done';
-    if (typeof window !== 'undefined' && sessionStorage.getItem('dw-grid-shown')) return 'done';
-    return 'idle';
-  });
+  const [phase, setPhase] = useState<'idle' | 'spinning' | 'done'>(
+    searchParams.get('grid') === '1' ? 'done' : 'idle'
+  );
   const [wheelAngle, setWheelAngle] = useState(0);
   const [cw, setCw] = useState(0);
 
@@ -247,10 +245,12 @@ export default function DharmaWheelPage() {
     return () => window.removeEventListener('resize', u);
   }, []);
 
-  // 그리드가 표시되면 sessionStorage에 기록 → 뒤로가기 시 그리드 유지
+  // 그리드 표시 시 URL에 ?grid=1 추가 → 브라우저 뒤로가기 시 그리드 유지
   useEffect(() => {
-    if (phase === 'done') sessionStorage.setItem('dw-grid-shown', '1');
-  }, [phase]);
+    if (phase === 'done' && searchParams.get('grid') !== '1') {
+      window.history.replaceState(null, '', `?grid=1`);
+    }
+  }, [phase, searchParams]);
 
   const wr = cw < 500 ? 120 : 165;
   const wcx = cw / 2, wcy = wr + 20;
