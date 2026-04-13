@@ -233,7 +233,11 @@ export default function DharmaWheelPage() {
   const { slug } = useParams<{ slug: string }>();
   const searchParams = useSearchParams();
   const rootRef = useRef<HTMLDivElement>(null);
-  const [phase, setPhase] = useState<'idle' | 'spinning' | 'done'>(searchParams.get('grid') === '1' ? 'done' : 'idle');
+  const [phase, setPhase] = useState<'idle' | 'spinning' | 'done'>(() => {
+    if (searchParams.get('grid') === '1') return 'done';
+    if (typeof window !== 'undefined' && sessionStorage.getItem('dw-grid-shown')) return 'done';
+    return 'idle';
+  });
   const [wheelAngle, setWheelAngle] = useState(0);
   const [cw, setCw] = useState(0);
 
@@ -242,6 +246,11 @@ export default function DharmaWheelPage() {
     u(); window.addEventListener('resize', u);
     return () => window.removeEventListener('resize', u);
   }, []);
+
+  // 그리드가 표시되면 sessionStorage에 기록 → 뒤로가기 시 그리드 유지
+  useEffect(() => {
+    if (phase === 'done') sessionStorage.setItem('dw-grid-shown', '1');
+  }, [phase]);
 
   const wr = cw < 500 ? 120 : 165;
   const wcx = cw / 2, wcy = wr + 20;
@@ -280,8 +289,8 @@ export default function DharmaWheelPage() {
   const gridY0 = cw < 500 ? 60 : 80;
   const cols = cw < 500 ? 2 : 4;
   const rows = Math.ceil(8 / cols);
-  const ch = cw < 500 ? 100 : 120;
-  const totalH = rows * ch + (rows - 1) * GAP;
+  const cardH = cw < 500 ? 140 : 180;
+  const totalH = rows * cardH + (rows - 1) * GAP;
   const wheelOpacity = phase === 'done' ? 0 : 1;
 
   return (
@@ -291,7 +300,7 @@ export default function DharmaWheelPage() {
       <div className="dw-title">{phase === 'done' ? '미래사' : '미 래 사'}</div>
       <div className="dw-sub">{phase === 'done' ? '온라인법당 초전법륜지' : '사이버법당 · 초전법륜지'}</div>
 
-      {cw === 0 ? <div style={{ height: 300 }} /> : <div style={{ position: 'relative', width: '100%', maxWidth: cw, margin: '0 auto', minHeight: phase === 'done' ? totalH + gridY0 + 20 : wcy + wr + 60, transition: 'min-height 0.8s ease', overflow: 'visible' }}>
+      {cw === 0 ? <div style={{ height: 300 }} /> : <div style={{ position: 'relative', width: '100%', maxWidth: cw, margin: '0 auto', minHeight: phase === 'done' ? totalH + gridY0 + 40 : wcy + wr + 60, paddingBottom: phase === 'done' ? 40 : 0, transition: 'min-height 0.8s ease', overflow: 'visible' }}>
 
         {/* 바퀴 뼈대 — 스핀 중 보이고 morph 시 fade out */}
         {phase !== 'done' && (
@@ -372,7 +381,7 @@ export default function DharmaWheelPage() {
 
 
       <style>{`
-        .dw-root { width:100%; min-height:100vh; display:flex; flex-direction:column; align-items:center; overflow:hidden; font-family:'Noto Serif KR',serif; padding-top:20px; background:linear-gradient(180deg,#FFFEF5,#FFF9E6); }
+        .dw-root { width:100%; min-height:100vh; display:flex; flex-direction:column; align-items:center; overflow-x:hidden; overflow-y:auto; font-family:'Noto Serif KR',serif; padding-top:20px; background:linear-gradient(180deg,#FFFEF5,#FFF9E6); }
         .dw-title { font-size:26px; font-weight:900; letter-spacing:6px; margin-bottom:2px; color:#2C2C2A; transition:all 0.5s; }
         .dw-sub { font-size:13px; color:#888; letter-spacing:2px; margin-bottom:12px; }
         .dw-cta { margin-top:8px; display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer; }
