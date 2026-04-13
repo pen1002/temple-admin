@@ -113,6 +113,12 @@ export async function POST(req: NextRequest) {
         ...(t.secondaryColor !== undefined && { secondaryColor: t.secondaryColor }),
         ...(t.themeColor !== undefined && { themeColor: t.themeColor }),
         ...(t.isActive !== undefined && { isActive: Boolean(t.isActive) }),
+        ...(t.temple_type !== undefined && { temple_type: t.temple_type }),
+        ...(t.pageTemplate !== undefined && { pageTemplate: t.pageTemplate }),
+        ...(t.kakao_notify_tel !== undefined && { kakao_notify_tel: t.kakao_notify_tel }),
+        ...(t.bank_name !== undefined && { bank_name: t.bank_name }),
+        ...(t.bank_account !== undefined && { bank_account: t.bank_account }),
+        ...(t.bank_holder !== undefined && { bank_holder: t.bank_holder }),
       },
       create: {
         code: t.code,
@@ -130,6 +136,12 @@ export async function POST(req: NextRequest) {
         secondaryColor: t.secondaryColor ?? '#C5A572',
         themeColor: t.themeColor ?? 'golden-lotus',
         isActive: t.isActive ?? true,
+        temple_type: t.temple_type ?? 'offline',
+        pageTemplate: t.pageTemplate ?? 'standard',
+        kakao_notify_tel: t.kakao_notify_tel,
+        bank_name: t.bank_name,
+        bank_account: t.bank_account,
+        bank_holder: t.bank_holder,
       },
     })
 

@@ -52,16 +52,20 @@ export async function POST(req: NextRequest) {
       },
     })
 
+    // 사찰명 조회 (구글시트 + 카카오 텍스트용)
+    const templeRow = await prisma.temple.findUnique({ where: { code: temple_slug }, select: { name: true } })
+
     // 구글 시트 기록 (참배 제외)
     if (SHEETS_URL && type !== 'bow') {
       const label = getPrayerLabel(type)
       const isIndungType = ['indung', 'yeondeung', 'avalokiteshvara'].includes(type)
+      const templeName = templeRow?.name || temple_slug
       fetch(SHEETS_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           type: isIndungType ? 'indung' : type.startsWith('prayer_') ? 'indung' : 'yeondeung',
-          templeName: '미래사',
+          templeName,
           blockCode: type,
           currentRound: 1,
           applicantName: name.trim(),
@@ -77,9 +81,10 @@ export async function POST(req: NextRequest) {
 
     // 카카오 공유 텍스트 생성
     const label = getPrayerLabel(type)
+    const tName = templeRow?.name || temple_slug
     const kakaoText = type === 'memorial'
-      ? `[미래사 ${label}]\n${name}님이 ${deceased || '영가'}님의 위패를 봉안하였습니다.\n발원: ${wish || ''}`
-      : `[미래사 ${label}]\n${name} 불자님이 ${label}에 동참하였습니다.\n발원: ${wish || ''}`
+      ? `[${tName} ${label}]\n${name}님이 ${deceased || '영가'}님의 위패를 봉안하였습니다.\n발원: ${wish || ''}`
+      : `[${tName} ${label}]\n${name} 불자님이 ${label}에 동참하였습니다.\n발원: ${wish || ''}`
 
     return NextResponse.json({ ok: true, id: row.id.toString(), kakaoText })
   } catch (e: unknown) {
