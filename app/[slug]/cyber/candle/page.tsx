@@ -156,16 +156,11 @@ export default function CandlePage() {
           <input value={name} onChange={e => setName(e.target.value)} placeholder="성함 *" style={inp} />
           <textarea value={wish} onChange={e => setWish(e.target.value)} placeholder="발원문 (선택)" rows={2} style={{ ...inp, resize: 'none' }} />
           <input value={contact} onChange={e => setContact(e.target.value)} type="tel" placeholder="연락처 (010-0000-0000)" style={inp} />
-          <div style={{ display: 'flex', gap: 8 }}>
-            {AMOUNTS.map(a => (
-              <button key={a.value} onClick={() => setAmount(a.value)} style={{
-                flex: 1, padding: '10px 0', borderRadius: 8, fontSize: 13, cursor: 'pointer',
-                border: amount === a.value ? '2px solid rgba(240,192,96,0.8)' : '1px solid rgba(240,192,96,0.2)',
-                background: amount === a.value ? 'rgba(240,192,96,0.2)' : 'rgba(255,255,255,0.04)',
-                color: amount === a.value ? '#f0c060' : 'rgba(240,192,96,0.5)', fontWeight: amount === a.value ? 700 : 400,
-              }}>{a.label}</button>
-            ))}
-          </div>
+          <button onClick={() => { navigator.clipboard.writeText('261-0359626501'); alert('계좌번호가 복사되었습니다') }} style={{
+            padding: '12px 0', borderRadius: 8, fontSize: 13, cursor: 'pointer',
+            border: '1px solid rgba(240,192,96,0.4)', background: 'rgba(240,192,96,0.1)',
+            color: '#f0c060', fontWeight: 600, textAlign: 'center',
+          }}>시티은행 261-0359626501 배연암 <span style={{ fontSize: 11, opacity: 0.6 }}>(복사)</span></button>
           <button onClick={handleSubmit} disabled={loading || !name.trim()} style={{ background: loading ? 'rgba(180,140,40,0.3)' : 'rgba(240,192,96,0.22)', border: '1px solid rgba(240,192,96,0.55)', color: 'rgba(255,220,120,0.95)', borderRadius: 8, padding: 14, fontSize: 15, cursor: 'pointer', fontWeight: 500 }}>
             {loading ? '접수 중...' : `원불모시기 — ${amount.toLocaleString()}원`}
           </button>
