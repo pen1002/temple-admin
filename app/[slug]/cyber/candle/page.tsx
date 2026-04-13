@@ -62,10 +62,29 @@ export default function CandlePage() {
         @keyframes cardFlame { 0%,100%{transform:scaleY(1) scaleX(1)} 50%{transform:scaleY(1.2) scaleX(0.85)} }
       `}</style>
       <div style={{ textAlign: 'center', marginBottom: 24 }}>
-        <div style={{ width: 80, height: 80, margin: '0 auto 8px', borderRadius: '50%', overflow: 'hidden', background: 'radial-gradient(circle, rgba(201,168,76,0.15) 0%, #0a0205 70%)', display: 'flex', alignItems: 'center', justifyContent: 'center', animation: 'cd-flicker 3s ease-in-out infinite alternate' }}>
-          <img src="https://res.cloudinary.com/db3izttcy/image/upload/bodisatt_quikgz" alt="관세음보살" style={{ height: 70, objectFit: 'contain', mixBlendMode: 'lighten', filter: 'drop-shadow(0 0 16px rgba(255,200,80,0.5)) brightness(1.05)' }} />
+        {/* 전각 스타일 헤더 카드 — 그리드 카드와 100% 동일 */}
+        <div style={{ width: 80, height: 106, margin: '0 auto 8px', borderRadius: 6, background: '#0d0608', position: 'relative', overflow: 'hidden', border: '1px solid rgba(201,168,76,0.2)' }}>
+          {/* 천장 + 단청 + 수막새 */}
+          <div style={{ position:'absolute',top:0,left:0,right:0,height:'12%',background:'linear-gradient(180deg,#1a0408,#2d0a10)',borderBottom:'1.5px solid #C9A84C',zIndex:6,overflow:'visible' }}>
+            <div style={{ position:'absolute',inset:0,background:'repeating-linear-gradient(90deg,#8B1A00 0,#8B1A00 4px,#C9A84C 4px,#C9A84C 7px,#1a5c20 7px,#1a5c20 11px,#1a3a8c 11px,#1a3a8c 15px,#C9A84C 15px,#C9A84C 18px)',opacity:0.8 }} />
+            <div style={{ position:'absolute',bottom:-4,left:'8%',right:'8%',display:'flex',justifyContent:'space-around',zIndex:7 }}>
+              {[0,1,2,3,4].map(k => <svg key={k} viewBox="0 0 10 10" width="7" height="7"><circle cx="5" cy="5" r="4.5" fill="#C9A84C" stroke="#FFD700" strokeWidth=".8"/><circle cx="5" cy="5" r="2" fill="#8B5C00"/></svg>)}
+            </div>
+          </div>
+          {/* 기둥 + 중앙 */}
+          <div style={{ display:'flex',width:'100%',height:'88%',marginTop:'12%',position:'relative' }}>
+            <div style={{ width:'9%',flexShrink:0,background:'linear-gradient(90deg,#5C1010,#8B2200,#5C1010)',borderRight:'1px solid rgba(201,168,76,0.45)',zIndex:5 }} />
+            <div style={{ flex:1,position:'relative' }}>
+              <div style={{ position:'absolute',top:'8%',left:'50%',transform:'translateX(-50%)',width:36,height:36,borderRadius:'50%',background:'radial-gradient(circle,rgba(255,210,80,0.3) 0%,transparent 70%)',animation:'cardHalo 3s ease-in-out infinite',zIndex:3 }} />
+              <img src="https://res.cloudinary.com/db3izttcy/image/upload/bodisatt_quikgz" alt="관세음보살" style={{ position:'absolute',top:'2%',left:0,right:0,width:'100%',height:'79%',objectFit:'contain',mixBlendMode:'lighten',filter:'drop-shadow(0 0 5px rgba(255,200,80,0.65)) brightness(1.1)',zIndex:4 }} />
+              <div style={{ position:'absolute',top:'3%',left:0,right:0,textAlign:'center',fontSize:'6.5px',color:'rgba(201,168,76,0.85)',letterSpacing:'0.04em',zIndex:8 }}>초공양</div>
+              <div style={{ position:'absolute',bottom:'5%',left:0,right:0,display:'flex',justifyContent:'space-around',padding:'0 14%',zIndex:8 }}>
+                {[0,1].map(k => <div key={k} style={{ display:'flex',flexDirection:'column',alignItems:'center' }}><div style={{ width:4,height:6,background:'linear-gradient(180deg,#fff8e0,#FFD700,#FF6600)',borderRadius:'50% 50% 30% 30%',boxShadow:'0 0 3px rgba(255,200,50,0.9)',animation:`cardFlame ${1.1+k*0.2}s ease-in-out infinite ${k*0.2}s` }} /><div style={{ width:3,height:9,background:'linear-gradient(90deg,#e0c880,#fff8e0)',borderRadius:1 }} /><div style={{ width:5,height:2,background:'#C9A84C',borderRadius:1 }} /></div>)}
+              </div>
+            </div>
+            <div style={{ width:'9%',flexShrink:0,background:'linear-gradient(270deg,#5C1010,#8B2200,#5C1010)',borderLeft:'1px solid rgba(201,168,76,0.45)',zIndex:5 }} />
+          </div>
         </div>
-        <style>{`@keyframes cd-flicker { 0% { filter: drop-shadow(0 0 4px rgba(201,168,76,0.2)); } 100% { filter: drop-shadow(0 0 12px rgba(201,168,76,0.5)); } }`}</style>
         <h2 style={{ fontSize: 22, fontWeight: 600, color: '#f0c060', letterSpacing: 3, fontFamily: '"Noto Serif KR",serif' }}>원불모시기</h2>
         <p style={{ fontSize: 12, color: 'rgba(240,192,96,0.5)', marginTop: 4 }}>관세음보살 원불을 모십니다</p>
       </div>

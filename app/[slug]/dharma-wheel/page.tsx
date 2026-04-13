@@ -104,15 +104,27 @@ function CardIcon({ id, done }: { id: string; done: boolean }) {
       </svg>
     )
     case 'candle': return (
-      <svg viewBox="0 0 64 64" style={common}>
-        <rect x="24" y="26" width="16" height="28" rx="2" fill="#f5f0e0" stroke="#d4c8a0" strokeWidth="0.6" />
-        <rect x="22" y="52" width="20" height="4" rx="1.5" fill="#d4c8a0" />
-        <rect x="30" y="20" width="4" height="8" rx="1" fill="#e8dcc0" />
-        <ellipse cx="32" cy="14" rx="6" ry="9" fill="rgba(255,200,50,0.7)" style={{ animation: 'ci-flame 0.8s ease-in-out infinite alternate' }} />
-        <ellipse cx="32" cy="16" rx="3" ry="5" fill="rgba(255,240,150,0.9)" />
-        <ellipse cx="32" cy="18" rx="1.5" ry="2.5" fill="#fff" opacity="0.7" />
-        <circle cx="32" cy="14" r="14" fill="none" stroke="rgba(255,200,50,0.08)" strokeWidth="6" style={{ animation: 'ci-glow 2s ease-in-out infinite alternate' }} />
-      </svg>
+      <div style={{ ...common, borderRadius: 4, background: '#0d0608', position: 'relative', overflow: 'hidden', border: '1px solid rgba(201,168,76,0.2)', aspectRatio: '3/4' }}>
+        {/* 천장 + 단청 + 수막새 */}
+        <div style={{ position:'absolute',top:0,left:0,right:0,height:'12%',background:'linear-gradient(180deg,#1a0408,#2d0a10)',borderBottom:'1.5px solid #C9A84C',zIndex:6,overflow:'visible' }}>
+          <div style={{ position:'absolute',inset:0,background:'repeating-linear-gradient(90deg,#8B1A00 0,#8B1A00 4px,#C9A84C 4px,#C9A84C 7px,#1a5c20 7px,#1a5c20 11px,#1a3a8c 11px,#1a3a8c 15px,#C9A84C 15px,#C9A84C 18px)',opacity:0.8 }} />
+          <div style={{ position:'absolute',bottom:-3,left:'8%',right:'8%',display:'flex',justifyContent:'space-around',zIndex:7 }}>
+            {[0,1,2,3,4].map(k => <svg key={k} viewBox="0 0 10 10" width="5" height="5"><circle cx="5" cy="5" r="4.5" fill="#C9A84C" stroke="#FFD700" strokeWidth=".8"/><circle cx="5" cy="5" r="2" fill="#8B5C00"/></svg>)}
+          </div>
+        </div>
+        {/* 기둥 + 중앙 */}
+        <div style={{ display:'flex',width:'100%',height:'88%',marginTop:'12%',position:'relative' }}>
+          <div style={{ width:'9%',flexShrink:0,background:'linear-gradient(90deg,#5C1010,#8B2200,#5C1010)',borderRight:'1px solid rgba(201,168,76,0.45)',zIndex:5 }} />
+          <div style={{ flex:1,position:'relative' }}>
+            <div style={{ position:'absolute',top:'8%',left:'50%',transform:'translateX(-50%)',width:'60%',aspectRatio:'1',borderRadius:'50%',background:'radial-gradient(circle,rgba(255,210,80,0.3) 0%,transparent 70%)',animation:'ci-glow 3s ease-in-out infinite',zIndex:3 }} />
+            <img src="https://res.cloudinary.com/db3izttcy/image/upload/bodisatt_quikgz" alt="" style={{ position:'absolute',top:'2%',left:0,right:0,width:'100%',height:'79%',objectFit:'contain',mixBlendMode:'lighten',filter:'drop-shadow(0 0 5px rgba(255,200,80,0.65)) brightness(1.1)',zIndex:4 }} />
+            <div style={{ position:'absolute',bottom:'5%',left:0,right:0,display:'flex',justifyContent:'space-around',padding:'0 14%',zIndex:8 }}>
+              {[0,1].map(k => <div key={k} style={{ display:'flex',flexDirection:'column',alignItems:'center' }}><div style={{ width:3,height:5,background:'linear-gradient(180deg,#fff8e0,#FFD700,#FF6600)',borderRadius:'50% 50% 30% 30%',boxShadow:'0 0 3px rgba(255,200,50,0.9)',animation:`ci-flame ${1.1+k*0.2}s ease-in-out infinite ${k*0.2}s alternate` }} /><div style={{ width:2,height:7,background:'linear-gradient(90deg,#e0c880,#fff8e0)',borderRadius:1 }} /><div style={{ width:4,height:1.5,background:'#C9A84C',borderRadius:1 }} /></div>)}
+            </div>
+          </div>
+          <div style={{ width:'9%',flexShrink:0,background:'linear-gradient(270deg,#5C1010,#8B2200,#5C1010)',borderLeft:'1px solid rgba(201,168,76,0.45)',zIndex:5 }} />
+        </div>
+      </div>
     )
     case 'indung': return (
       <svg viewBox="0 0 78 90" style={{ ...common, overflow: 'visible' }}>
