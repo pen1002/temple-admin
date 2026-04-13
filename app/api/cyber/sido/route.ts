@@ -20,25 +20,46 @@ export async function GET(req: NextRequest) {
       orderBy: { created_at: 'desc' }, take: 10,
     })
 
-    // 해당 이름으로 접수한 기도/공양 내역 검색
-    const offerings = await prisma.cyberOffering.findMany({
-      where: { temple_slug: slug, type: { not: 'sido' }, name: { contains: q } },
-      orderBy: { created_at: 'desc' }, take: 50,
-    })
+    const TYPE_LABELS: Record<string, string> = {
+      indung: '인등불사', yeondeung: '연등공양', candle: '초공양',
+      memorial: '위패봉안', bow: '참배',
+      'prayer_PR-01': '초하루기도', 'prayer_PR-02': '백일기도',
+      'prayer_PR-06': '49재', 'prayer_PR-07': '천도재',
+      'prayer_PR-08': '정초기도', 'prayer_PR-09': '산신기도',
+    }
 
-    // 유형별 집계
-    const summary: Record<string, number> = {}
-    offerings.forEach(o => {
-      const label = o.type.replace('prayer_', '').replace('PR-01', '초하루기도').replace('PR-02', '백일기도').replace('PR-06', '49재').replace('PR-07', '천도재').replace('PR-08', '정초기도').replace('PR-09', '산신기도')
-      summary[label] = (summary[label] || 0) + 1
-    })
-
-    const results = sidos.map(s => {
+    const results = await Promise.all(sidos.map(async (s) => {
       let parsed: Record<string, string> = {}
       try {
         const parts = (s.wish || '').split(' ')
         parts.forEach(p => { const [k, v] = p.split(':'); if (k && v) parsed[k] = v; })
       } catch {}
+
+      // 가족 이름 목록 추출 (쉼표 구분)
+      const familyNames = s.name.split(',').map(n => n.trim()).filter(Boolean)
+
+      // 가족 전체 기도/공양 내역 검색
+      const familyOfferings = await prisma.cyberOffering.findMany({
+        where: {
+          temple_slug: slug,
+          type: { notIn: ['sido', 'notice'] },
+          OR: familyNames.map(fn => ({ name: { contains: fn } })),
+        },
+        orderBy: { created_at: 'desc' }, take: 200,
+      })
+
+      // 가족별 + 유형별 집계
+      const familySummary: Record<string, Record<string, number>> = {}
+      const totalSummary: Record<string, number> = {}
+      familyOfferings.forEach(o => {
+        const label = TYPE_LABELS[o.type] || o.type
+        totalSummary[label] = (totalSummary[label] || 0) + 1
+        // 어느 가족 이름인지
+        const matchedName = familyNames.find(fn => o.name.includes(fn)) || o.name
+        if (!familySummary[matchedName]) familySummary[matchedName] = {}
+        familySummary[matchedName][label] = (familySummary[matchedName][label] || 0) + 1
+      })
+
       return {
         id: s.id.toString(),
         name: s.name,
@@ -46,9 +67,11 @@ export async function GET(req: NextRequest) {
         beopMyeong: parsed['법명'] || '-',
         address: parsed['주소'] || '-',
         date: s.created_at,
-        offerings: summary,
+        familyNames,
+        familySummary,
+        totalSummary,
       }
-    })
+    }))
 
     return NextResponse.json(results)
   } catch (e: unknown) {

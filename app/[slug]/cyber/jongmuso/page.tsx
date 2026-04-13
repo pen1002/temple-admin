@@ -45,7 +45,7 @@ export default function JongmusoPage() {
   const [regTel, setRegTel] = useState('');
   const [regSuccess, setRegSuccess] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<{id:string;name:string;contact:string;beopMyeong:string;address:string;date:string;offerings:Record<string,number>}[]>([]);
+  const [searchResults, setSearchResults] = useState<{id:string;name:string;contact:string;beopMyeong:string;address:string;date:string;familyNames:string[];familySummary:Record<string,Record<string,number>>;totalSummary:Record<string,number>}[]>([]);
   const [searching, setSearching] = useState(false);
   const [copied, setCopied] = useState(false);
   const famRef = useRef<HTMLInputElement>(null);
@@ -124,9 +124,23 @@ export default function JongmusoPage() {
             <div key={r.id} style={{ background:'rgba(200,150,30,0.06)',borderRadius:8,padding:12,marginBottom:8 }}>
               <div style={{ fontWeight:700,color:'#F5D060',fontSize:14 }}>{r.name} 불자님</div>
               <div style={{ fontSize:11,color:'rgba(245,230,184,0.5)',marginTop:2 }}>법명: {r.beopMyeong} | 연락처: {r.contact} | 등록: {new Date(r.date).toLocaleDateString('ko-KR')}</div>
-              {Object.keys(r.offerings).length > 0 && (
-                <div style={{ marginTop:8,fontSize:12 }}>
-                  {Object.entries(r.offerings).map(([k,v]) => <div key={k} className="preview-row"><span>{k}</span><span>{v}건</span></div>)}
+              {/* 가족 전체 합산 */}
+              {Object.keys(r.totalSummary).length > 0 && (
+                <div style={{ marginTop:10 }}>
+                  <div style={{ fontSize:11,color:'rgba(245,230,184,0.4)',marginBottom:4 }}>가족 전체 동참 내역</div>
+                  {Object.entries(r.totalSummary).map(([k,v]) => <div key={k} className="preview-row"><span>{k}</span><span style={{ color:'#F5D060' }}>{v}건</span></div>)}
+                </div>
+              )}
+              {/* 가족별 상세 */}
+              {r.familyNames.length > 1 && Object.keys(r.familySummary).length > 0 && (
+                <div style={{ marginTop:10 }}>
+                  <div style={{ fontSize:11,color:'rgba(245,230,184,0.4)',marginBottom:4 }}>가족별 상세</div>
+                  {Object.entries(r.familySummary).map(([name, items]) => (
+                    <div key={name} style={{ marginBottom:6 }}>
+                      <div style={{ fontSize:12,color:'#F5E6B8',fontWeight:600 }}>{name}</div>
+                      {Object.entries(items).map(([k,v]) => <div key={k} className="preview-row" style={{ paddingLeft:8 }}><span>{k}</span><span>{v}건</span></div>)}
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
