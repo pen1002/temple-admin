@@ -4,15 +4,19 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 
+const KAKAO_CHAT_URL = 'https://pf.kakao.com/_placeholder/chat';
+
 const items = [
+  // 1열
   { label: '대웅전', sub: '본존불 친견', icon: '🏛️', href: 'daeungjeon' },
   { label: '지장전', sub: '위패모십니다', icon: '🪷', href: 'jijangjeon' },
-  { label: '종무소', sub: '사찰 안내', icon: '📜', href: 'jongmuso' },
-  { label: '초공양', sub: '초 올리기', icon: '🕯️', href: 'candle' },
   { label: '인등불사', sub: '가족건강행복', icon: '🏮', href: 'indung' },
   { label: '연등공양', sub: '연꽃 등불', icon: '🪷', href: 'yeondeung' },
+  // 2열
+  { label: '초공양', sub: '초 올리기', icon: '🕯️', href: 'candle' },
+  { label: '스님과 소통', sub: '카카오톡 상담', icon: '💬', href: '_kakao' },
+  { label: '종무소', sub: '디지털 종무소', icon: '📜', href: 'jongmuso' },
   { label: '부처님말씀', sub: '오늘의 법문', icon: '📿', href: 'dharma' },
-  { label: '공지사항', sub: '타종', icon: '🔔', href: 'notice' },
 ];
 
 function CardIcon({ id, done }: { id: string; done: boolean }) {
@@ -174,6 +178,13 @@ function CardIcon({ id, done }: { id: string; done: boolean }) {
         <circle cx="32" cy="30" r="16" fill="none" stroke="rgba(201,168,76,0.08)" strokeWidth="4" style={{ animation: 'ci-glow 4s ease-in-out infinite alternate' }} />
       </svg>
     )
+    case '_kakao': return (
+      <svg viewBox="0 0 64 64" style={{ ...common, animation: 'ci-float 3s ease-in-out infinite' }}>
+        <circle cx="32" cy="28" r="22" fill="#FEE500" />
+        <path d="M22 25 Q22 18 32 18 Q42 18 42 25 Q42 32 32 35 L30 40 L34 34 Q42 32 42 25" fill="#3C1E1E" opacity="0.85" />
+        <text x="32" y="50" textAnchor="middle" fill="#3C1E1E" fontSize="7" fontWeight="700">스님과 소통</text>
+      </svg>
+    )
     case 'notice': return (
       <svg viewBox="0 0 64 72" style={{ ...common, animation: 'ci-bell 3s ease-in-out infinite' }}>
         <ellipse cx="32" cy="8" rx="6" ry="4" fill="#4a5038" stroke="#3a4030" strokeWidth="0.6" />
@@ -316,7 +327,7 @@ export default function DharmaWheelPage() {
                 borderRadius: isDone ? 12 : 20,
               }}
               transition={{ type: 'spring', stiffness: 40, damping: 16, delay: isDone ? i * 0.06 : 0 }}
-              onClick={() => isDone && item.href !== '#' && router.push(`/${slug}/cyber/${item.href}`)}
+              onClick={() => { if (!isDone) return; if (item.href === '_kakao') { window.open(KAKAO_CHAT_URL, '_blank'); return; } if (item.href !== '#') router.push(`/${slug}/cyber/${item.href}`); }}
               whileHover={isDone ? { scale: 1.05, boxShadow: '0 4px 16px rgba(0,0,0,0.1)' } : {}}
               style={{
                 position: 'absolute', left: 0, top: 0,

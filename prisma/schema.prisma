@@ -35,6 +35,12 @@ model Temple {
   pin            String   @default("0000")
   status         String   @default("active")
   isActive       Boolean  @default(true)
+  temple_type    String   @default("offline")
+  kakao_notify_tel String?
+  bank_name      String?
+  bank_account   String?
+  bank_holder    String?
+  contact_tel    String?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
