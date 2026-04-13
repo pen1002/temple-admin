@@ -119,8 +119,8 @@ export default function JongmusoPage() {
       </div>)}
 
       {activePanel === 'media' && (<div className="panel"><button className="panel-close" onClick={closePanel}>&times;</button><div className="panel-title">사찰 홍보</div>
-        <div className="youtube-placeholder"><div style={{ fontSize:40 }}>▶</div><div style={{ fontSize:11,color:'rgba(245,230,184,0.3)',marginTop:8 }}>유튜브 채널 연동 영역</div></div>
-        <div className="media-btns"><span className="media-btn youtube">유튜브</span><span className="media-btn naver">네이버 블로그</span><span className="media-btn kakao">카카오톡</span><span className="media-btn insta">인스타그램</span></div>
+        <div className="youtube-embed"><iframe width="100%" height="200" src="https://www.youtube.com/embed?listType=user_uploads&list=108-forU" title="미래사 유튜브" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen style={{ borderRadius: 8 }} /></div>
+        <div className="media-btns"><a className="media-btn youtube" href="https://www.youtube.com/@108-forU" target="_blank" rel="noopener noreferrer">유튜브</a><span className="media-btn naver">네이버 블로그</span><span className="media-btn kakao">카카오톡</span><span className="media-btn insta">인스타그램</span></div>
       </div>)}
 
       {activePanel === 'info' && (<div className="panel"><button className="panel-close" onClick={closePanel}>&times;</button><div className="panel-title">사찰 안내</div>
@@ -137,7 +137,7 @@ export default function JongmusoPage() {
         </div>
       </div>)}
 
-      <div style={{ textAlign:'center',marginTop:20,paddingBottom:40 }}><a href={`/${slug}/cyber`} style={{ display:'inline-flex',alignItems:'center',gap:6,background:'rgba(201,168,76,0.12)',border:'1px solid rgba(201,168,76,0.3)',color:'#c9a84c',borderRadius:8,padding:'10px 24px',fontSize:13,textDecoration:'none' }}>☸ 도량으로 돌아가기</a></div>
+      <div style={{ textAlign:'center',marginTop:20,paddingBottom:40 }}><a href={`/${slug}/dharma-wheel`} style={{ display:'inline-flex',alignItems:'center',gap:6,background:'rgba(201,168,76,0.12)',border:'1px solid rgba(201,168,76,0.3)',color:'#c9a84c',borderRadius:8,padding:'10px 24px',fontSize:13,textDecoration:'none' }}>☸ 도량으로 돌아가기</a></div>
 
       <style>{`
         .jm-root{width:100%;min-height:100vh;display:flex;flex-direction:column;align-items:center;background:#1e140a;font-family:'Noto Serif KR',serif;color:#F5E6B8;padding:20px 12px}
