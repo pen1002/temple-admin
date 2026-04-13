@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import type { Metadata } from 'next'
 import { db } from '@/lib/db'
 import { getNotices, getEventList, getRitualTimes, getDharma, getGallery } from '@/lib/kv'
@@ -68,7 +68,7 @@ export default async function TemplePage(
       address: true, phone: true, email: true, heroImageUrl: true, logoUrl: true,
       primaryColor: true, secondaryColor: true, denomination: true,
       abbotName: true, foundedYear: true, tier: true, isActive: true,
-      pageTemplate: true,
+      pageTemplate: true, temple_type: true,
       blockConfigs: {
         where: { isVisible: true },
         orderBy: { order: 'asc' },
@@ -76,6 +76,11 @@ export default async function TemplePage(
     },
   })
   if (!temple) notFound()
+
+  // 사이버사찰: 법륜바퀴를 첫 화면으로 즉시 이동 (블록 렌더링 스킵)
+  if (temple.temple_type === 'cyber') {
+    redirect(`/${slug}/dharma-wheel`)
+  }
 
   // Redis: 동적 콘텐츠 (병렬 fetch)
   const [notices, eventList, ritualTimes, dharma, gallery, dailyWisdom] = await Promise.all([
