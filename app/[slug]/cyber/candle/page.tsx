@@ -82,17 +82,34 @@ export default function CandlePage() {
               onMouseEnter={e => c && setTooltip({ x: e.clientX, y: e.clientY, name: c.name, wish: c.wish || '', date: c.created_at })}
               onMouseLeave={() => setTooltip(null)}
               style={{
-                aspectRatio: '1', borderRadius: 6, cursor: lit ? 'default' : 'pointer',
-                background: lit ? 'rgba(240,192,96,0.12)' : 'rgba(255,255,255,0.02)',
-                border: `1px solid ${lit ? 'rgba(240,192,96,0.25)' : 'rgba(255,255,255,0.04)'}`,
-                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                transition: 'all 0.3s',
+                aspectRatio: '3/4', borderRadius: 6, cursor: lit ? 'default' : 'pointer',
+                background: '#0d0608', position: 'relative', overflow: 'hidden',
+                border: `1px solid ${lit ? 'rgba(201,168,76,0.2)' : 'rgba(255,255,255,0.04)'}`,
               }}
             >
-              <div style={{ fontSize: lit ? 16 : 12, filter: lit ? 'drop-shadow(0 0 4px rgba(255,200,50,0.5))' : 'grayscale(1) opacity(0.15)' }}>
-                🕯
+              {/* 단청 천장 */}
+              <div style={{ position:'absolute',top:0,left:0,right:0,height:'20%',background:'linear-gradient(180deg,#1a0408,#2d0a10)',opacity:lit?1:0.4,zIndex:2 }}>
+                <div style={{ position:'absolute',bottom:0,left:0,right:0,height:2,background:'linear-gradient(90deg,#8B2200,#C9A84C,#8B2200)' }} />
               </div>
-              {lit && <div style={{ fontSize: 7, color: 'rgba(240,192,96,0.6)', marginTop: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%', padding: '0 2px' }}>{c!.name.slice(0, 3)}</div>}
+              {/* 기둥 */}
+              <div style={{ position:'absolute',top:0,bottom:0,left:0,width:'9%',background:'#8B2200',opacity:lit?1:0.3,zIndex:3,borderRight:'1px solid rgba(201,168,76,0.2)' }} />
+              <div style={{ position:'absolute',top:0,bottom:0,right:0,width:'9%',background:'#8B2200',opacity:lit?1:0.3,zIndex:3,borderLeft:'1px solid rgba(201,168,76,0.2)' }} />
+              {/* 관세음보살 */}
+              <div style={{ position:'absolute',top:'16%',left:'50%',transform:'translateX(-50%)',width:'60%',zIndex:5,display:'flex',justifyContent:'center' }}>
+                <img src="https://res.cloudinary.com/db3izttcy/image/upload/bodisatt_quikgz" alt="" style={{ width:'100%',objectFit:'contain',mixBlendMode:'multiply',filter:lit?'brightness(0.95) contrast(1.1)':'brightness(0.3)',opacity:lit?1:0.12 }} />
+              </div>
+              {/* 촛불+향로 (점등 시) */}
+              {lit && (
+                <div style={{ position:'absolute',bottom:'12%',left:0,right:0,display:'flex',justifyContent:'center',alignItems:'flex-end',gap:4,zIndex:8 }}>
+                  <svg viewBox="0 0 14 42" width="10" height="32"><rect x="4" y="10" width="6" height="26" rx="2" fill="#f5f0e0"/><rect x="6" y="6" width="2" height="5" fill="#e8dcc0"/><ellipse cx="7" cy="4" rx="3" ry="5" fill="#FFD700" opacity="0.9"><animate attributeName="ry" values="4;6;4" dur="2s" repeatCount="indefinite"/></ellipse><ellipse cx="7" cy="3" rx="1.5" ry="3" fill="#fff" opacity="0.8"/><rect x="2" y="36" width="10" height="3" rx="1" fill="#C9A84C"/></svg>
+                  <svg viewBox="0 0 16 28" width="10" height="20"><rect x="7" y="10" width="1.5" height="10" fill="#7a5c1e"/><ellipse cx="8" cy="21" rx="6" ry="3" fill="#C9A84C" opacity="0.8"/><path d="M6 10 Q5 5 7 0" stroke="rgba(200,180,140,0.5)" strokeWidth="0.6" fill="none"><animate attributeName="d" values="M6 10 Q5 5 7 0;M6 10 Q8 5 6 0;M6 10 Q5 5 7 0" dur="2.5s" repeatCount="indefinite"/></path><path d="M10 10 Q11 5 9 0" stroke="rgba(200,180,140,0.4)" strokeWidth="0.6" fill="none"><animate attributeName="d" values="M10 10 Q11 5 9 0;M10 10 Q8 5 10 0;M10 10 Q11 5 9 0" dur="3s" repeatCount="indefinite"/></path></svg>
+                  <svg viewBox="0 0 14 42" width="10" height="32"><rect x="4" y="10" width="6" height="26" rx="2" fill="#f5f0e0"/><rect x="6" y="6" width="2" height="5" fill="#e8dcc0"/><ellipse cx="7" cy="4" rx="3" ry="5" fill="#FFD700" opacity="0.9"><animate attributeName="ry" values="4;6;4" dur="2.2s" repeatCount="indefinite"/></ellipse><ellipse cx="7" cy="3" rx="1.5" ry="3" fill="#fff" opacity="0.8"/><rect x="2" y="36" width="10" height="3" rx="1" fill="#C9A84C"/></svg>
+                </div>
+              )}
+              {/* 이름 or 빈자리 */}
+              <div style={{ position:'absolute',bottom:'3%',left:0,right:0,textAlign:'center',zIndex:10,fontSize:7,color:lit?'rgba(255,210,100,0.9)':'rgba(255,255,255,0.2)',background:'rgba(0,0,0,0.4)',padding:'1px 4px',borderRadius:3,width:'fit-content',margin:'0 auto' }}>
+                {lit ? c!.name.slice(0,3) : '초공양'}
+              </div>
             </div>
           )
         })}
