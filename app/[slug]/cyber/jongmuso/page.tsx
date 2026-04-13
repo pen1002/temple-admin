@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 
 const GIDO_ITEMS = [
@@ -45,8 +45,26 @@ export default function JongmusoPage() {
   const [regTel, setRegTel] = useState('');
   const [regSuccess, setRegSuccess] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<{id:string;name:string;contact:string;beopMyeong:string;address:string;date:string;offerings:Record<string,number>}[]>([]);
+  const [searching, setSearching] = useState(false);
   const [copied, setCopied] = useState(false);
   const famRef = useRef<HTMLInputElement>(null);
+  const searchTimerRef = useRef<ReturnType<typeof setTimeout>|null>(null);
+
+  const doSearch = useCallback(async (q: string) => {
+    if (!q.trim()) { setSearchResults([]); return; }
+    setSearching(true);
+    const res = await fetch(`/api/cyber/sido?q=${encodeURIComponent(q)}&temple_slug=${slug}`);
+    const data = await res.json();
+    if (Array.isArray(data)) setSearchResults(data);
+    setSearching(false);
+  }, [slug]);
+
+  const handleSearchChange = (val: string) => {
+    setSearchQuery(val);
+    if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
+    searchTimerRef.current = setTimeout(() => doSearch(val), 500);
+  };
 
   const openPanel = (id: string) => setActivePanel(activePanel === id ? null : id);
   const closePanel = () => setActivePanel(null);
@@ -56,7 +74,7 @@ export default function JongmusoPage() {
   const submitRegistration = async () => {
     if (families.length === 0) { alert('성함을 1명 이상 입력해 주세요.'); return; }
     if (!regTel.trim()) { alert('전화번호를 입력해 주세요.'); return; }
-    await fetch('/api/cyber/offering', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ temple_slug: slug, type: 'sido', name: families.join(', '), contact: regTel.trim(), wish: `법명:${regBeopMyeong || '-'} 주소:${regAddr || '-'}` }) });
+    await fetch('/api/cyber/sido', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ temple_slug: slug, names: families.join(', '), beopMyeong: regBeopMyeong, address: regAddr, contact: regTel.trim() }) });
     setRegSuccess(`${families.join(', ')} 님이 미래사 신도로 등록되었습니다!`);
     setTimeout(() => setRegSuccess(''), 8000);
   };
@@ -97,8 +115,23 @@ export default function JongmusoPage() {
       </div>
 
       {activePanel === 'sido' && (<div className="panel"><button className="panel-close" onClick={closePanel}>&times;</button><div className="panel-title">신도카드</div>
-        <input className="panel-input" placeholder="성함 또는 법명으로 검색..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
-        <div className="search-result">{searchQuery.trim() ? <div style={{ color:'rgba(245,230,184,0.3)',textAlign:'center',padding:'12px 0',fontSize:12 }}>&ldquo;{searchQuery}&rdquo; 검색 결과가 없습니다</div> : <div style={{ color:'rgba(245,230,184,0.3)',textAlign:'center',padding:'12px 0',fontSize:12 }}>성함을 입력하면 신도 정보가 표시됩니다</div>}</div>
+        <input className="panel-input" placeholder="성함 또는 법명으로 검색..." value={searchQuery} onChange={e => handleSearchChange(e.target.value)} />
+        <div className="search-result">
+          {searching && <div style={{ color:'rgba(245,230,184,0.4)',textAlign:'center',padding:'12px 0',fontSize:12 }}>검색 중...</div>}
+          {!searching && searchQuery.trim() && searchResults.length === 0 && <div style={{ color:'rgba(245,230,184,0.3)',textAlign:'center',padding:'12px 0',fontSize:12 }}>&ldquo;{searchQuery}&rdquo; 검색 결과가 없습니다</div>}
+          {!searching && !searchQuery.trim() && <div style={{ color:'rgba(245,230,184,0.3)',textAlign:'center',padding:'12px 0',fontSize:12 }}>성함을 입력하면 신도 정보가 표시됩니다</div>}
+          {searchResults.map(r => (
+            <div key={r.id} style={{ background:'rgba(200,150,30,0.06)',borderRadius:8,padding:12,marginBottom:8 }}>
+              <div style={{ fontWeight:700,color:'#F5D060',fontSize:14 }}>{r.name} 불자님</div>
+              <div style={{ fontSize:11,color:'rgba(245,230,184,0.5)',marginTop:2 }}>법명: {r.beopMyeong} | 연락처: {r.contact} | 등록: {new Date(r.date).toLocaleDateString('ko-KR')}</div>
+              {Object.keys(r.offerings).length > 0 && (
+                <div style={{ marginTop:8,fontSize:12 }}>
+                  {Object.entries(r.offerings).map(([k,v]) => <div key={k} className="preview-row"><span>{k}</span><span>{v}건</span></div>)}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
         <div className="divider" /><div className="panel-title" style={{ fontSize:14 }}>신규 신도 등록</div>
         <div className="field-group"><div className="field-label">성함 (가족) <span className="req">*</span><span className="hint">이름 입력 후 추가</span></div>
           <div className="fam-tags">{families.map((n,i) => <span key={i} className="fam-tag">{n}<span className="fam-x" onClick={() => removeFamily(i)}>&times;</span></span>)}</div>
