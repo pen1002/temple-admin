@@ -48,6 +48,9 @@ export default function JongmusoPage() {
   const [searchResults, setSearchResults] = useState<{id:string;name:string;contact:string;beopMyeong:string;address:string;date:string;familyNames:string[];familySummary:Record<string,Record<string,number>>;totalSummary:Record<string,number>}[]>([]);
   const [searching, setSearching] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [sidoPin, setSidoPin] = useState('');
+  const [sidoAuth, setSidoAuth] = useState(false);
+  const SIDO_PIN = '1080';
   const famRef = useRef<HTMLInputElement>(null);
   const searchTimerRef = useRef<ReturnType<typeof setTimeout>|null>(null);
 
@@ -114,7 +117,14 @@ export default function JongmusoPage() {
         <div className="shelf-plank" />
       </div>
 
-      {activePanel === 'sido' && (<div className="panel"><button className="panel-close" onClick={closePanel}>&times;</button><div className="panel-title">신도카드</div>
+      {activePanel === 'sido' && (<div className="panel"><button className="panel-close" onClick={() => { closePanel(); setSidoAuth(false); setSidoPin(''); }}>&times;</button><div className="panel-title">신도카드</div>
+        {!sidoAuth ? (
+          <div style={{ textAlign:'center',padding:'20px 0' }}>
+            <div style={{ fontSize:13,color:'rgba(245,230,184,0.5)',marginBottom:12 }}>관리자 인증이 필요합니다</div>
+            <input type="password" maxLength={4} placeholder="비밀번호 4자리" value={sidoPin} onChange={e => setSidoPin(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && sidoPin === SIDO_PIN) setSidoAuth(true); else if (e.key === 'Enter') alert('비밀번호가 일치하지 않습니다.'); }} style={{ width:120,textAlign:'center',padding:'12px',background:'#1e140a',border:'1px solid rgba(200,150,30,0.3)',borderRadius:8,color:'#F5E6B8',fontSize:18,letterSpacing:8,fontFamily:'monospace' }} />
+            <div style={{ marginTop:10 }}><button onClick={() => { if (sidoPin === SIDO_PIN) setSidoAuth(true); else alert('비밀번호가 일치하지 않습니다.'); }} style={{ padding:'10px 24px',background:'linear-gradient(135deg,#8B6914,#C8961E)',color:'#fff',border:'none',borderRadius:8,fontSize:13,fontWeight:700,cursor:'pointer',fontFamily:'Noto Serif KR,serif' }}>인증</button></div>
+          </div>
+        ) : (<>
         <input className="panel-input" placeholder="성함 또는 법명으로 검색..." value={searchQuery} onChange={e => handleSearchChange(e.target.value)} />
         <div className="search-result">
           {searching && <div style={{ color:'rgba(245,230,184,0.4)',textAlign:'center',padding:'12px 0',fontSize:12 }}>검색 중...</div>}
@@ -157,6 +167,7 @@ export default function JongmusoPage() {
         {(families.length > 0 || regTel.trim()) && <div className="preview-box"><div className="preview-title">등록 미리보기</div>{[['성함(가족)',families.join(', ')||'-'],['법명',regBeopMyeong||'-'],['주소',regAddr||'-'],['전화번호',regTel||'-']].map(([k,v],i) => <div key={i} className="preview-row"><span>{k}</span><span>{v}</span></div>)}</div>}
         <button className="submit-btn" onClick={submitRegistration}>신도 등록하기</button>
         {regSuccess && <div className="success-msg"><div className="success-title">{regSuccess}</div><div className="success-sub">나무아미타불 관세음보살</div></div>}
+        </>)}
       </div>)}
 
       {activePanel === 'status' && (<div className="panel"><button className="panel-close" onClick={closePanel}>&times;</button><div className="panel-title">기도/공양 접수현황</div>

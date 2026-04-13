@@ -82,7 +82,7 @@ export default function IndungPage() {
                 <ellipse cx="20" cy="20" rx="4" ry="6" fill="rgba(255,255,255,0.15)" />
                 {/* 이름 */}
                 {lit && c && (
-                  <text x="22" y="33" textAnchor="middle" fill="rgba(100,70,30,0.7)" fontSize="7" fontWeight="700">{c.name.slice(0, 3)}</text>
+                  <text x="22" y="33" textAnchor="middle" fill="rgba(100,70,30,0.7)" fontSize="7" fontWeight="700">{c.name.length >= 2 ? c.name[0] + '*' + c.name.slice(2,3) : c.name}</text>
                 )}
                 <defs>
                   <radialGradient id="idBodyGrad" cx="40%" cy="35%">
@@ -99,7 +99,7 @@ export default function IndungPage() {
       <style>{`@keyframes id-flame { 0% { transform: scaleY(0.85) scaleX(0.9); opacity:0.8; } 100% { transform: scaleY(1.1) scaleX(1.05); opacity:1; } }`}</style>
       {tooltip && (
         <div style={{ position: 'fixed', left: tooltip.x + 10, top: tooltip.y - 50, background: 'rgba(12,4,28,0.97)', border: '1px solid rgba(240,192,96,0.4)', borderRadius: 8, padding: '8px 12px', pointerEvents: 'none', zIndex: 100 }}>
-          <div style={{ fontSize: 13, color: 'rgba(255,235,150,0.95)', fontWeight: 700 }}>{tooltip.name} 불자님</div>
+          <div style={{ fontSize: 13, color: 'rgba(255,235,150,0.95)', fontWeight: 700 }}>{(tooltip.name.length >= 2 ? tooltip.name[0] + '*' + tooltip.name.slice(2) : tooltip.name)} 불자님</div>
           {tooltip.wish && <div style={{ fontSize: 11, color: "rgba(240,192,96,0.6)", marginTop: 2 }}>{tooltip.wish.slice(0, 30)}</div>}
           {tooltip.date && <div style={{ fontSize: 10, color: "rgba(240,192,96,0.35)", marginTop: 2 }}>{new Date(tooltip.date).toLocaleDateString("ko-KR")}</div>}
         </div>

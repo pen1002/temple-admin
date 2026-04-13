@@ -92,7 +92,7 @@ export default function CandlePage() {
               <div style={{ fontSize: lit ? 16 : 12, filter: lit ? 'drop-shadow(0 0 4px rgba(255,200,50,0.5))' : 'grayscale(1) opacity(0.15)' }}>
                 🕯
               </div>
-              {lit && <div style={{ fontSize: 7, color: 'rgba(240,192,96,0.6)', marginTop: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%', padding: '0 2px' }}>{c!.name.slice(0, 3)}</div>}
+              {lit && <div style={{ fontSize: 7, color: 'rgba(240,192,96,0.6)', marginTop: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%', padding: '0 2px' }}>{c!.name.length >= 2 ? c!.name[0] + '*' + c!.name.slice(2,3) : c!.name}</div>}
             </div>
           )
         })}
@@ -101,7 +101,7 @@ export default function CandlePage() {
       {/* 툴팁 */}
       {tooltip && (
         <div style={{ position: 'fixed', left: tooltip.x + 10, top: tooltip.y - 50, background: 'rgba(12,4,28,0.97)', border: '1px solid rgba(240,192,96,0.4)', borderRadius: 8, padding: '8px 12px', pointerEvents: 'none', zIndex: 100 }}>
-          <div style={{ fontSize: 13, color: 'rgba(255,235,150,0.95)', fontWeight: 700 }}>{tooltip.name} 불자님</div>
+          <div style={{ fontSize: 13, color: 'rgba(255,235,150,0.95)', fontWeight: 700 }}>{(tooltip.name.length >= 2 ? tooltip.name[0] + '*' + tooltip.name.slice(2) : tooltip.name)} 불자님</div>
           {tooltip.wish && <div style={{ fontSize: 11, color: 'rgba(240,192,96,0.6)', marginTop: 2 }}>{tooltip.wish.slice(0, 30)}</div>}
         </div>
       )}

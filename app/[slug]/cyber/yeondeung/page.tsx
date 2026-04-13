@@ -102,7 +102,7 @@ export default function YeondeungPage() {
                 <rect x="20" y="55" width="10" height="12" rx="1" fill={lit ? cl.tag : '#555'} />
                 {/* 이름 */}
                 {lit && c && (
-                  <text x="25" y="33" textAnchor="middle" fill={cl.text} fontSize="7" fontWeight="700">{c.name.slice(0, 3)}</text>
+                  <text x="25" y="33" textAnchor="middle" fill={cl.text} fontSize="7" fontWeight="700">{c.name.length >= 2 ? c.name[0] + '*' + c.name.slice(2,3) : c.name}</text>
                 )}
               </svg>
             </div>
@@ -111,7 +111,7 @@ export default function YeondeungPage() {
       </div>
       {tooltip && (
         <div style={{ position: 'fixed', left: tooltip.x + 10, top: tooltip.y - 50, background: 'rgba(12,4,28,0.97)', border: `1px solid rgba(${accentRgb},0.4)`, borderRadius: 8, padding: '8px 12px', pointerEvents: 'none', zIndex: 100 }}>
-          <div style={{ fontSize: 13, color: 'rgba(255,235,150,0.95)', fontWeight: 700 }}>{tooltip.name} 불자님</div>
+          <div style={{ fontSize: 13, color: 'rgba(255,235,150,0.95)', fontWeight: 700 }}>{(tooltip.name.length >= 2 ? tooltip.name[0] + '*' + tooltip.name.slice(2) : tooltip.name)} 불자님</div>
           {tooltip.wish && <div style={{ fontSize: 11, color: `rgba(${accentRgb},0.6)`, marginTop: 2 }}>{tooltip.wish.slice(0, 30)}</div>}
         </div>
       )}

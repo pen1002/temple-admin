@@ -104,7 +104,7 @@ export default function JijangjeonPage() {
                 <svg viewBox="0 0 40 70" style={{ width: '100%', maxWidth: 40, position: 'relative', zIndex: 1, filter: lit ? 'drop-shadow(0 0 4px rgba(212,184,255,0.3))' : 'grayscale(1) opacity(0.15)' }}>
                   <path d="M11 54 L11 16 Q11 6 20 6 Q29 6 29 16 L29 54 Z" fill={lit ? '#0a0a0a' : '#1a1a1a'} stroke={lit ? '#c9a84c' : '#333'} strokeWidth="0.8" />
                   <path d="M13 52 L13 18 Q13 9 20 9 Q27 9 27 18 L27 52 Z" fill="none" stroke={lit ? 'rgba(201,168,76,0.5)' : '#333'} strokeWidth="0.4" />
-                  {lit && m && <text x="20" y="34" textAnchor="middle" fill="#c9a84c" fontSize="7" fontWeight="700" writingMode="tb" style={{ textShadow: '0 0 4px rgba(201,168,76,0.5)' }}>{m.deceased.slice(0, 3)}</text>}
+                  {lit && m && <text x="20" y="34" textAnchor="middle" fill="#c9a84c" fontSize="7" fontWeight="700" writingMode="tb" style={{ textShadow: '0 0 4px rgba(201,168,76,0.5)' }}>{m.deceased.length >= 2 ? m.deceased[0] + '*' + m.deceased.slice(2,3) : m.deceased}</text>}
                   <ellipse cx="20" cy="56" rx="12" ry="3" fill={lit ? '#e8a88c' : '#555'} />
                   <rect x="10" y="60" width="20" height="5" rx="1" fill={lit ? '#1a1a2e' : '#222'} stroke={lit ? '#c9a84c' : '#333'} strokeWidth="0.4" />
                 </svg>
@@ -116,8 +116,8 @@ export default function JijangjeonPage() {
 
         {tooltip && (
           <div style={{ position: 'fixed', left: Math.min(tooltip.x + 10, (typeof window !== 'undefined' ? window.innerWidth : 400) - 180), top: Math.max(tooltip.y - 70, 8), background: 'rgba(12,4,28,0.97)', border: `1px solid rgba(${accentRgb},0.4)`, borderRadius: 8, padding: '8px 12px', pointerEvents: 'none', zIndex: 100 }}>
-            <div style={{ fontSize: 13, color: 'rgba(220,200,255,0.95)', fontWeight: 700 }}>{tooltip.deceased} 영가지위</div>
-            <div style={{ fontSize: 11, color: `rgba(${accentRgb},0.6)`, marginTop: 2 }}>신청: {tooltip.name} ({tooltip.rel})</div>
+            <div style={{ fontSize: 13, color: 'rgba(220,200,255,0.95)', fontWeight: 700 }}>{(tooltip.deceased.length >= 2 ? tooltip.deceased[0] + '*' + tooltip.deceased.slice(2) : tooltip.deceased)} 영가지위</div>
+            <div style={{ fontSize: 11, color: `rgba(${accentRgb},0.6)`, marginTop: 2 }}>신청: {tooltip.name.length >= 2 ? tooltip.name[0] + '*' + tooltip.name.slice(2) : tooltip.name} ({tooltip.rel})</div>
             {tooltip.wish && <div style={{ fontSize: 10, color: `rgba(${accentRgb},0.45)`, marginTop: 2 }}>{tooltip.wish.slice(0, 30)}</div>}
             {tooltip.date && <div style={{ fontSize: 10, color: `rgba(${accentRgb},0.3)`, marginTop: 2 }}>{new Date(tooltip.date).toLocaleDateString('ko-KR')}</div>}
           </div>
