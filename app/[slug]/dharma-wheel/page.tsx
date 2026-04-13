@@ -13,7 +13,7 @@ const items = [
   { label: '인등불사', sub: '가족건강행복', icon: '🏮', href: 'indung' },
   { label: '연등공양', sub: '연꽃 등불', icon: '🪷', href: 'yeondeung' },
   // 2열
-  { label: '초공양', sub: '초 올리기', icon: '🕯️', href: 'candle' },
+  { label: '원불모시기', sub: '관세음보살', icon: '🕯️', href: 'candle' },
   { label: '스님과 소통', sub: '카카오톡 상담', icon: '💬', href: '_kakao' },
   { label: '종무소', sub: '디지털 종무소', icon: '📜', href: 'jongmuso' },
   { label: '부처님말씀', sub: '오늘의 법문', icon: '📿', href: 'dharma' },

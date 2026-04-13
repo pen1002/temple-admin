@@ -55,10 +55,12 @@ export default function CandlePage() {
   return (
     <div style={{ padding: '20px 20px 60px', maxWidth: 640, margin: '0 auto' }}>
       <div style={{ textAlign: 'center', marginBottom: 24 }}>
-        <div style={{ fontSize: 48, marginBottom: 8, animation: 'cd-flicker 1.5s ease-in-out infinite alternate' }}>🕯</div>
-        <style>{`@keyframes cd-flicker { 0% { transform: scale(1); filter: brightness(1); } 100% { transform: scale(1.08); filter: brightness(1.2) drop-shadow(0 0 8px rgba(255,200,50,0.5)); } }`}</style>
-        <h2 style={{ fontSize: 22, fontWeight: 600, color: '#f0c060', letterSpacing: 3, fontFamily: '"Noto Serif KR",serif' }}>초공양</h2>
-        <p style={{ fontSize: 12, color: 'rgba(240,192,96,0.5)', marginTop: 4 }}>초를 밝혀 지혜의 빛을 공양합니다</p>
+        <div style={{ width: 80, height: 80, margin: '0 auto 8px', borderRadius: '50%', overflow: 'hidden', background: 'radial-gradient(circle, rgba(201,168,76,0.15) 0%, transparent 70%)', display: 'flex', alignItems: 'center', justifyContent: 'center', animation: 'cd-flicker 3s ease-in-out infinite alternate' }}>
+          <img src="https://res.cloudinary.com/db3izttcy/image/upload/bodisatt_quikgz" alt="관세음보살" style={{ height: 70, objectFit: 'contain', mixBlendMode: 'multiply', filter: 'brightness(0.9) contrast(1.1)' }} />
+        </div>
+        <style>{`@keyframes cd-flicker { 0% { filter: drop-shadow(0 0 4px rgba(201,168,76,0.2)); } 100% { filter: drop-shadow(0 0 12px rgba(201,168,76,0.5)); } }`}</style>
+        <h2 style={{ fontSize: 22, fontWeight: 600, color: '#f0c060', letterSpacing: 3, fontFamily: '"Noto Serif KR",serif' }}>원불모시기</h2>
+        <p style={{ fontSize: 12, color: 'rgba(240,192,96,0.5)', marginTop: 4 }}>관세음보살 원불을 모십니다</p>
       </div>
 
       <div style={{ textAlign: 'center', marginBottom: 8 }}>
