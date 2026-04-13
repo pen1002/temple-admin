@@ -37,6 +37,9 @@ export default function AddTempleForm() {
 
   const [templeType, setTempleType] = useState<'offline' | 'cyber'>('offline')
   const [kakaoNotifyTel, setKakaoNotifyTel] = useState('')
+  const [bankName, setBankName] = useState('')
+  const [bankAccount, setBankAccount] = useState('')
+  const [bankHolder, setBankHolder] = useState('')
 
   const [form, setForm] = useState({
     code: '', name: '', nameEn: '', description: '', address: '',
@@ -74,6 +77,9 @@ export default function AddTempleForm() {
         tier: Number(form.tier),
         temple_type: templeType,
         kakao_notify_tel: kakaoNotifyTel || undefined,
+        bank_name: bankName || undefined,
+        bank_account: bankAccount || undefined,
+        bank_holder: bankHolder || undefined,
       },
       blocks: selectedBlocks.map((id, i) => {
         const config: Record<string, unknown> = id === 'H-01' ? {
@@ -179,6 +185,18 @@ export default function AddTempleForm() {
                 <label className="block text-temple-brown font-bold text-base mb-1">카카오 알림 수신 전화번호</label>
                 <input type="tel" value={kakaoNotifyTel} onChange={e => setKakaoNotifyTel(e.target.value)} placeholder="010-0000-0000" className="input-field" />
                 <p className="text-gray-400 text-sm mt-1">기도/공양 접수 시 카카오톡 알림을 받을 번호</p>
+              </div>
+              <div>
+                <label className="block text-temple-brown font-bold text-base mb-1">은행명 *</label>
+                <input type="text" value={bankName} onChange={e => setBankName(e.target.value)} placeholder="예: 시티은행" className="input-field" />
+              </div>
+              <div>
+                <label className="block text-temple-brown font-bold text-base mb-1">계좌번호 *</label>
+                <input type="text" value={bankAccount} onChange={e => setBankAccount(e.target.value)} placeholder="예: 261-0359-626501" className="input-field" />
+              </div>
+              <div>
+                <label className="block text-temple-brown font-bold text-base mb-1">예금주 *</label>
+                <input type="text" value={bankHolder} onChange={e => setBankHolder(e.target.value)} placeholder="예: 배연암" className="input-field" />
               </div>
             </div>
           )}
