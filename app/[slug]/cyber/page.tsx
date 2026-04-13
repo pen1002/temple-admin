@@ -318,6 +318,7 @@ export default function DharmaWheelPage() {
           const targetY = isDone ? tgtY - gp.h / 2 : sp.y - gp.h / 2;
           return (
             <motion.div key={i}
+              initial={{ x: (cw || 300) / 2 - 20, y: wcy + wr - 20, width: 40, height: 40, opacity: 0, borderRadius: 20, scale: 0.5 }}
               animate={{
                 x: isDone ? tgtX - gp.w / 2 : sp.x - 20,
                 y: isDone ? tgtY - gp.h / 2 : sp.y - 20,
