@@ -141,7 +141,7 @@ export default function JongmusoPage() {
         </div>
       </div>)}
 
-      <div style={{ textAlign:'center',marginTop:20,paddingBottom:40 }}><a href={`/${slug}/dharma-wheel`} style={{ display:'inline-flex',alignItems:'center',gap:6,background:'rgba(201,168,76,0.12)',border:'1px solid rgba(201,168,76,0.3)',color:'#c9a84c',borderRadius:8,padding:'10px 24px',fontSize:13,textDecoration:'none' }}>☸ 도량으로 돌아가기</a></div>
+      <div style={{ textAlign:'center',marginTop:20,paddingBottom:40 }}><a href={`/${slug}/dharma-wheel?grid=1`} style={{ display:'inline-flex',alignItems:'center',gap:6,background:'rgba(201,168,76,0.12)',border:'1px solid rgba(201,168,76,0.3)',color:'#c9a84c',borderRadius:8,padding:'10px 24px',fontSize:13,textDecoration:'none' }}>☸ 도량으로 돌아가기</a></div>
 
       <style>{`
         .jm-root{width:100%;min-height:100vh;display:flex;flex-direction:column;align-items:center;background:#1e140a;font-family:'Noto Serif KR',serif;color:#F5E6B8;padding:20px 12px}

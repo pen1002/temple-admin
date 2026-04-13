@@ -48,7 +48,7 @@ export default function DaeungjeonPage() {
     setBowCount(p => p + 1);
     await fetch('/api/cyber/offering', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ temple_slug: slug, type: 'bow', name: '참배자' }) });
     await fetchData();
-    setTimeout(() => { setBowing(false); window.location.href = `/${slug}/dharma-wheel` }, 5000);
+    setTimeout(() => { setBowing(false); window.location.href = `/${slug}/dharma-wheel?grid=1` }, 5000);
   }, [bowing, slug, fetchData]);
 
   const doCandle = () => { if (candlesLit < 2) setCandlesLit(2); };

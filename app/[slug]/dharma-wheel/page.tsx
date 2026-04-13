@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { useRouter, useParams } from 'next/navigation';
+import { useRouter, useParams, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 
 const KAKAO_CHAT_URL = 'https://pf.kakao.com/_placeholder/chat';
@@ -219,8 +219,9 @@ function getGridPos(i: number, cw: number) {
 export default function DharmaWheelPage() {
   const router = useRouter();
   const { slug } = useParams<{ slug: string }>();
+  const searchParams = useSearchParams();
   const rootRef = useRef<HTMLDivElement>(null);
-  const [phase, setPhase] = useState<'idle' | 'spinning' | 'done'>('idle');
+  const [phase, setPhase] = useState<'idle' | 'spinning' | 'done'>(searchParams.get('grid') === '1' ? 'done' : 'idle');
   const [wheelAngle, setWheelAngle] = useState(0);
   const [cw, setCw] = useState(0);
 
