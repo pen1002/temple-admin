@@ -2,7 +2,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useParams } from 'next/navigation'
 
-const AMOUNTS = [{ label: '5천원', value: 5000 }, { label: '1만원', value: 10000 }, { label: '3만원', value: 30000 }]
+const AMOUNTS = [{ label: '10만원', value: 100000 }]
 const PER_ROUND = 30
 
 
@@ -15,7 +15,7 @@ export default function CandlePage() {
   const [name, setName] = useState('')
   const [wish, setWish] = useState('')
   const [contact, setContact] = useState('')
-  const [amount, setAmount] = useState(10000)
+  const [amount, setAmount] = useState(100000)
   const [loading, setLoading] = useState(false); const [kakaoText, setKakaoText] = useState("")
   const [viewRound, setViewRound] = useState(1)
   const [touchStartX2, setTouchStartX2] = useState(0)
@@ -63,23 +63,23 @@ export default function CandlePage() {
       `}</style>
       <div style={{ textAlign: 'center', marginBottom: 24 }}>
         {/* 전각 스타일 헤더 카드 — 그리드 카드와 100% 동일 */}
-        <div style={{ width: 80, height: 106, margin: '0 auto 8px', borderRadius: 6, background: '#0d0608', position: 'relative', overflow: 'hidden', border: '1px solid rgba(201,168,76,0.2)' }}>
+        <div style={{ width: 160, height: 212, margin: '0 auto 8px', borderRadius: 6, background: '#0d0608', position: 'relative', overflow: 'hidden', border: '1px solid rgba(201,168,76,0.2)' }}>
           {/* 천장 + 단청 + 수막새 */}
           <div style={{ position:'absolute',top:0,left:0,right:0,height:'12%',background:'linear-gradient(180deg,#1a0408,#2d0a10)',borderBottom:'1.5px solid #C9A84C',zIndex:6,overflow:'visible' }}>
             <div style={{ position:'absolute',inset:0,background:'repeating-linear-gradient(90deg,#8B1A00 0,#8B1A00 4px,#C9A84C 4px,#C9A84C 7px,#1a5c20 7px,#1a5c20 11px,#1a3a8c 11px,#1a3a8c 15px,#C9A84C 15px,#C9A84C 18px)',opacity:0.8 }} />
-            <div style={{ position:'absolute',bottom:-4,left:'8%',right:'8%',display:'flex',justifyContent:'space-around',zIndex:7 }}>
-              {[0,1,2,3,4].map(k => <svg key={k} viewBox="0 0 10 10" width="7" height="7"><circle cx="5" cy="5" r="4.5" fill="#C9A84C" stroke="#FFD700" strokeWidth=".8"/><circle cx="5" cy="5" r="2" fill="#8B5C00"/></svg>)}
+            <div style={{ position:'absolute',bottom:-8,left:'8%',right:'8%',display:'flex',justifyContent:'space-around',zIndex:7 }}>
+              {[0,1,2,3,4].map(k => <svg key={k} viewBox="0 0 10 10" width="14" height="14"><circle cx="5" cy="5" r="4.5" fill="#C9A84C" stroke="#FFD700" strokeWidth=".8"/><circle cx="5" cy="5" r="2" fill="#8B5C00"/></svg>)}
             </div>
           </div>
           {/* 기둥 + 중앙 */}
           <div style={{ display:'flex',width:'100%',height:'88%',marginTop:'12%',position:'relative' }}>
             <div style={{ width:'9%',flexShrink:0,background:'linear-gradient(90deg,#5C1010,#8B2200,#5C1010)',borderRight:'1px solid rgba(201,168,76,0.45)',zIndex:5 }} />
             <div style={{ flex:1,position:'relative' }}>
-              <div style={{ position:'absolute',top:'8%',left:'50%',transform:'translateX(-50%)',width:36,height:36,borderRadius:'50%',background:'radial-gradient(circle,rgba(255,210,80,0.3) 0%,transparent 70%)',animation:'cardHalo 3s ease-in-out infinite',zIndex:3 }} />
-              <img src="https://res.cloudinary.com/db3izttcy/image/upload/bodisatt_quikgz" alt="관세음보살" style={{ position:'absolute',top:'2%',left:0,right:0,width:'100%',height:'79%',objectFit:'contain',mixBlendMode:'lighten',filter:'drop-shadow(0 0 5px rgba(255,200,80,0.65)) brightness(1.1)',zIndex:4 }} />
-              <div style={{ position:'absolute',top:'3%',left:0,right:0,textAlign:'center',fontSize:'6.5px',color:'rgba(201,168,76,0.85)',letterSpacing:'0.04em',zIndex:8 }}>초공양</div>
+              <div style={{ position:'absolute',top:'8%',left:'50%',transform:'translateX(-50%)',width:72,height:72,borderRadius:'50%',background:'radial-gradient(circle,rgba(255,210,80,0.3) 0%,transparent 70%)',animation:'cardHalo 3s ease-in-out infinite',zIndex:3 }} />
+              <img src="https://res.cloudinary.com/db3izttcy/image/upload/bodisatt_quikgz" alt="관세음보살" style={{ position:'absolute',top:'2%',left:0,right:0,width:'100%',height:'79%',objectFit:'contain',mixBlendMode:'lighten',filter:'drop-shadow(0 0 10px rgba(255,200,80,0.65)) brightness(1.1)',zIndex:4 }} />
+              <div style={{ position:'absolute',top:'3%',left:0,right:0,textAlign:'center',fontSize:11,color:'rgba(201,168,76,0.85)',letterSpacing:'0.06em',zIndex:8,fontWeight:600 }}>원불모시기</div>
               <div style={{ position:'absolute',bottom:'5%',left:0,right:0,display:'flex',justifyContent:'space-around',padding:'0 14%',zIndex:8 }}>
-                {[0,1].map(k => <div key={k} style={{ display:'flex',flexDirection:'column',alignItems:'center' }}><div style={{ width:4,height:6,background:'linear-gradient(180deg,#fff8e0,#FFD700,#FF6600)',borderRadius:'50% 50% 30% 30%',boxShadow:'0 0 3px rgba(255,200,50,0.9)',animation:`cardFlame ${1.1+k*0.2}s ease-in-out infinite ${k*0.2}s` }} /><div style={{ width:3,height:9,background:'linear-gradient(90deg,#e0c880,#fff8e0)',borderRadius:1 }} /><div style={{ width:5,height:2,background:'#C9A84C',borderRadius:1 }} /></div>)}
+                {[0,1].map(k => <div key={k} style={{ display:'flex',flexDirection:'column',alignItems:'center' }}><div style={{ width:8,height:12,background:'linear-gradient(180deg,#fff8e0,#FFD700,#FF6600)',borderRadius:'50% 50% 30% 30%',boxShadow:'0 0 6px rgba(255,200,50,0.9)',animation:`cardFlame ${1.1+k*0.2}s ease-in-out infinite ${k*0.2}s` }} /><div style={{ width:6,height:18,background:'linear-gradient(90deg,#e0c880,#fff8e0)',borderRadius:1 }} /><div style={{ width:10,height:4,background:'#C9A84C',borderRadius:1 }} /></div>)}
               </div>
             </div>
             <div style={{ width:'9%',flexShrink:0,background:'linear-gradient(270deg,#5C1010,#8B2200,#5C1010)',borderLeft:'1px solid rgba(201,168,76,0.45)',zIndex:5 }} />
@@ -167,7 +167,7 @@ export default function CandlePage() {
             ))}
           </div>
           <button onClick={handleSubmit} disabled={loading || !name.trim()} style={{ background: loading ? 'rgba(180,140,40,0.3)' : 'rgba(240,192,96,0.22)', border: '1px solid rgba(240,192,96,0.55)', color: 'rgba(255,220,120,0.95)', borderRadius: 8, padding: 14, fontSize: 15, cursor: 'pointer', fontWeight: 500 }}>
-            {loading ? '점등 중...' : `초 공양 — ${amount.toLocaleString()}원`}
+            {loading ? '접수 중...' : `원불모시기 — ${amount.toLocaleString()}원`}
           </button>
         </div>
       )}
@@ -186,7 +186,7 @@ export default function CandlePage() {
       {!showForm && !submitDone && true && (
         <div style={{ textAlign: 'center' }}>
           <button onClick={() => setShowForm(true)} style={{ background: 'rgba(240,192,96,0.15)', border: '1px solid rgba(240,192,96,0.4)', color: 'rgba(255,220,120,0.9)', borderRadius: 8, padding: '12px 28px', cursor: 'pointer', fontSize: 14 }}>
-            🕯 초 밝히기
+            🕯 원불모시기
           </button>
         </div>
       )}
