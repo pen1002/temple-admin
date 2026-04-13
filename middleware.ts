@@ -6,17 +6,47 @@ const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET || 'temple-admin-secret-change-in-production'
 )
 
+// Vercel 기본 도메인 (경로 기반 → 서브도메인 리다이렉트 제외)
+const VERCEL_DOMAINS = ['temple-admin-zeta.vercel.app', 'localhost']
+
 export async function middleware(request: NextRequest) {
   const hostname = request.headers.get('host') || ''
   const { pathname } = request.nextUrl
-  const slug = hostname.split('.')[0] // 'borimsa', 'www', 'admin', ...
 
   // ── 서브도메인 라우팅: {slug}.k-buddhism.kr ────────────────────────────────
-  if (hostname.endsWith('.k-buddhism.kr') && slug !== 'www' && slug !== 'admin') {
-    // 모든 사찰: DB 블록 템플릿 렌더링 (app/[slug]/page.tsx)
+  if (hostname.endsWith('.k-buddhism.kr')) {
+    const slug = hostname.split('.')[0]
+
+    // www/admin 제외
+    if (slug === 'www' || slug === 'admin') {
+      return NextResponse.next()
+    }
+
+    // 서브도메인 → /{slug}{pathname} 으로 rewrite
+    // 예: miraesa.k-buddhism.kr/cyber → /miraesa/cyber
     const url = request.nextUrl.clone()
-    url.pathname = `/${slug}${request.nextUrl.pathname}`
+    url.pathname = `/${slug}${pathname}`
     return NextResponse.rewrite(url)
+  }
+
+  // ── 독립 도메인 지원 (customDomain): 예) haeinsa.org → /haeinsa ──────────
+  // Vercel/localhost가 아니고 k-buddhism.kr도 아닌 경우
+  if (!hostname.endsWith('.k-buddhism.kr') && !VERCEL_DOMAINS.some(d => hostname.includes(d))) {
+    // 독립 도메인 → DB에서 customDomain 매칭 (Vercel DNS 연결 필요)
+    // 현재는 hostname 전체를 slug로 사용하지 않고, 그대로 통과
+    // TODO: customDomain → slug 매핑 API 또는 edge config 활용
+    return NextResponse.next()
+  }
+
+  // ── 경로 기반 접근 시 서브도메인으로 리다이렉트 (k-buddhism.kr 도메인만) ────
+  // 예: k-buddhism.kr/miraesa → miraesa.k-buddhism.kr
+  // Vercel 도메인에서는 리다이렉트 하지 않음 (개발/미리보기용)
+  if (hostname === 'k-buddhism.kr' || hostname === 'www.k-buddhism.kr') {
+    const pathSlug = pathname.split('/')[1]
+    if (pathSlug && !['_next', 'api', 'favicon.ico', 'super', 'login', 'admin', 'cyber', 'block-preview'].includes(pathSlug)) {
+      const restPath = pathname.replace(`/${pathSlug}`, '') || '/'
+      return NextResponse.redirect(new URL(`https://${pathSlug}.k-buddhism.kr${restPath}`))
+    }
   }
 
   // ── 개별 사찰 관리자 (/admin/*) ─────────────────────────────────────────────
@@ -60,6 +90,6 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  // _next 전체, api, favicon 제외 → 서브도메인 요청 포함
+  // _next, api, favicon 제외 → 서브도메인 요청 포함
   matcher: ['/((?!_next|api|favicon\\.ico).*)'],
 }
