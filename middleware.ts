@@ -23,9 +23,15 @@ export async function middleware(request: NextRequest) {
     }
 
     // 서브도메인 → /{slug}{pathname} 으로 rewrite
-    // 예: miraesa.k-buddhism.kr/cyber → /miraesa/cyber
+    // 이미 pathname이 /slug로 시작하면 이중 추가 방지
     const url = request.nextUrl.clone()
-    url.pathname = `/${slug}${pathname}`
+    if (pathname.startsWith(`/${slug}`)) {
+      // 이미 slug 포함: miraesa.k-buddhism.kr/miraesa/dharma-wheel → /miraesa/dharma-wheel 그대로
+      url.pathname = pathname
+    } else {
+      // slug 미포함: miraesa.k-buddhism.kr/cyber → /miraesa/cyber
+      url.pathname = `/${slug}${pathname}`
+    }
     return NextResponse.rewrite(url)
   }
 
