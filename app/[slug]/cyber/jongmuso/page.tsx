@@ -185,8 +185,24 @@ export default function JongmusoPage() {
       </div>)}
 
       {activePanel === 'media' && (<div className="panel"><button className="panel-close" onClick={closePanel}>&times;</button><div className="panel-title">사찰 홍보</div>
-        <div className="youtube-embed"><iframe width="100%" height="200" src="https://www.youtube.com/embed?listType=user_uploads&list=108-forU" title="미래사 유튜브" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen style={{ borderRadius: 8 }} /></div>
-        <div className="media-btns"><a className="media-btn youtube" href="https://www.youtube.com/@108-forU" target="_blank" rel="noopener noreferrer">유튜브</a><span className="media-btn naver">네이버 블로그</span><span className="media-btn kakao">카카오톡</span><span className="media-btn insta">인스타그램</span></div>
+        <div style={{ display:'grid',gridTemplateColumns:'1fr 1fr',gap:10,marginTop:8 }}>
+          <a href="https://www.youtube.com/@108-forU" target="_blank" rel="noopener noreferrer" style={{ display:'flex',flexDirection:'column',alignItems:'center',gap:6,padding:'16px 8px',background:'rgba(255,0,0,0.08)',borderRadius:10,border:'1px solid rgba(255,0,0,0.2)',textDecoration:'none' }}>
+            <svg viewBox="0 0 48 48" width="36" height="36"><rect width="48" height="48" rx="10" fill="#FF0000"/><polygon points="20,14 20,34 36,24" fill="#fff"/></svg>
+            <span style={{ fontSize:12,color:'#F5E6B8',fontWeight:700 }}>유튜브</span>
+          </a>
+          <a href="https://blog.naver.com" target="_blank" rel="noopener noreferrer" style={{ display:'flex',flexDirection:'column',alignItems:'center',gap:6,padding:'16px 8px',background:'rgba(3,199,90,0.08)',borderRadius:10,border:'1px solid rgba(3,199,90,0.2)',textDecoration:'none' }}>
+            <svg viewBox="0 0 48 48" width="36" height="36"><rect width="48" height="48" rx="10" fill="#03C75A"/><text x="24" y="32" textAnchor="middle" fill="#fff" fontSize="22" fontWeight="900" fontFamily="Arial">N</text></svg>
+            <span style={{ fontSize:12,color:'#F5E6B8',fontWeight:700 }}>네이버 블로그</span>
+          </a>
+          <a href="https://pf.kakao.com/_placeholder" target="_blank" rel="noopener noreferrer" style={{ display:'flex',flexDirection:'column',alignItems:'center',gap:6,padding:'16px 8px',background:'rgba(254,229,0,0.08)',borderRadius:10,border:'1px solid rgba(254,229,0,0.2)',textDecoration:'none' }}>
+            <svg viewBox="0 0 48 48" width="36" height="36"><rect width="48" height="48" rx="10" fill="#FEE500"/><path d="M24 13C16.8 13 11 17.5 11 23c0 3.5 2.3 6.6 5.8 8.4l-1.5 5.6 6.5-4.3c.7.1 1.4.1 2.2.1 7.2 0 13-4.5 13-10S31.2 13 24 13z" fill="#3C1E1E"/></svg>
+            <span style={{ fontSize:12,color:'#F5E6B8',fontWeight:700 }}>카카오톡</span>
+          </a>
+          <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" style={{ display:'flex',flexDirection:'column',alignItems:'center',gap:6,padding:'16px 8px',background:'rgba(225,48,108,0.08)',borderRadius:10,border:'1px solid rgba(225,48,108,0.2)',textDecoration:'none' }}>
+            <svg viewBox="0 0 48 48" width="36" height="36"><defs><linearGradient id="igG" x1="0%" y1="100%" x2="100%" y2="0%"><stop offset="0%" stopColor="#FD5"/><stop offset="50%" stopColor="#E1306C"/><stop offset="100%" stopColor="#833AB4"/></linearGradient></defs><rect width="48" height="48" rx="10" fill="url(#igG)"/><rect x="10" y="10" width="28" height="28" rx="8" fill="none" stroke="#fff" strokeWidth="3"/><circle cx="24" cy="24" r="7" fill="none" stroke="#fff" strokeWidth="3"/><circle cx="35" cy="13" r="2.5" fill="#fff"/></svg>
+            <span style={{ fontSize:12,color:'#F5E6B8',fontWeight:700 }}>인스타그램</span>
+          </a>
+        </div>
       </div>)}
 
       {activePanel === 'info' && (<div className="panel"><button className="panel-close" onClick={closePanel}>&times;</button><div className="panel-title">사찰 안내</div>
