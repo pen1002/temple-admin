@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback } from 'react';
 import { useParams } from 'next/navigation';
+import { useCyberTemple } from '@/lib/useCyberTemple';
 
 const GIDO_ITEMS = [
   { name: '초파일봉축연등', icon: '🏮', price: '개인등 5만 / 가족등 10만' },
@@ -37,6 +38,8 @@ const CAL_EVENTS = [
 
 export default function JongmusoPage() {
   const { slug } = useParams<{ slug: string }>();
+  const temple = useCyberTemple(slug);
+  const tName = temple?.name || slug;
   const [activePanel, setActivePanel] = useState<string | null>(null);
   const [families, setFamilies] = useState<string[]>([]);
   const [famInput, setFamInput] = useState('');
@@ -78,11 +81,11 @@ export default function JongmusoPage() {
     if (families.length === 0) { alert('성함을 1명 이상 입력해 주세요.'); return; }
     if (!regTel.trim()) { alert('전화번호를 입력해 주세요.'); return; }
     await fetch('/api/cyber/sido', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ temple_slug: slug, names: families.join(', '), beopMyeong: regBeopMyeong, address: regAddr, contact: regTel.trim() }) });
-    setRegSuccess(`${families.join(', ')} 님이 미래사 신도로 등록되었습니다!`);
+    setRegSuccess(`${families.join(', ')} 님이 ${tName} 신도로 등록되었습니다!`);
     setTimeout(() => setRegSuccess(''), 8000);
   };
 
-  const copyAccount = () => { navigator.clipboard.writeText('261-0359-626501').then(() => { setCopied(true); setTimeout(() => setCopied(false), 2000); }); };
+  const copyAccount = () => { navigator.clipboard.writeText(temple?.bank_account || '').then(() => { setCopied(true); setTimeout(() => setCopied(false), 2000); }); };
 
   const startOffset = 3;
   const aprilDays: (number | null)[] = [];
@@ -95,7 +98,7 @@ export default function JongmusoPage() {
   return (
     <div className="jm-root">
       <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&display=swap" rel="stylesheet" />
-      <div className="jm-header"><div className="jm-title">宗 務 所</div><div className="jm-sub">대한불교조계종 미래사 디지털 종무소</div></div>
+      <div className="jm-header"><div className="jm-title">宗 務 所</div><div className="jm-sub">{temple?.denomination || '대한불교조계종'} {tName} 디지털 종무소</div></div>
 
       <div className="shelf">
         <div className="shelf-plank" />
@@ -112,7 +115,7 @@ export default function JongmusoPage() {
         </div>
         <div className="shelf-plank" />
         <div className="shelf-row">
-          <div className="shelf-slot" onClick={() => window.location.href = `/${slug}/cyber/notice`}><div className="slot-icon">🔔</div><div className="slot-label">공지사항</div><div className="slot-sub">미래사 소식</div></div>
+          <div className="shelf-slot" onClick={() => window.location.href = `/${slug}/cyber/notice`}><div className="slot-icon">🔔</div><div className="slot-label">공지사항</div><div className="slot-sub">{tName} 소식</div></div>
         </div>
         <div className="shelf-plank" />
       </div>
@@ -206,7 +209,7 @@ export default function JongmusoPage() {
       </div>)}
 
       {activePanel === 'info' && (<div className="panel"><button className="panel-close" onClick={closePanel}>&times;</button><div className="panel-title">사찰 안내</div>
-        {[['사찰명','미래사 (未來寺)'],['종단','대한불교조계종'],['주지스님','미래 스님'],['연락처','010-5145-5589'],['주소','대한민국 온라인시 미래로 108길 1004']].map(([k,v],i) => <div key={i} className="info-row"><span>{k}</span><span>{v}</span></div>)}
+        {[['사찰명', tName],['종단', temple?.denomination || '-'],['주지스님', temple?.abbotName || '-'],['연락처', temple?.phone || temple?.kakao_notify_tel || '-'],['주소', temple?.address || '-']].map(([k,v],i) => <div key={i} className="info-row"><span>{k}</span><span>{v}</span></div>)}
         <div className="map-placeholder">지도 연동 영역 (네이버/카카오맵)</div>
       </div>)}
 
@@ -214,8 +217,8 @@ export default function JongmusoPage() {
         <div style={{ fontSize:11,color:'rgba(245,230,184,0.4)',marginBottom:10 }}>각 기도 1년 2,000원 | 100등 × 20차 = 2,000등</div>
         <div className="gido-grid">{GIDO_ITEMS.map((item,i) => <div key={i} className="gido-card"><div style={{ fontSize:24 }}>{item.icon}</div><div className="gido-name">{item.name}</div><div className="gido-price">{item.price}</div></div>)}</div>
         <div className="account-box"><div className="account-title">계좌 정보</div>
-          {[['은행','시티은행'],['예금주','배연암'],['문의','010-5145-5589']].map(([k,v],i) => <div key={i} className="info-row"><span>{k}</span><span>{v}</span></div>)}
-          <div className="info-row"><span>계좌번호</span><span>261-0359-626501 <button className="copy-btn" onClick={copyAccount}>{copied?'복사됨':'복사'}</button></span></div>
+          {[['은행', temple?.bank_name || '-'],['예금주', temple?.bank_holder || '-'],['문의', temple?.phone || temple?.kakao_notify_tel || '-']].map(([k,v],i) => <div key={i} className="info-row"><span>{k}</span><span>{v}</span></div>)}
+          <div className="info-row"><span>계좌번호</span><span>{temple?.bank_account || '-'} <button className="copy-btn" onClick={copyAccount}>{copied?'복사됨':'복사'}</button></span></div>
         </div>
       </div>)}
 

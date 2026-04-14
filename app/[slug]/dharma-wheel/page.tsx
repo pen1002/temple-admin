@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter, useParams, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
+import { useCyberTemple } from '@/lib/useCyberTemple';
 
 const KAKAO_CHAT_URL = 'https://pf.kakao.com/_placeholder/chat';
 
@@ -232,6 +233,8 @@ export default function DharmaWheelPage() {
   const router = useRouter();
   const { slug } = useParams<{ slug: string }>();
   const searchParams = useSearchParams();
+  const temple = useCyberTemple(slug);
+  const templeName = temple?.name || slug;
   const rootRef = useRef<HTMLDivElement>(null);
   const [phase, setPhase] = useState<'idle' | 'spinning' | 'done'>(
     searchParams.get('grid') === '1' ? 'done' : 'idle'
@@ -297,7 +300,7 @@ export default function DharmaWheelPage() {
     <div ref={rootRef} className="dw-root">
       <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&display=swap" rel="stylesheet" />
 
-      <div className="dw-title">{phase === 'done' ? '미래사' : '미 래 사'}</div>
+      <div className="dw-title">{phase === 'done' ? templeName : templeName.split('').join(' ')}</div>
       <div className="dw-sub">{phase === 'done' ? '온라인법당 초전법륜지' : '사이버법당 · 초전법륜지'}</div>
 
       {cw === 0 ? <div style={{ height: 300 }} /> : <div style={{ position: 'relative', width: '100%', maxWidth: cw, margin: '0 auto', minHeight: phase === 'done' ? totalH + gridY0 + 40 : wcy + wr + 60, paddingBottom: phase === 'done' ? 40 : 0, transition: 'min-height 0.8s ease', overflow: 'visible' }}>

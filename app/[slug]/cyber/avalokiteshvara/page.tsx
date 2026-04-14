@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useState, useCallback } from 'react'
 import { useParams } from 'next/navigation'
+import { useCyberTemple } from '@/lib/useCyberTemple'
 
 const AMOUNTS = [{ label: '10만원', value: 100000 }]
 const PER_ROUND = 30
@@ -10,6 +11,9 @@ const COLS = 5
 
 export default function CandlePage() {
   const { slug } = useParams<{ slug: string }>()
+  const temple = useCyberTemple(slug)
+  const bankAccount = temple?.bank_account || ''
+  const bankLabel = temple ? `${temple.bank_name || ''} ${temple.bank_account || ''} ${temple.bank_holder || ''}` : ''
   const [candles, setCandles] = useState<{ id: string; name: string; wish: string; created_at: string }[]>([])
   const [showForm, setShowForm] = useState(false)
   const [name, setName] = useState('')
@@ -156,11 +160,11 @@ export default function CandlePage() {
           <input value={name} onChange={e => setName(e.target.value)} placeholder="성함 *" style={inp} />
           <textarea value={wish} onChange={e => setWish(e.target.value)} placeholder="발원문 (선택)" rows={2} style={{ ...inp, resize: 'none' }} />
           <input value={contact} onChange={e => setContact(e.target.value)} type="tel" placeholder="연락처 (010-0000-0000)" style={inp} />
-          <button onClick={() => { navigator.clipboard.writeText('261-0359626501'); alert('계좌번호가 복사되었습니다') }} style={{
+          {bankLabel && <button onClick={() => { navigator.clipboard.writeText(bankAccount); alert('계좌번호가 복사되었습니다') }} style={{
             padding: '12px 0', borderRadius: 8, fontSize: 13, cursor: 'pointer',
             border: '1px solid rgba(240,192,96,0.4)', background: 'rgba(240,192,96,0.1)',
             color: '#f0c060', fontWeight: 600, textAlign: 'center',
-          }}>시티은행 261-0359626501 배연암 <span style={{ fontSize: 11, opacity: 0.6 }}>(복사)</span></button>
+          }}>{bankLabel.trim()} <span style={{ fontSize: 11, opacity: 0.6 }}>(복사)</span></button>}
           <button onClick={handleSubmit} disabled={loading || !name.trim()} style={{ background: loading ? 'rgba(180,140,40,0.3)' : 'rgba(240,192,96,0.22)', border: '1px solid rgba(240,192,96,0.55)', color: 'rgba(255,220,120,0.95)', borderRadius: 8, padding: 14, fontSize: 15, cursor: 'pointer', fontWeight: 500 }}>
             {loading ? '접수 중...' : `원불모시기 — ${amount.toLocaleString()}원`}
           </button>

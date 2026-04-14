@@ -1,9 +1,11 @@
 'use client';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams } from 'next/navigation';
+import { useCyberTemple } from '@/lib/useCyberTemple';
 
 export default function DaeungjeonPage() {
   const { slug } = useParams<{ slug: string }>();
+  const temple = useCyberTemple(slug);
   const [modelLoaded, setModelLoaded] = useState(false);
   const [bowCount, setBowCount] = useState(0);
   const [totalBows, setTotalBows] = useState(0);
@@ -62,7 +64,7 @@ export default function DaeungjeonPage() {
         <rect width="600" height="50" fill="#3D1F0A"/><rect y="0" width="600" height="6" fill="#1B6B5A"/><rect y="6" width="600" height="3" fill="#C83232"/><rect y="9" width="600" height="4" fill="#1B6B5A"/><rect y="13" width="600" height="2" fill="#F5D060"/><rect y="15" width="600" height="6" fill="#C83232"/><rect y="21" width="600" height="3" fill="#2255AA"/><rect y="24" width="600" height="2" fill="#F5D060"/><rect y="26" width="600" height="4" fill="#1B6B5A"/><rect y="40" width="600" height="10" fill="#8B4513"/><rect y="38" width="600" height="3" fill="#C8961E"/>
       </svg>
       <div className="dj-col dj-col-l" /><div className="dj-col dj-col-r" />
-      <div className="dj-plaque"><div className="dj-plaque-text">大 雄 殿</div><div className="dj-plaque-sub">미래사 사이버법당 · 누적 참배 {totalBows.toLocaleString()}회</div></div>
+      <div className="dj-plaque"><div className="dj-plaque-text">大 雄 殿</div><div className="dj-plaque-sub">{temple?.name || slug} 사이버법당 · 누적 참배 {totalBows.toLocaleString()}회</div></div>
       <div className="dj-lanterns">
         {Array.from({ length: lanternCount }).map((_, i) => {
           const colors = ['#ff6b6b','#ff8844','#ffaa33','#ff5555','#ee4444','#ff7744','#ffcc00','#ff9966'];

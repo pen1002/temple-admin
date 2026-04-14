@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { useParams } from 'next/navigation';
+import { useCyberTemple } from '@/lib/useCyberTemple';
 
 const RELATIONS = ['부', '모', '조부', '조모', '배우자', '자녀', '형제자매', '기타']
 const PER_ROUND = 30, COLS = 5
@@ -9,6 +10,7 @@ interface Memorial { id: string; name: string; deceased: string; relationship: s
 
 export default function JijangjeonPage() {
   const { slug } = useParams<{ slug: string }>();
+  const temple = useCyberTemple(slug);
   const [modelLoaded, setModelLoaded] = useState(false);
   const [memorials, setMemorials] = useState<Memorial[]>([]);
   const [name, setName] = useState(''); const [deceased, setDeceased] = useState('');
@@ -61,7 +63,7 @@ export default function JijangjeonPage() {
         <rect width="600" height="50" fill="#1a1028"/><rect y="0" width="600" height="6" fill="#2a1848"/><rect y="6" width="600" height="3" fill="#6a3a8a"/><rect y="9" width="600" height="2" fill="#c9a84c"/><rect y="11" width="600" height="4" fill="#3a2060"/><rect y="15" width="600" height="3" fill="#8a5ab0"/><rect y="40" width="600" height="10" fill="#2a1040"/><rect y="38" width="600" height="3" fill="#c9a84c"/>
       </svg>
       <div className="jj-col jj-col-l" /><div className="jj-col jj-col-r" />
-      <div className="jj-plaque"><div className="jj-plaque-text">地 藏 殿</div><div className="jj-plaque-sub">미래사 사이버법당 · {memorials.length}위 봉안</div></div>
+      <div className="jj-plaque"><div className="jj-plaque-text">地 藏 殿</div><div className="jj-plaque-sub">{temple?.name || slug} 사이버법당 · {memorials.length}위 봉안</div></div>
 
       {/* 지장보살 3D */}
       <div className="jj-halo" />

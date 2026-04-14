@@ -1,11 +1,13 @@
 'use client'
 import { useEffect, useState, useCallback } from 'react'
 import { useParams } from 'next/navigation'
+import { useCyberTemple } from '@/lib/useCyberTemple'
 
 interface Notice { id: string; title: string; content: string; author: string; date: string }
 
 export default function NoticePage() {
   const { slug } = useParams<{ slug: string }>()
+  const temple = useCyberTemple(slug)
   const [notices, setNotices] = useState<Notice[]>([])
   const [currentSlide, setCurrentSlide] = useState(0)
   const [showForm, setShowForm] = useState(false)
@@ -35,7 +37,7 @@ export default function NoticePage() {
   }
 
   const shareKakao = (n: Notice) => {
-    const text = `[${n.title}]\n${n.content}\n\n— 미래사 사이버법당`
+    const text = `[${n.title}]\n${n.content}\n\n— ${temple?.name || slug} 사이버법당`
     navigator.clipboard.writeText(text).then(() => alert('공지가 복사되었습니다.\n카카오톡에 붙여넣기하여 공유해 주세요.'))
   }
 
@@ -106,7 +108,7 @@ export default function NoticePage() {
           </div>
         </div>
         <h2 style={{ fontSize: 22, fontWeight: 600, color: '#c9a84c', letterSpacing: 3, fontFamily: '"Noto Serif KR",serif' }}>공지사항</h2>
-        <p style={{ fontSize: 12, color: 'rgba(201,168,76,0.4)', marginTop: 4 }}>미래사 소식을 전합니다</p>
+        <p style={{ fontSize: 12, color: 'rgba(201,168,76,0.4)', marginTop: 4 }}>{temple?.name || slug} 소식을 전합니다</p>
         <style>{`
           @keyframes bell-swing { 0%,100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } }
           @keyframes bell-wave { 0% { transform: scale(0.8); opacity: 0.6; } 100% { transform: scale(1.8); opacity: 0; } }
