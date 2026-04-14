@@ -9,6 +9,7 @@
  *
  * 미설정 시 graceful skip (에러 없이 통과)
  */
+import crypto from 'crypto'
 
 const API_KEY = process.env.SOLAPI_API_KEY || ''
 const API_SECRET = process.env.SOLAPI_API_SECRET || ''
@@ -18,8 +19,6 @@ const SOLAPI_URL = 'https://api.solapi.com/messages/v4/send'
 function getAuthHeader(): string {
   const date = new Date().toISOString()
   const salt = Math.random().toString(36).substring(2, 15)
-  // HMAC-SHA256
-  const crypto = require('crypto')
   const signature = crypto
     .createHmac('sha256', API_SECRET)
     .update(date + salt)
