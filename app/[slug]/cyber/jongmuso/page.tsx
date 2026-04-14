@@ -225,13 +225,13 @@ export default function JongmusoPage() {
       <div style={{ textAlign:'center',marginTop:20,paddingBottom:40 }}><a href={`/${slug}/dharma-wheel?grid=1`} style={{ display:'inline-flex',alignItems:'center',gap:6,background:'rgba(201,168,76,0.12)',border:'1px solid rgba(201,168,76,0.3)',color:'#c9a84c',borderRadius:8,padding:'10px 24px',fontSize:13,textDecoration:'none' }}>☸ 도량으로 돌아가기</a></div>
 
       <style>{`
-        .jm-root{width:100%;min-height:100vh;display:flex;flex-direction:column;align-items:center;background:#1e140a;font-family:'Noto Serif KR',serif;color:#F5E6B8;padding:20px 12px}
+        .jm-root{width:100%;min-height:100vh;display:flex;flex-direction:column;align-items:center;background:#1e140a;font-family:'Noto Serif KR',serif;color:#F5E6B8;padding:20px 12px;overflow-y:auto;-webkit-overflow-scrolling:touch}
         .jm-header{text-align:center;margin-bottom:16px}.jm-title{font-size:clamp(20px,5vw,24px);font-weight:900;color:#F5D060;letter-spacing:6px}.jm-sub{font-size:11px;color:rgba(245,230,184,0.4);letter-spacing:2px;margin-top:2px}
         .shelf{width:100%;max-width:520px}.shelf-plank{height:10px;background:linear-gradient(180deg,#8B6914,#6B4400);border-radius:2px;margin:0 -4px}
         .shelf-row{display:grid;grid-template-columns:repeat(3,1fr);gap:0}
         .shelf-slot{background:#2a1a0a;border-left:3px solid #5C3A1E;border-right:3px solid #5C3A1E;padding:16px 8px;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:130px;cursor:pointer;transition:background 0.3s}.shelf-slot:hover{background:#3a2a1a}.shelf-slot:active{transform:scale(0.97)}
         .slot-icon{font-size:32px;margin-bottom:6px}.slot-label{font-size:12px;font-weight:700;color:#F5D060;letter-spacing:1px;text-align:center}.slot-sub{font-size:9px;color:rgba(245,230,184,0.35);margin-top:2px;text-align:center}
-        .panel{width:100%;max-width:520px;background:#2a1a0a;border:1px solid rgba(200,150,30,0.2);border-radius:8px;padding:20px;margin-top:12px;position:relative;animation:fadeIn 0.3s ease}
+        .panel{width:100%;max-width:520px;background:#2a1a0a;border:1px solid rgba(200,150,30,0.2);border-radius:8px;padding:20px;margin-top:12px;position:relative;animation:fadeIn 0.3s ease;max-height:70vh;overflow-y:auto;-webkit-overflow-scrolling:touch;box-sizing:border-box}
         @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
         .panel-close{position:absolute;top:12px;right:16px;font-size:20px;color:rgba(245,230,184,0.5);cursor:pointer;background:none;border:none}.panel-close:hover{color:#F5D060}
         .panel-title{font-size:16px;font-weight:700;color:#F5D060;margin-bottom:12px;letter-spacing:2px}
@@ -256,7 +256,7 @@ export default function JongmusoPage() {
         .gido-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.gido-card{background:rgba(200,150,30,0.08);border:1px solid rgba(200,150,30,0.15);border-radius:8px;padding:12px 6px;text-align:center;cursor:pointer;transition:border-color 0.2s}.gido-card:hover{border-color:rgba(200,150,30,0.4);background:rgba(200,150,30,0.15)}.gido-name{font-size:11px;font-weight:700;color:#F5D060;margin-top:4px}.gido-price{font-size:9px;color:rgba(245,230,184,0.4);margin-top:2px}
         .account-box{margin-top:16px;padding:12px;background:rgba(200,150,30,0.08);border-radius:8px}.account-title{font-size:12px;color:#F5D060;font-weight:700;margin-bottom:6px}
         .copy-btn{margin-left:6px;padding:3px 8px;background:rgba(200,150,30,0.15);border:1px solid rgba(200,150,30,0.3);border-radius:10px;color:#F5D060;font-size:10px;cursor:pointer;font-family:'Noto Serif KR',serif}.copy-btn:hover{background:rgba(200,150,30,0.3)}
-        @media(max-width:500px){.shelf-row{grid-template-columns:repeat(2,1fr)}.shelf-slot{min-height:110px;padding:12px 6px}.gido-grid{grid-template-columns:repeat(2,1fr)}.jm-title{font-size:20px}}
+        @media(max-width:500px){.shelf-row{grid-template-columns:repeat(2,1fr)}.shelf-row:last-of-type{grid-template-columns:1fr}.shelf-slot{min-height:100px;padding:12px 6px}.gido-grid{grid-template-columns:repeat(2,1fr)}.jm-title{font-size:20px}.panel{max-height:65vh}}
       `}</style>
     </div>
   );
