@@ -32,7 +32,7 @@ export async function GET() {
       try {
         const ctrl = new AbortController()
         const timer = setTimeout(() => ctrl.abort(), 5000)
-        const res = await fetch(`https://res.cloudinary.com/${cloudName}/image/upload/w_1/sample.jpg`, { method: 'HEAD', signal: ctrl.signal })
+        const res = await fetch(`https://res.cloudinary.com/${cloudName}/image/upload/w_1/bodisatt_quikgz`, { method: 'HEAD', signal: ctrl.signal })
         clearTimeout(timer)
         report.checks.cloudinary = res.ok ? '🌕 통함(OK)' : '🌑 막힘(Error)'
       } catch {
