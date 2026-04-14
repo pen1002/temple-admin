@@ -19,4 +19,6 @@ const nextConfig = {
 export default withSentryConfig(nextConfig, {
   silent: true,
   hideSourceMaps: true,
+  disableLogger: true,
+  excludeServerRoutes: [],
 })
