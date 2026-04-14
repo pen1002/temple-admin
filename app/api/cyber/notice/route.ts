@@ -36,6 +36,33 @@ export async function POST(req: NextRequest) {
   }
 }
 
+// PATCH /api/cyber/notice — 공지 수정
+export async function PATCH(req: NextRequest) {
+  try {
+    const { id, title, content } = await req.json()
+    if (!id || !title?.trim()) return NextResponse.json({ error: 'id, title 필수' }, { status: 400 })
+    await prisma.cyberOffering.update({
+      where: { id: BigInt(id) },
+      data: { wish: JSON.stringify({ title: title.trim().slice(0, 100), content: (content || '').trim().slice(0, 500) }) },
+    })
+    return NextResponse.json({ ok: true })
+  } catch (e: unknown) {
+    return NextResponse.json({ error: e instanceof Error ? e.message : 'unknown' }, { status: 500 })
+  }
+}
+
+// DELETE /api/cyber/notice — 공지 삭제
+export async function DELETE(req: NextRequest) {
+  try {
+    const { id } = await req.json()
+    if (!id) return NextResponse.json({ error: 'id 필수' }, { status: 400 })
+    await prisma.cyberOffering.delete({ where: { id: BigInt(id) } })
+    return NextResponse.json({ ok: true })
+  } catch (e: unknown) {
+    return NextResponse.json({ error: e instanceof Error ? e.message : 'unknown' }, { status: 500 })
+  }
+}
+
 export async function GET(req: NextRequest) {
   try {
     const slug = req.nextUrl.searchParams.get('temple_slug')

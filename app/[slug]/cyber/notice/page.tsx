@@ -15,6 +15,9 @@ export default function NoticePage() {
   const [content, setContent] = useState('')
   const [loading, setLoading] = useState(false)
   const [touchStartX, setTouchStartX] = useState(0)
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [editTitle, setEditTitle] = useState('')
+  const [editContent, setEditContent] = useState('')
 
   const fetchNotices = useCallback(async () => {
     const res = await fetch(`/api/cyber/notice?temple_slug=${slug}`)
@@ -39,6 +42,18 @@ export default function NoticePage() {
   const shareKakao = (n: Notice) => {
     const text = `[${n.title}]\n${n.content}\n\n— ${temple?.name || slug} 사이버법당`
     navigator.clipboard.writeText(text).then(() => alert('공지가 복사되었습니다.\n카카오톡에 붙여넣기하여 공유해 주세요.'))
+  }
+
+  const startEdit = (n: Notice) => { setEditingId(n.id); setEditTitle(n.title); setEditContent(n.content) }
+  const saveEdit = async () => {
+    if (!editingId || !editTitle.trim()) return
+    await fetch('/api/cyber/notice', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: editingId, title: editTitle.trim(), content: editContent.trim() }) })
+    setEditingId(null); await fetchNotices()
+  }
+  const deleteNotice = async (n: Notice) => {
+    if (!confirm(`"${n.title}" 공지를 삭제하시겠습니까?`)) return
+    await fetch('/api/cyber/notice', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: n.id }) })
+    await fetchNotices(); if (currentSlide > 0 && currentPage.length <= 1) setCurrentSlide(currentSlide - 1)
   }
 
   // 3개씩 그룹화
@@ -129,6 +144,16 @@ export default function NoticePage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {currentPage.length > 0 ? currentPage.map((n) => (
             <div key={n.id} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(201,168,76,0.12)', borderRadius: 12, padding: '16px 18px' }}>
+              {editingId === n.id ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  <input value={editTitle} onChange={e => setEditTitle(e.target.value.slice(0, 100))} placeholder="제목" style={inp} />
+                  <textarea value={editContent} onChange={e => setEditContent(e.target.value.slice(0, 500))} placeholder="내용" rows={4} style={{ ...inp, resize: 'none' }} />
+                  <div style={{ display: 'flex', gap: 6 }}>
+                    <button onClick={saveEdit} style={{ flex: 1, padding: '8px', background: 'rgba(34,197,94,0.2)', border: '1px solid rgba(34,197,94,0.4)', color: '#22c55e', borderRadius: 6, fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>저장</button>
+                    <button onClick={() => setEditingId(null)} style={{ flex: 1, padding: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(201,168,76,0.2)', color: 'rgba(201,168,76,0.5)', borderRadius: 6, fontSize: 12, cursor: 'pointer' }}>취소</button>
+                  </div>
+                </div>
+              ) : (<>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8, gap: 8 }}>
                 <span style={{ fontSize: 15, fontWeight: 600, color: '#f0dfa0', flex: 1, wordBreak: 'keep-all' }}>{n.title}</span>
                 <span style={{ fontSize: 10, color: 'rgba(201,168,76,0.35)', whiteSpace: 'nowrap' }}>{new Date(n.date).toLocaleDateString('ko-KR')}</span>
@@ -136,7 +161,10 @@ export default function NoticePage() {
               <p style={{ fontSize: 13, color: 'rgba(240,223,160,0.6)', lineHeight: 1.8, margin: '0 0 10px', wordBreak: 'keep-all' }}>{n.content}</p>
               <div style={{ display: 'flex', gap: 6 }}>
                 <button onClick={() => shareKakao(n)} style={{ background: '#FEE500', border: 'none', color: '#3A1D1D', borderRadius: 6, padding: '5px 12px', fontSize: 11, cursor: 'pointer', fontWeight: 600 }}>카톡 공유</button>
+                <button onClick={() => startEdit(n)} style={{ background: 'rgba(201,168,76,0.15)', border: '1px solid rgba(201,168,76,0.3)', color: '#c9a84c', borderRadius: 6, padding: '5px 12px', fontSize: 11, cursor: 'pointer', fontWeight: 600 }}>수정</button>
+                <button onClick={() => deleteNotice(n)} style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', color: '#ef4444', borderRadius: 6, padding: '5px 12px', fontSize: 11, cursor: 'pointer', fontWeight: 600 }}>삭제</button>
               </div>
+              </>)}
             </div>
           )) : (
             <div style={{ textAlign: 'center', padding: '40px 0', color: 'rgba(201,168,76,0.3)', fontSize: 14 }}>등록된 공지사항이 없습니다</div>
