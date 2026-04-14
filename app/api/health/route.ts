@@ -1,10 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_KEY!
-)
+export const dynamic = 'force-dynamic'
 
 export async function GET() {
   const start = Date.now()
@@ -17,27 +14,38 @@ export async function GET() {
 
   try {
     // 🔍 [DB 진맥]
-    const { error: dbError } = await supabase.from('temples').select('id').limit(1)
-    report.checks.database = dbError ? '🌑 막힘(Error)' : '🌕 통함(OK)'
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const key = process.env.SUPABASE_SERVICE_KEY
+    if (!url || !key) {
+      report.checks.database = '⚪ 미설정(Skip)'
+    } else {
+      const supabase = createClient(url, key)
+      const { error: dbError } = await supabase.from('temples').select('id').limit(1)
+      report.checks.database = dbError ? '🌑 막힘(Error)' : '🌕 통함(OK)'
+    }
 
-    // 🔍 [Cloudinary 진맥] — REST API ping (SDK 불필요)
-    let cloudinaryOk = false
+    // 🔍 [Cloudinary 진맥]
     const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
-    if (cloudName) {
+    if (!cloudName) {
+      report.checks.cloudinary = '⚪ 미설정(Skip)'
+    } else {
       try {
         const res = await fetch(`https://res.cloudinary.com/${cloudName}/image/upload/w_1/sample.jpg`, { method: 'HEAD' })
-        cloudinaryOk = res.ok
-      } catch {}
+        report.checks.cloudinary = res.ok ? '🌕 통함(OK)' : '🌑 막힘(Error)'
+      } catch {
+        report.checks.cloudinary = '🌑 막힘(Error)'
+      }
     }
-    report.checks.cloudinary = cloudinaryOk ? '🌕 통함(OK)' : cloudName ? '🌑 막힘(Error)' : '⚪ 미설정(Skip)'
 
-    const isHealthy = !dbError && (cloudinaryOk || !cloudName)
+    const dbOk = report.checks.database.includes('통함') || report.checks.database.includes('미설정')
+    const cdnOk = report.checks.cloudinary.includes('통함') || report.checks.cloudinary.includes('미설정')
+    const isHealthy = dbOk && cdnOk
     report.status = isHealthy ? '🌕 만월(Healthy)' : '🌘 하현(Unhealthy)'
     report.latency = `${Date.now() - start}ms`
 
     return NextResponse.json(report, { status: isHealthy ? 200 : 500 })
   } catch (error) {
-    console.error('[health] Critical error:', error)
+    console.error('[health] Critical:', error)
     return NextResponse.json({ status: '🌑 개기월식(Critical)', error: String(error) }, { status: 500 })
   }
 }
