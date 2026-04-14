@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
-import { notifyTemple } from '@/lib/notify'
+import { notifyTemple, KAKAO_TEMPLATES } from '@/lib/notify'
 
 const globalForPrisma = global as unknown as { prismaCyber?: PrismaClient }
 const prisma = globalForPrisma.prismaCyber ?? new PrismaClient()
@@ -94,7 +94,13 @@ export async function POST(req: NextRequest) {
     if (type !== 'bow') {
       const notifyPhone = templeRow?.kakao_notify_tel || templeRow?.phone
       if (notifyPhone) {
-        notifyTemple(notifyPhone, kakaoText).catch(() => {})
+        const tplId = type === 'memorial' ? KAKAO_TEMPLATES.MEMORIAL : KAKAO_TEMPLATES.OFFERING
+        notifyTemple(notifyPhone, kakaoText, tplId || undefined, {
+          '#{사찰명}': tName,
+          '#{유형}': label,
+          '#{이름}': name.trim(),
+          '#{발원}': wish?.trim() || '',
+        }).catch(() => {})
       }
     }
 

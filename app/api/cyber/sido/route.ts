@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
-import { notifyTemple } from '@/lib/notify'
+import { notifyTemple, KAKAO_TEMPLATES } from '@/lib/notify'
 
 const globalForPrisma = global as unknown as { prismaSido?: PrismaClient }
 const prisma = globalForPrisma.prismaSido ?? new PrismaClient()
@@ -133,7 +133,13 @@ export async function POST(req: NextRequest) {
     // 사찰 스님에게 알림
     const notifyPhone = templeRow?.kakao_notify_tel || templeRow?.phone
     if (notifyPhone) {
-      notifyTemple(notifyPhone, `[${templeName} 신도등록]\n${names.trim()}님이 신도로 등록되었습니다.\n법명: ${beopMyeong || '-'}\n연락처: ${contact.trim()}`).catch(() => {})
+      const sidoMsg = `[${templeName} 신도등록]\n${names.trim()}님이 신도로 등록되었습니다.\n법명: ${beopMyeong || '-'}\n연락처: ${contact.trim()}`
+      notifyTemple(notifyPhone, sidoMsg, KAKAO_TEMPLATES.SIDO || undefined, {
+        '#{사찰명}': templeName,
+        '#{이름}': names.trim(),
+        '#{법명}': beopMyeong || '-',
+        '#{연락처}': contact.trim(),
+      }).catch(() => {})
     }
 
     return NextResponse.json({ ok: true, id: row.id.toString() })
