@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
+import { notifyTemple } from '@/lib/notify'
 
 const globalForPrisma = global as unknown as { prismaCyber?: PrismaClient }
 const prisma = globalForPrisma.prismaCyber ?? new PrismaClient()
@@ -52,8 +53,11 @@ export async function POST(req: NextRequest) {
       },
     })
 
-    // 사찰명 조회 (구글시트 + 카카오 텍스트용)
-    const templeRow = await prisma.temple.findUnique({ where: { code: temple_slug }, select: { name: true } })
+    // 사찰 정보 조회 (구글시트 + 알림 + 카카오 텍스트용)
+    const templeRow = await prisma.temple.findUnique({
+      where: { code: temple_slug },
+      select: { name: true, kakao_notify_tel: true, phone: true },
+    })
 
     // 구글 시트 기록 (참배 제외)
     if (SHEETS_URL && type !== 'bow') {
@@ -85,6 +89,14 @@ export async function POST(req: NextRequest) {
     const kakaoText = type === 'memorial'
       ? `[${tName} ${label}]\n${name}님이 ${deceased || '영가'}님의 위패를 봉안하였습니다.\n발원: ${wish || ''}`
       : `[${tName} ${label}]\n${name} 불자님이 ${label}에 동참하였습니다.\n발원: ${wish || ''}`
+
+    // 사찰 스님에게 SMS 알림 발송 (참배 제외)
+    if (type !== 'bow') {
+      const notifyPhone = templeRow?.kakao_notify_tel || templeRow?.phone
+      if (notifyPhone) {
+        notifyTemple(notifyPhone, kakaoText).catch(() => {})
+      }
+    }
 
     return NextResponse.json({ ok: true, id: row.id.toString(), kakaoText })
   } catch (e: unknown) {

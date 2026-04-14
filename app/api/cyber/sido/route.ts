@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
+import { notifyTemple } from '@/lib/notify'
 
 const globalForPrisma = global as unknown as { prismaSido?: PrismaClient }
 const prisma = globalForPrisma.prismaSido ?? new PrismaClient()
@@ -103,6 +104,13 @@ export async function POST(req: NextRequest) {
       },
     })
 
+    // 사찰 정보 조회
+    const templeRow = await prisma.temple.findUnique({
+      where: { code: temple_slug },
+      select: { name: true, kakao_notify_tel: true, phone: true },
+    })
+    const templeName = templeRow?.name || temple_slug
+
     // 구글시트 기록
     if (SHEETS_URL) {
       fetch(SHEETS_URL, {
@@ -110,7 +118,7 @@ export async function POST(req: NextRequest) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           type: 'indung',
-          templeName: '미래사',
+          templeName,
           blockCode: 'sido',
           currentRound: 1,
           applicantName: names.trim(),
@@ -120,6 +128,12 @@ export async function POST(req: NextRequest) {
           gridPosition: '신도카드',
         }),
       }).catch(() => {})
+    }
+
+    // 사찰 스님에게 알림
+    const notifyPhone = templeRow?.kakao_notify_tel || templeRow?.phone
+    if (notifyPhone) {
+      notifyTemple(notifyPhone, `[${templeName} 신도등록]\n${names.trim()}님이 신도로 등록되었습니다.\n법명: ${beopMyeong || '-'}\n연락처: ${contact.trim()}`).catch(() => {})
     }
 
     return NextResponse.json({ ok: true, id: row.id.toString() })
