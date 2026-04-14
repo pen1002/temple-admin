@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import * as Sentry from '@sentry/nextjs'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -38,7 +37,7 @@ export async function GET() {
 
     return NextResponse.json(report, { status: isHealthy ? 200 : 500 })
   } catch (error) {
-    Sentry.captureException(error)
+    console.error('[health] Critical error:', error)
     return NextResponse.json({ status: '🌑 개기월식(Critical)', error: String(error) }, { status: 500 })
   }
 }
