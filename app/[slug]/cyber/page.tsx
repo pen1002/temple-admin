@@ -11,7 +11,7 @@ const items = [
   { label: '대웅전', sub: '본존불 친견', icon: '🏛️', href: 'daeungjeon' },
   { label: '지장전', sub: '위패모십니다', icon: '🪷', href: 'jijangjeon' },
   { label: '인등불사', sub: '가족건강행복', icon: '🏮', href: 'indung' },
-  { label: '연등공양', sub: '연꽃 등불', icon: '🪷', href: 'yeondeung' },
+  { label: '초파일연등접수', sub: '부처님오신날', icon: '🪷', href: 'yeondeung' },
   // 2열
   { label: '원불모시기', sub: '관세음보살', icon: '🕯️', href: 'avalokiteshvara' },
   { label: '스님과 소통', sub: '카카오톡 상담', icon: '💬', href: '_kakao' },

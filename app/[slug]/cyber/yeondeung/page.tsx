@@ -13,7 +13,7 @@ const LANTERN_COLORS = [
   { body: '#f0a860', rib: '#e09040', band: '#e89848', rim: '#c06020', tag: '#e89850', text: 'rgba(120,60,10,0.7)', glow: 'rgba(240,170,80,0.4)' },      // 주황
   { body: '#88cc88', rib: '#70b870', band: '#78c078', rim: '#308030', tag: '#80c080', text: 'rgba(30,80,30,0.7)', glow: 'rgba(130,220,130,0.4)' },       // 초록
 ]
-const AMOUNTS = [{ label: '1인 5만원', value: 50000 }, { label: '가족등 10만원', value: 100000 }]
+const AMOUNTS = [{ label: '가족등(1년) 10만원', value: 100000 }]
 
 interface Donor { id: string; name: string; wish: string; created_at: string }
 
@@ -21,7 +21,7 @@ export default function YeondeungPage() {
   const { slug } = useParams<{ slug: string }>()
   const [items, setItems] = useState<Donor[]>([])
   const [name, setName] = useState(''); const [wish, setWish] = useState(''); const [contact, setContact] = useState('')
-  const [amount, setAmount] = useState(50000); const [loading, setLoading] = useState(false); const [submitted, setSubmitted] = useState(false); const [kakaoText, setKakaoText] = useState("")
+  const [amount, setAmount] = useState(100000); const [loading, setLoading] = useState(false); const [submitted, setSubmitted] = useState(false); const [kakaoText, setKakaoText] = useState("")
   const [viewRound, setViewRound] = useState(1)
   const [touchStartX2, setTouchStartX2] = useState(0)
   const [tooltip, setTooltip] = useState<{ x: number; y: number; name: string; wish: string; date?: string } | null>(null)
@@ -51,9 +51,11 @@ export default function YeondeungPage() {
   return (
     <div style={{ padding: '20px 20px 60px', maxWidth: 600, margin: '0 auto' }}>
       <div style={{ textAlign: 'center', marginBottom: 20 }}>
-        <div style={{ fontSize: 48, marginBottom: 8, animation: 'yd-sway 2.5s ease-in-out infinite' }}>🏮</div>
-        <style>{`@keyframes yd-sway { 0%,100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } }`}</style>
-        <h2 style={{ fontSize: 22, fontWeight: 600, color: accent, letterSpacing: 3, fontFamily: '"Noto Serif KR",serif' }}>연등공양</h2>
+        <div style={{ width: 80, height: 100, margin: '0 auto 8px', animation: 'yd-sway 2.5s ease-in-out infinite' }}>
+          <img src="https://res.cloudinary.com/db3izttcy/image/upload/lotuslantern_ta3yrq" alt="연등" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+        </div>
+        <style>{`@keyframes yd-sway { 0%,100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg); } }`}</style>
+        <h2 style={{ fontSize: 22, fontWeight: 600, color: accent, letterSpacing: 3, fontFamily: '"Noto Serif KR",serif' }}>초파일연등접수</h2>
         <p style={{ fontSize: 12, color: `rgba(${accentRgb},0.5)`, marginTop: 4 }}>부처님오신날 연등을 밝혀 공양합니다</p>
         <p style={{ fontSize: 11, color: `rgba(${accentRgb},0.4)`, marginTop: 6 }}>🏮 연등 신청자는 서울 불연암에 등을 달아드립니다</p>
       </div>
@@ -69,42 +71,22 @@ export default function YeondeungPage() {
         <button onClick={() => setViewRound(viewRound + 1)} style={{ background: "none", border: `1px solid rgba(${accentRgb},0.2)`, color: accent, borderRadius: 6, padding: "5px 12px", cursor: "pointer", fontSize: 13 }}>▸</button>
       </div>
 
-      {/* 연등 격자 — 타원형 */}
+      {/* 연등 격자 — Cloudinary 이미지 */}
       <div style={{ display: 'grid', gridTemplateColumns: `repeat(${COLS}, 1fr)`, gap: 6, marginBottom: 20, position: 'relative' }}>
         {Array.from({ length: PER_ROUND }).map((_, i) => {
           const gi = roundStart + i, lit = gi < items.length, c = lit ? items[gi] : null
-          const cl = LANTERN_COLORS[gi % LANTERN_COLORS.length]
           return (
-            <div key={i} onMouseEnter={e => c && setTooltip({ x: e.clientX, y: e.clientY, name: c.name, wish: c.wish || '', date: c.created_at })} onMouseLeave={() => setTooltip(null)} onClick={e => c && setTooltip({ x: e.clientX, y: e.clientY, name: c.name, wish: c.wish || "", date: c.created_at })}
-              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '2px 0' }}>
-              <svg viewBox="0 0 50 68" style={{ width: '100%', maxWidth: 40, filter: lit ? `drop-shadow(0 0 6px ${cl.glow})` : 'grayscale(1) opacity(0.12)' }}>
-                {/* 줄 */}
-                <line x1="25" y1="0" x2="25" y2="10" stroke={lit ? '#666' : '#444'} strokeWidth="1" />
-                {/* 상단 테 */}
-                <rect x="13" y="9" width="24" height="4" rx="1.5" fill={lit ? cl.rim : '#555'} />
-                {/* 연등 몸통 — 구형 */}
-                <ellipse cx="25" cy="30" rx="18" ry="17" fill={lit ? cl.body : '#555'} />
-                {/* 살 (세로 곡선) */}
-                <path d="M25 13 Q25 30 25 47" stroke={lit ? cl.rib : '#666'} strokeWidth="1" fill="none" />
-                <path d="M14 15 Q10 30 14 45" stroke={lit ? cl.rib : '#666'} strokeWidth="0.7" fill="none" />
-                <path d="M36 15 Q40 30 36 45" stroke={lit ? cl.rib : '#666'} strokeWidth="0.7" fill="none" />
-                <path d="M9 20 Q7 30 9 40" stroke={lit ? cl.rib : '#666'} strokeWidth="0.5" fill="none" />
-                <path d="M41 20 Q43 30 41 40" stroke={lit ? cl.rib : '#666'} strokeWidth="0.5" fill="none" />
-                {/* 중앙 띠 */}
-                <rect x="23" y="13" width="4" height="34" rx="1" fill={lit ? cl.band : '#555'} opacity="0.5" />
-                {/* 하이라이트 */}
-                <ellipse cx="20" cy="26" rx="5" ry="7" fill="rgba(255,255,255,0.18)" />
-                {/* 하단 테 */}
-                <rect x="13" y="45" width="24" height="4" rx="1.5" fill={lit ? cl.rim : '#555'} />
-                {/* 하단 줄 */}
-                <line x1="25" y1="49" x2="25" y2="56" stroke={lit ? '#666' : '#444'} strokeWidth="1" />
-                {/* 발원문 패 */}
-                <rect x="20" y="55" width="10" height="12" rx="1" fill={lit ? cl.tag : '#555'} />
-                {/* 이름 */}
-                {lit && c && (
-                  <text x="25" y="33" textAnchor="middle" fill={cl.text} fontSize="7" fontWeight="700">{c.name.slice(0, 3)}</text>
-                )}
-              </svg>
+            <div key={i} onMouseEnter={e => c && setTooltip({ x: e.clientX, y: e.clientY, name: c.name, wish: c.wish || '', date: c.created_at })} onMouseLeave={() => setTooltip(null)} onClick={() => !lit && !submitted && document.querySelector<HTMLInputElement>('input[placeholder="성함 *"]')?.focus()}
+              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '2px 0', cursor: lit ? 'default' : 'pointer' }}>
+              <img src="https://res.cloudinary.com/db3izttcy/image/upload/lotuslantern_ta3yrq" alt="연등" style={{ width: '100%', maxWidth: 50, objectFit: 'contain', filter: lit ? 'drop-shadow(0 0 8px rgba(255,180,60,0.5))' : 'grayscale(1) opacity(0.15)', transition: 'filter 0.3s' }} />
+              {lit && c ? (
+                <div style={{ textAlign: 'center', marginTop: 2 }}>
+                  <div style={{ fontSize: 9, fontWeight: 700, color: accent, lineHeight: 1.2 }}>{c.name.slice(0, 3)}</div>
+                  {c.wish && <div style={{ fontSize: 7, color: `rgba(${accentRgb},0.5)`, lineHeight: 1.2, maxWidth: 50, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.wish.slice(0, 8)}</div>}
+                </div>
+              ) : (
+                <div style={{ fontSize: 7, color: 'rgba(255,255,255,0.15)', marginTop: 2 }}>신청하기</div>
+              )}
             </div>
           )
         })}
@@ -128,7 +110,7 @@ export default function YeondeungPage() {
             ))}
           </div>
           <button onClick={handleSubmit} disabled={loading || !name.trim()} style={{ background: loading ? `rgba(${accentRgb},0.15)` : `rgba(${accentRgb},0.22)`, border: `1px solid rgba(${accentRgb},0.55)`, color: 'rgba(255,220,120,0.95)', borderRadius: 8, padding: 14, fontSize: 15, cursor: 'pointer', fontWeight: 500 }}>
-            {loading ? '접수 중...' : `연등 신청하기 — ${amount.toLocaleString()}원`}
+            {loading ? '접수 중...' : `초파일연등접수 — ${amount.toLocaleString()}원`}
           </button>
         </div>
       ) : (
