@@ -1,4 +1,4 @@
-import { notFound, redirect } from 'next/navigation'
+import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { db } from '@/lib/db'
 import { getNotices, getEventList, getRitualTimes, getDharma, getGallery } from '@/lib/kv'
@@ -79,7 +79,9 @@ export default async function TemplePage(
 
   // 사이버사찰: 법륜바퀴를 첫 화면으로 즉시 이동 (블록 렌더링 스킵)
   if (temple.temple_type === 'cyber') {
-    redirect(`/${slug}/dharma-wheel`)
+    return (
+      <meta httpEquiv="refresh" content={`0;url=/${slug}/dharma-wheel`} />
+    )
   }
 
   // Redis: 동적 콘텐츠 (병렬 fetch)
