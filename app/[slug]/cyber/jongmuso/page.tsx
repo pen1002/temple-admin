@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { useCyberTemple } from '@/lib/useCyberTemple';
 
@@ -16,17 +16,7 @@ const GIDO_ITEMS = [
   { name: '산신기도', icon: '⛰', price: '1년 2,000원' },
 ];
 
-const STATUS_DATA = [
-  { name: '초파일봉축연등', current: 25, total: 100 },
-  { name: '인등기도', current: 2, total: 30 },
-  { name: '원불모시기', current: 1, total: 30 },
-  { name: '초하루기도', current: 18, total: 100 },
-  { name: '백일기도', current: 42, total: 100 },
-  { name: '49재', current: 7, total: 100 },
-  { name: '천도재', current: 12, total: 100 },
-  { name: '정초기도', current: 65, total: 100 },
-  { name: '산신기도', current: 23, total: 100 },
-];
+interface StatusItem { name: string; current: number; total: number; unit: string }
 
 const CAL_EVENTS = [
   { date: 6, label: '일요법회 10:30', type: 'normal' as const },
@@ -59,6 +49,15 @@ export default function JongmusoPage() {
   const [editAddr, setEditAddr] = useState('');
   const [editContact, setEditContact] = useState('');
   const SIDO_PIN = temple?.pin || '1080';
+  const [statusData, setStatusData] = useState<StatusItem[]>([]);
+
+  useEffect(() => {
+    if (!slug) return;
+    fetch(`/api/cyber/status?temple_slug=${slug}`)
+      .then(r => r.json())
+      .then(d => { if (Array.isArray(d)) setStatusData(d) })
+      .catch(() => {});
+  }, [slug]);
   const famRef = useRef<HTMLInputElement>(null);
   const searchTimerRef = useRef<ReturnType<typeof setTimeout>|null>(null);
 
@@ -217,7 +216,8 @@ export default function JongmusoPage() {
       </div>)}
 
       {activePanel === 'status' && (<div className="panel"><button className="panel-close" onClick={closePanel}>&times;</button><div className="panel-title">기도/공양 접수현황</div>
-        {STATUS_DATA.map((item,i) => <div key={i}><div className="status-row"><span className="status-k">{item.name}</span><span className="status-v">{item.current}/{item.total}등</span></div><div className="progress-bar"><div className="progress-bg"><div className="progress-fill" style={{ width:`${Math.round(item.current/item.total*100)}%` }} /></div><span className="progress-num">{Math.round(item.current/item.total*100)}%</span></div></div>)}
+        {statusData.length === 0 && <div style={{ color:'rgba(245,230,184,0.3)',textAlign:'center',padding:'12px 0',fontSize:12 }}>접수 데이터가 없습니다</div>}
+        {statusData.map((item,i) => <div key={i}><div className="status-row"><span className="status-k">{item.name}</span><span className="status-v">{item.current}/{item.total}{item.unit}</span></div><div className="progress-bar"><div className="progress-bg"><div className="progress-fill" style={{ width:`${item.total > 0 ? Math.round(item.current/item.total*100) : 0}%` }} /></div><span className="progress-num">{item.total > 0 ? Math.round(item.current/item.total*100) : 0}%</span></div></div>)}
       </div>)}
 
       {activePanel === 'cal' && (<div className="panel"><button className="panel-close" onClick={closePanel}>&times;</button><div className="panel-title">4월 법회/행사 일정</div>
