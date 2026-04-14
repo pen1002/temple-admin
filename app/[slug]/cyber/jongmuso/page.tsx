@@ -53,6 +53,11 @@ export default function JongmusoPage() {
   const [copied, setCopied] = useState(false);
   const [sidoPin, setSidoPin] = useState('');
   const [sidoAuth, setSidoAuth] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editNames, setEditNames] = useState('');
+  const [editBeopMyeong, setEditBeopMyeong] = useState('');
+  const [editAddr, setEditAddr] = useState('');
+  const [editContact, setEditContact] = useState('');
   const SIDO_PIN = temple?.pin || '1080';
   const famRef = useRef<HTMLInputElement>(null);
   const searchTimerRef = useRef<ReturnType<typeof setTimeout>|null>(null);
@@ -86,6 +91,20 @@ export default function JongmusoPage() {
   };
 
   const copyAccount = () => { navigator.clipboard.writeText(temple?.bank_account || '').then(() => { setCopied(true); setTimeout(() => setCopied(false), 2000); }); };
+
+  const startEdit = (r: typeof searchResults[0]) => {
+    setEditingId(r.id); setEditNames(r.name); setEditBeopMyeong(r.beopMyeong); setEditAddr(r.address); setEditContact(r.contact);
+  };
+  const saveEdit = async () => {
+    if (!editingId || !editNames.trim()) return;
+    await fetch('/api/cyber/sido', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: editingId, names: editNames.trim(), beopMyeong: editBeopMyeong, address: editAddr, contact: editContact.trim() }) });
+    setEditingId(null); doSearch(searchQuery);
+  };
+  const deleteSido = async (id: string, name: string) => {
+    if (!confirm(`${name} 신도카드를 삭제하시겠습니까?`)) return;
+    await fetch('/api/cyber/sido', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) });
+    doSearch(searchQuery);
+  };
 
   const startOffset = 3;
   const aprilDays: (number | null)[] = [];
@@ -135,7 +154,26 @@ export default function JongmusoPage() {
           {!searching && !searchQuery.trim() && <div style={{ color:'rgba(245,230,184,0.3)',textAlign:'center',padding:'12px 0',fontSize:12 }}>성함을 입력하면 신도 정보가 표시됩니다</div>}
           {searchResults.map(r => (
             <div key={r.id} style={{ background:'rgba(200,150,30,0.06)',borderRadius:8,padding:12,marginBottom:8 }}>
-              <div style={{ fontWeight:700,color:'#F5D060',fontSize:14 }}>{r.name} 불자님</div>
+              {editingId === r.id ? (
+                <div style={{ display:'flex',flexDirection:'column',gap:8 }}>
+                  <div style={{ fontSize:12,color:'#F5D060',fontWeight:700 }}>신도카드 수정</div>
+                  <input value={editNames} onChange={e => setEditNames(e.target.value)} placeholder="성함 (쉼표로 가족 구분)" className="panel-input" style={{ marginBottom:0 }} />
+                  <input value={editBeopMyeong} onChange={e => setEditBeopMyeong(e.target.value)} placeholder="법명" className="panel-input" style={{ marginBottom:0 }} />
+                  <input value={editAddr} onChange={e => setEditAddr(e.target.value)} placeholder="주소" className="panel-input" style={{ marginBottom:0 }} />
+                  <input value={editContact} onChange={e => setEditContact(e.target.value)} placeholder="연락처" className="panel-input" style={{ marginBottom:0 }} />
+                  <div style={{ display:'flex',gap:6 }}>
+                    <button onClick={saveEdit} style={{ flex:1,padding:'8px',background:'rgba(34,197,94,0.2)',border:'1px solid rgba(34,197,94,0.4)',color:'#22c55e',borderRadius:6,fontSize:12,fontWeight:700,cursor:'pointer' }}>저장</button>
+                    <button onClick={() => setEditingId(null)} style={{ flex:1,padding:'8px',background:'rgba(245,230,184,0.06)',border:'1px solid rgba(245,230,184,0.15)',color:'rgba(245,230,184,0.5)',borderRadius:6,fontSize:12,cursor:'pointer' }}>취소</button>
+                  </div>
+                </div>
+              ) : (<>
+              <div style={{ display:'flex',justifyContent:'space-between',alignItems:'center' }}>
+                <div style={{ fontWeight:700,color:'#F5D060',fontSize:14 }}>{r.name} 불자님</div>
+                <div style={{ display:'flex',gap:6 }}>
+                  <button onClick={() => startEdit(r)} style={{ padding:'3px 10px',background:'rgba(200,150,30,0.15)',border:'1px solid rgba(200,150,30,0.3)',color:'#F5D060',borderRadius:4,fontSize:10,fontWeight:700,cursor:'pointer' }}>수정</button>
+                  <button onClick={() => deleteSido(r.id, r.name)} style={{ padding:'3px 10px',background:'rgba(239,68,68,0.1)',border:'1px solid rgba(239,68,68,0.3)',color:'#ef4444',borderRadius:4,fontSize:10,fontWeight:700,cursor:'pointer' }}>삭제</button>
+                </div>
+              </div>
               <div style={{ fontSize:11,color:'rgba(245,230,184,0.5)',marginTop:2 }}>법명: {r.beopMyeong} | 연락처: {r.contact} | 등록: {new Date(r.date).toLocaleDateString('ko-KR')}</div>
               {/* 동참 내역 상세 (금액, 날짜, 납부여부) */}
               {r.offeringDetails.length > 0 && (
@@ -160,6 +198,7 @@ export default function JongmusoPage() {
                   </div>
                 </div>
               )}
+              </>)}
             </div>
           ))}
         </div>

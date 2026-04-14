@@ -142,15 +142,47 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// PATCH /api/cyber/sido — 납부 확인 토글
+// PATCH /api/cyber/sido — 납부 확인 토글 또는 신도카드 수정
 export async function PATCH(req: NextRequest) {
   try {
-    const { id, paid } = await req.json()
+    const body = await req.json()
+    const { id, paid, names, beopMyeong, address, contact } = body
     if (!id) return NextResponse.json({ error: 'id 필수' }, { status: 400 })
-    await prisma.cyberOffering.update({
-      where: { id: BigInt(id) },
-      data: { bank_confirmed: Boolean(paid) },
-    })
+
+    // 납부 토글
+    if (paid !== undefined) {
+      await prisma.cyberOffering.update({
+        where: { id: BigInt(id) },
+        data: { bank_confirmed: Boolean(paid) },
+      })
+      return NextResponse.json({ ok: true })
+    }
+
+    // 신도카드 수정
+    if (names) {
+      await prisma.cyberOffering.update({
+        where: { id: BigInt(id) },
+        data: {
+          name: names.trim(),
+          contact: contact?.trim() || '',
+          wish: `법명:${beopMyeong || '-'} 주소:${address || '-'}`,
+        },
+      })
+      return NextResponse.json({ ok: true })
+    }
+
+    return NextResponse.json({ error: '수정할 데이터 없음' }, { status: 400 })
+  } catch (e: unknown) {
+    return NextResponse.json({ error: e instanceof Error ? e.message : 'unknown' }, { status: 500 })
+  }
+}
+
+// DELETE /api/cyber/sido — 신도카드 삭제
+export async function DELETE(req: NextRequest) {
+  try {
+    const { id } = await req.json()
+    if (!id) return NextResponse.json({ error: 'id 필수' }, { status: 400 })
+    await prisma.cyberOffering.delete({ where: { id: BigInt(id) } })
     return NextResponse.json({ ok: true })
   } catch (e: unknown) {
     return NextResponse.json({ error: e instanceof Error ? e.message : 'unknown' }, { status: 500 })
