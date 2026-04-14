@@ -137,7 +137,7 @@ export default function AddTempleForm() {
           </p>
           <div className="space-y-3">
             <a
-              href={templeType === 'cyber' ? `https://${result.code}.k-buddhism.kr` : `https://temple-admin-zeta.vercel.app/${result.code}`}
+              href={`https://${result.code}.k-buddhism.kr`}
               target="_blank" rel="noopener"
               className="btn-primary"
             >
