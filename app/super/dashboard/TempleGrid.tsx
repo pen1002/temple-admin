@@ -16,7 +16,7 @@ interface Pagination {
   totalCount: number
 }
 
-const SITE_BASE = 'https://munsusa-site-fmwyrdut3-bae-yeonams-projects.vercel.app'
+const SITE_BASE = 'https://k-buddhism.kr' // {code}.k-buddhism.kr 서브도메인 방식
 
 function getPageNumbers(current: number, total: number): (number | '...')[] {
   if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1)
@@ -145,7 +145,7 @@ export default function TempleGrid({ temples, pagination }: { temples: TempleRow
               {/* 액션 버튼 */}
               <div className="flex flex-wrap gap-2">
                 <a
-                  href={`${SITE_BASE}/${t.code}`}
+                  href={`https://${t.code}.k-buddhism.kr`}
                   target="_blank" rel="noopener"
                   className="bg-blue-50 text-blue-600 border border-blue-200 font-semibold px-3 py-2 rounded-xl text-base active:opacity-70"
                 >
