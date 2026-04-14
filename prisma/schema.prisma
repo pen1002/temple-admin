@@ -45,6 +45,7 @@ model Temple {
   updatedAt      DateTime @updatedAt
 
   blockConfigs          BlockConfig[]
+  believers             Believer[]
   wisdomOverrides       TempleWisdomOverride[]
 
   @@index([code])
@@ -153,4 +154,40 @@ model CyberOffering {
 
   @@index([temple_slug, type, created_at])
   @@map("cyber_offerings")
+}
+
+// 지능형 신도 대장 (가람지기 호환)
+model Believer {
+  id              String    @id @default(uuid())
+  temple_id       String?
+  temple          Temple?   @relation(fields: [temple_id], references: [id])
+
+  // 인적 사항
+  full_name       String                                    // 성명
+  buddhist_name   String?                                   // 법명
+  gender          String?                                   // 성별 (남/여)
+  birth_date      DateTime? @db.Date                        // 생년월일
+  is_lunar        Boolean   @default(true)                  // 음력 여부
+
+  // 연락 및 소통
+  phone           String?                                   // 연락처
+  address         String?                                   // 주소
+
+  // 가족 연합 (세주 중심 관리)
+  family_id       String?                                    // 가족 고유 ID
+  family_relation String?                                   // 세주와의 관계
+
+  // 신도 관리
+  status          String    @default("활동")                // 활동/휴면/망자/탈퇴
+  initiation_date DateTime? @db.Date                        // 수계/입교일
+  memo            String?   @db.Text                        // 비고
+
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
+
+  @@index([full_name])
+  @@index([phone])
+  @@index([temple_id])
+  @@index([family_id])
+  @@map("believers")
 }
