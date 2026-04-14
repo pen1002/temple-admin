@@ -53,7 +53,7 @@ export default function JongmusoPage() {
   const [copied, setCopied] = useState(false);
   const [sidoPin, setSidoPin] = useState('');
   const [sidoAuth, setSidoAuth] = useState(false);
-  const SIDO_PIN = '1080';
+  const SIDO_PIN = temple?.pin || '1080';
   const famRef = useRef<HTMLInputElement>(null);
   const searchTimerRef = useRef<ReturnType<typeof setTimeout>|null>(null);
 
