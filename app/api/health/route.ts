@@ -20,8 +20,8 @@ export async function GET() {
       report.checks.database = '⚪ 미설정(Skip)'
     } else {
       const supabase = createClient(url, key)
-      const { error: dbError } = await supabase.from('temples').select('id').limit(1)
-      report.checks.database = dbError ? '🌑 막힘(Error)' : '🌕 통함(OK)'
+      const { error: dbError } = await supabase.from('Temple').select('id').limit(1)
+      report.checks.database = dbError ? `🌑 막힘(${dbError.message})` : '🌕 통함(OK)'
     }
 
     // 🔍 [Cloudinary 진맥]
@@ -30,10 +30,13 @@ export async function GET() {
       report.checks.cloudinary = '⚪ 미설정(Skip)'
     } else {
       try {
-        const res = await fetch(`https://res.cloudinary.com/${cloudName}/image/upload/w_1/sample.jpg`, { method: 'HEAD' })
+        const ctrl = new AbortController()
+        const timer = setTimeout(() => ctrl.abort(), 5000)
+        const res = await fetch(`https://res.cloudinary.com/${cloudName}/image/upload/w_1/sample.jpg`, { method: 'HEAD', signal: ctrl.signal })
+        clearTimeout(timer)
         report.checks.cloudinary = res.ok ? '🌕 통함(OK)' : '🌑 막힘(Error)'
       } catch {
-        report.checks.cloudinary = '🌑 막힘(Error)'
+        report.checks.cloudinary = '🌑 막힘(Timeout)'
       }
     }
 
