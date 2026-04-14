@@ -6,6 +6,9 @@ import { getDailyWisdom } from '@/lib/getDailyWisdom'
 import BlockRenderer from './_blocks/BlockRenderer'
 import FooterBlock from './_blocks/FooterBlock'
 import type { TempleData, TemplateContent } from './_blocks/types'
+import dynamic from 'next/dynamic'
+
+const DharmaWheelPage = dynamic(() => import('./dharma-wheel/page'), { ssr: false })
 
 // ISR: 1분마다 재생성 (on-demand revalidation 병행)
 export const revalidate = 60
@@ -77,11 +80,9 @@ export default async function TemplePage(
   })
   if (!temple) notFound()
 
-  // 사이버사찰: 법륜바퀴를 첫 화면으로 즉시 이동 (블록 렌더링 스킵)
+  // 사이버사찰: 법륜바퀴를 직접 렌더링 (URL 유지)
   if (temple.temple_type === 'cyber') {
-    return (
-      <meta httpEquiv="refresh" content={`0;url=/${slug}/dharma-wheel`} />
-    )
+    return <DharmaWheelPage />
   }
 
   // Redis: 동적 콘텐츠 (병렬 fetch)
