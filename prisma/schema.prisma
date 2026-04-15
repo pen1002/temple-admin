@@ -33,6 +33,8 @@ model Temple {
   themeColor     String?  @default("golden-lotus")
   pageTemplate   String   @default("standard")
   pin            String   @default("0000")
+  admin_pin      String   @default("0000")
+  pin_changed    Boolean  @default(false)
   status         String   @default("active")
   isActive       Boolean  @default(true)
   temple_type    String   @default("offline")
