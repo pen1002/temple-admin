@@ -40,8 +40,17 @@ export default function IndungPage() {
   return (
     <div style={{ padding: '20px 20px 60px', maxWidth: 600, margin: '0 auto' }}>
       <div style={{ textAlign: 'center', marginBottom: 20 }}>
-        <div style={{ fontSize: 48, marginBottom: 8, animation: 'id-pulse 2s ease-in-out infinite alternate' }}>🕯</div>
-        <style>{`@keyframes id-pulse { 0% { transform: scale(1); filter: drop-shadow(0 0 4px rgba(255,200,50,0.3)); } 100% { transform: scale(1.06); filter: drop-shadow(0 0 12px rgba(255,200,50,0.6)); } }`}</style>
+        <div style={{ width: 120, height: 120, margin: '0 auto 8px', animation: 'id-pulse 2s ease-in-out infinite alternate' }}>
+          <svg viewBox="0 0 44 50" style={{ width: '100%', height: '100%', filter: 'drop-shadow(0 0 16px rgba(255,200,50,0.6))' }}>
+            <rect x="19" y="2" width="6" height="6" rx="1.5" fill="#d4c8a0" />
+            <path d="M16 8 Q16 4 22 4 Q28 4 28 8 L30 16 Q32 20 32 24 L32 38 Q32 42 28 42 L16 42 Q12 42 12 38 L12 24 Q12 20 14 16 Z" fill="url(#idHeroGrad)" stroke="rgba(220,210,190,0.4)" strokeWidth="0.5" />
+            <path d="M32 22 Q38 22 38 30 Q38 36 32 36" fill="none" stroke="#c8bda0" strokeWidth="2.5" strokeLinecap="round" />
+            <rect x="11" y="42" width="22" height="3" rx="1" fill="#b8a888" />
+            <ellipse cx="20" cy="20" rx="4" ry="6" fill="rgba(255,255,255,0.15)" />
+            <defs><radialGradient id="idHeroGrad" cx="40%" cy="35%"><stop offset="0%" stopColor="#f0e8d8" /><stop offset="50%" stopColor="#ddd4c0" /><stop offset="100%" stopColor="#c8bda0" /></radialGradient></defs>
+          </svg>
+        </div>
+        <style>{`@keyframes id-pulse { 0% { transform: scale(1); filter: drop-shadow(0 0 8px rgba(255,200,50,0.4)); } 100% { transform: scale(1.06); filter: drop-shadow(0 0 20px rgba(255,200,50,0.8)); } }`}</style>
         <h2 style={{ fontSize: 22, fontWeight: 600, color: accent, letterSpacing: 3, fontFamily: '"Noto Serif KR",serif' }}>인등불사</h2>
         <p style={{ fontSize: 12, color: `rgba(${accentRgb},0.5)`, marginTop: 4 }}>인등을 밝혀 소원을 발원합니다</p>
       </div>
@@ -65,10 +74,10 @@ export default function IndungPage() {
               style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '2px 0' }}>
               {/* 불꽃 */}
               {lit && (
-                <div style={{ width: 6, height: 10, background: 'radial-gradient(ellipse at 50% 80%, rgba(255,200,50,0.95), rgba(255,140,20,0.7) 60%, transparent)', borderRadius: '50% 50% 40% 40%', marginBottom: -2, filter: 'blur(0.5px)', animation: 'id-flame 0.8s ease-in-out infinite alternate' }} />
+                <div style={{ width: 8, height: 14, background: 'radial-gradient(ellipse at 50% 80%, rgba(255,220,80,1), rgba(255,160,30,0.9) 60%, transparent)', borderRadius: '50% 50% 40% 40%', marginBottom: -2, filter: 'blur(0.5px)', boxShadow: '0 0 12px rgba(255,200,50,0.8), 0 0 24px rgba(255,180,40,0.4)', animation: 'id-flame 0.8s ease-in-out infinite alternate' }} />
               )}
               {/* 인등 SVG — 도자기 모형 */}
-              <svg viewBox="0 0 44 50" style={{ width: '100%', maxWidth: 36, filter: lit ? 'drop-shadow(0 0 5px rgba(255,200,50,0.3))' : 'grayscale(1) opacity(0.12)' }}>
+              <svg viewBox="0 0 44 50" style={{ width: '100%', maxWidth: 54, filter: lit ? 'drop-shadow(0 0 15px rgba(255,200,50,0.9)) drop-shadow(0 0 30px rgba(255,180,40,0.5))' : 'grayscale(1) opacity(0.12)' }}>
                 {/* 심지 목 */}
                 <rect x="19" y="2" width="6" height="6" rx="1.5" fill={lit ? '#d4c8a0' : '#888'} />
                 {/* 어깨 (좁은 목에서 넓어지는 곡선) */}
