@@ -46,10 +46,15 @@ export default function JungmusoPage() {
     if (saved === 'super' || saved === 'admin') setRole(saved)
   }, [slug])
 
-  // PIN 필요한 탭 클릭 시
+  // PIN 필요한 탭 클릭 시 — 항상 PIN 확인
   const openProtectedTab = (tab: Tab) => {
-    if (role) { setActiveTab(tab); return }
-    setPendingTab(tab) // PIN 인증 후 이동할 탭 기억
+    // sessionStorage에 role이 있어도 5분 경과 시 재인증
+    const authTime = sessionStorage.getItem(`${slug}_members_auth_time`)
+    const isExpired = !authTime || (Date.now() - parseInt(authTime)) > 5 * 60 * 1000
+    if (role && !isExpired) { setActiveTab(tab); return }
+    // 만료 시 role 초기화
+    if (isExpired) { setRole(null); sessionStorage.removeItem(`${slug}_members_role`); sessionStorage.removeItem(`${slug}_members_auth_time`) }
+    setPendingTab(tab)
   }
 
   const handlePin = async (input: string) => {
@@ -57,7 +62,7 @@ export default function JungmusoPage() {
     const res = await fetch('/api/cyber/members/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pin: input, temple_slug: slug }) })
     if (res.ok) {
       const { role: r, pin_changed } = await res.json()
-      setRole(r); sessionStorage.setItem(`${slug}_members_role`, r); setPinError(0)
+      setRole(r); sessionStorage.setItem(`${slug}_members_role`, r); sessionStorage.setItem(`${slug}_members_auth_time`, String(Date.now())); setPinError(0)
       if (pendingTab) { setActiveTab(pendingTab); setPendingTab(null) }
       if (!pin_changed && r === 'admin') setShowChangePin(true)
     } else {
@@ -73,7 +78,7 @@ export default function JungmusoPage() {
     setShowChangePin(false); setNewPin('')
   }
 
-  const logout = () => { setRole(null); setActiveTab(null); sessionStorage.removeItem(`${slug}_members_role`) }
+  const logout = () => { setRole(null); setActiveTab(null); sessionStorage.removeItem(`${slug}_members_role`); sessionStorage.removeItem(`${slug}_members_auth_time`) }
 
   // PIN 화면 (신도카드/기도접수 진입 시에만)
   if (pendingTab && !role) {
