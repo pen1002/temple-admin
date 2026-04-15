@@ -248,12 +248,14 @@ export default function DharmaWheelPage() {
     return () => window.removeEventListener('resize', u);
   }, []);
 
-  // 그리드 표시 시 URL에 ?grid=1 추가 → 브라우저 뒤로가기 시 그리드 유지
+  // 그리드 표시 시 URL에 ?grid=1 추가 + prefetch
   useEffect(() => {
-    if (phase === 'done' && searchParams.get('grid') !== '1') {
-      window.history.replaceState(null, '', `?grid=1`);
+    if (phase === 'done') {
+      if (searchParams.get('grid') !== '1') window.history.replaceState(null, '', `?grid=1`);
+      // 모든 카드 경로 미리 불러오기
+      items.forEach(item => { if (item.href !== '_kakao' && item.href !== '#') router.prefetch(`/${slug}/cyber/${item.href}`) });
     }
-  }, [phase, searchParams]);
+  }, [phase, searchParams, slug, router]);
 
   const wr = cw < 500 ? 120 : 165;
   const wcx = cw / 2, wcy = wr + 20;

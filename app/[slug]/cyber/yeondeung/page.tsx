@@ -52,7 +52,7 @@ export default function YeondeungPage() {
     <div style={{ padding: '20px 20px 60px', maxWidth: 600, margin: '0 auto' }}>
       <div style={{ textAlign: 'center', marginBottom: 20 }}>
         <div style={{ width: 80, height: 100, margin: '0 auto 8px', animation: 'yd-sway 2.5s ease-in-out infinite' }}>
-          <img src="https://res.cloudinary.com/db3izttcy/image/upload/lotuslantern_ta3yrq" alt="연등" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+          <img src="https://res.cloudinary.com/db3izttcy/image/upload/w_200,q_auto,f_auto/lotuslantern_ta3yrq" alt="연등" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
         </div>
         <style>{`@keyframes yd-sway { 0%,100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg); } }`}</style>
         <h2 style={{ fontSize: 22, fontWeight: 600, color: accent, letterSpacing: 3, fontFamily: '"Noto Serif KR",serif' }}>초파일연등접수</h2>
@@ -78,7 +78,7 @@ export default function YeondeungPage() {
           return (
             <div key={i} onMouseEnter={e => c && setTooltip({ x: e.clientX, y: e.clientY, name: c.name, wish: c.wish || '', date: c.created_at })} onMouseLeave={() => setTooltip(null)} onClick={() => !lit && !submitted && document.querySelector<HTMLInputElement>('input[placeholder="성함 *"]')?.focus()}
               style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '2px 0', cursor: lit ? 'default' : 'pointer' }}>
-              <img src="https://res.cloudinary.com/db3izttcy/image/upload/lotuslantern_ta3yrq" alt="연등" style={{ width: '100%', maxWidth: 50, objectFit: 'contain', filter: lit ? 'drop-shadow(0 0 8px rgba(255,180,60,0.5))' : 'grayscale(1) opacity(0.15)', transition: 'filter 0.3s' }} />
+              <img src="https://res.cloudinary.com/db3izttcy/image/upload/w_200,q_auto,f_auto/lotuslantern_ta3yrq" alt="연등" style={{ width: '100%', maxWidth: 50, objectFit: 'contain', filter: lit ? 'drop-shadow(0 0 8px rgba(255,180,60,0.5))' : 'grayscale(1) opacity(0.15)', transition: 'filter 0.3s' }} />
               {lit && c ? (
                 <div style={{ textAlign: 'center', marginTop: 2 }}>
                   <div style={{ fontSize: 9, fontWeight: 700, color: accent, lineHeight: 1.2 }}>{c.name.slice(0, 3)}</div>
