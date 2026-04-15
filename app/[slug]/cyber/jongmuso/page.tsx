@@ -263,7 +263,7 @@ function MembersTab({ slug, role, tName }: { slug: string; role: Role; tName: st
         </div>
 
         {/* 가족축원 테이블 */}
-        <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 8 }}>
+        <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}><table style={{ width: '100%', minWidth: 340, borderCollapse: 'collapse', marginBottom: 8 }}>
           <thead><tr style={{ background: `${A}11`, fontSize: 11, color: A }}>
             <th style={{ padding: '6px 4px', textAlign: 'center', width: 60 }}>관계</th>
             <th style={{ padding: '6px 4px', textAlign: 'center', width: 60 }}>음·양력</th>
@@ -276,13 +276,13 @@ function MembersTab({ slug, role, tName }: { slug: string; role: Role; tName: st
               <tr key={i} style={{ borderBottom: `1px solid ${A}11` }}>
                 <td style={{ padding: 4 }}><select value={m.relation_type} onChange={e => updateFam(i, 'relation_type', e.target.value)} style={{ width: '100%', background: 'rgba(255,255,255,0.06)', border: `1px solid ${A}33`, borderRadius: 4, color: '#F5E6C8', padding: '4px 2px', fontSize: 12 }}>{RELS.map(r => <option key={r} value={r} style={{ background: '#1a0408' }}>{r}</option>)}</select></td>
                 <td style={{ padding: 4 }}><div style={{ display: 'flex', gap: 2, justifyContent: 'center' }}>{['음', '양'].map(t => <button key={t} onClick={() => updateFam(i, 'is_lunar', t === '음')} style={{ padding: '3px 6px', background: (t === '음') === m.is_lunar ? `${A}33` : 'transparent', border: `1px solid ${A}33`, borderRadius: 3, color: (t === '음') === m.is_lunar ? A : '#F5E6C8', cursor: 'pointer', fontSize: 11 }}>{t}</button>)}</div></td>
-                <td style={{ padding: 4 }}><input value={m.birth_date || ''} onChange={e => updateFam(i, 'birth_date', e.target.value)} placeholder="1960.01.15" style={{ width: '100%', background: 'rgba(255,255,255,0.06)', border: `1px solid ${A}33`, borderRadius: 4, color: '#F5E6C8', padding: '4px 6px', fontSize: 12, boxSizing: 'border-box' }} />{getGapja(m.birth_date) && <div style={{ fontSize: 9, color: `${A}88`, marginTop: 1 }}>{getGapja(m.birth_date)}</div>}</td>
+                <td style={{ padding: 4 }}><input value={m.birth_date || ''} onChange={e => updateFam(i, 'birth_date', e.target.value)} placeholder="1960.01.15" style={{ width: '100%', background: 'rgba(255,255,255,0.06)', border: `1px solid ${A}33`, borderRadius: 4, color: '#F5E6C8', padding: '4px 6px', fontSize: 12, boxSizing: 'border-box' }} />{getGapja(m.birth_date) && <div style={{ fontSize: 11, color: `${A}88`, marginTop: 1 }}>{getGapja(m.birth_date)}</div>}</td>
                 <td style={{ padding: 4 }}><input value={m.name} onChange={e => updateFam(i, 'name', e.target.value)} placeholder="성명" style={{ width: '100%', background: 'rgba(255,255,255,0.06)', border: `1px solid ${A}33`, borderRadius: 4, color: '#F5E6C8', padding: '4px 6px', fontSize: 12, boxSizing: 'border-box' }} /></td>
                 <td style={{ padding: 4, textAlign: 'center' }}><button onClick={() => setFamilyRows(familyRows.filter((_, j) => j !== i))} style={{ background: 'transparent', border: 'none', color: `${A}44`, cursor: 'pointer', fontSize: 13 }}>✕</button></td>
               </tr>
             ))}
           </tbody>
-        </table>
+        </table></div>
         <button onClick={() => setFamilyRows([...familyRows, { relation_type: '자', is_lunar: true, birth_date: '', name: '' }])} style={{ width: '100%', marginTop: 4, padding: 7, background: 'transparent', border: `1px dashed ${A}33`, borderRadius: 6, color: `${A}66`, cursor: 'pointer', fontSize: 12 }}>+ 가족 추가</button>
 
         {/* 연락처 */}
@@ -348,8 +348,8 @@ function MembersTab({ slug, role, tName }: { slug: string; role: Role; tName: st
        believers.map((b: any) => (
         <div key={b.id} onClick={() => setSelected(selected === b.id ? null : b.id)} style={{ background: selected === b.id ? `${A}0a` : 'rgba(255,255,255,0.03)', border: `1px solid ${selected === b.id ? A : `${A}18`}`, borderRadius: 8, padding: '0.75rem', marginBottom: 6, cursor: 'pointer' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <div><span style={{ fontWeight: 700, fontSize: 14 }}>{b.full_name}</span>{b.buddhist_name && <span style={{ color: A, fontSize: 12, marginLeft: 5 }}>({b.buddhist_name})</span>}{b.chukwon_no && <span style={{ fontSize: 9, color: `${A}66`, marginLeft: 6 }}>{b.chukwon_no}</span>}</div>
-            {b.believerOfferings?.length > 0 && <div style={{ display: 'flex', gap: 2 }}>{b.believerOfferings.filter((o: any) => o.status === 'active').map((o: any) => <span key={o.id} style={{ fontSize: 9, background: `${A}22`, border: `1px solid ${A}33`, borderRadius: 3, padding: '0px 3px', color: A }}>{o.offering_type === 'yeondeung' ? '🏮' : o.offering_type === 'indung' ? '🕯️' : '🪷'}</span>)}</div>}
+            <div><span style={{ fontWeight: 700, fontSize: 14 }}>{b.full_name}</span>{b.buddhist_name && <span style={{ color: A, fontSize: 12, marginLeft: 5 }}>({b.buddhist_name})</span>}{b.chukwon_no && <span style={{ fontSize: 11, color: `${A}66`, marginLeft: 6 }}>{b.chukwon_no}</span>}</div>
+            {b.believerOfferings?.length > 0 && <div style={{ display: 'flex', gap: 2 }}>{b.believerOfferings.filter((o: any) => o.status === 'active').map((o: any) => <span key={o.id} style={{ fontSize: 11, background: `${A}22`, border: `1px solid ${A}33`, borderRadius: 3, padding: '0px 3px', color: A }}>{o.offering_type === 'yeondeung' ? '🏮' : o.offering_type === 'indung' ? '🕯️' : '🪷'}</span>)}</div>}
           </div>
           {b.phone && <div style={{ fontSize: 11, opacity: 0.4, marginTop: 1 }}>{b.phone}</div>}
           {selected === b.id && (

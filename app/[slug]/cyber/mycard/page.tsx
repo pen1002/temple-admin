@@ -38,14 +38,14 @@ export default function MyCardPage() {
         <div style={{ fontSize: 18, fontWeight: 700, color: A, marginBottom: 4 }}>나의 기도동참</div>
         <div style={{ fontSize: 13, opacity: 0.5, marginBottom: 20 }}>{tName}</div>
         <div style={{ fontSize: 12, opacity: 0.4, marginBottom: 12, textAlign: 'center' }}>성함을 입력하시면<br/>기도 접수 현황을 확인하실 수 있습니다.</div>
-        <input value={nameInput} onChange={e => setNameInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSearch()} placeholder="성함을 입력하세요" style={{ width: 240, padding: '10px 14px', background: 'rgba(255,255,255,0.06)', border: `1px solid ${A}44`, borderRadius: 8, color: '#F5E6C8', fontSize: 15, textAlign: 'center', marginBottom: 8 }} />
+        <input value={nameInput} onChange={e => setNameInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSearch()} placeholder="성함을 입력하세요" style={{ width: '100%', maxWidth: 280, padding: '12px 14px', background: 'rgba(255,255,255,0.06)', border: `1px solid ${A}44`, borderRadius: 8, color: '#F5E6C8', fontSize: 16, textAlign: 'center', marginBottom: 8, boxSizing: 'border-box' }} />
         {multiple && (
           <div style={{ marginTop: 8 }}>
             <div style={{ fontSize: 12, color: A, marginBottom: 6 }}>동명이인이 있습니다.<br/>연락처 뒷 4자리를 입력해주세요.</div>
-            <input value={phoneLast4} onChange={e => setPhoneLast4(e.target.value.replace(/\D/g, '').slice(0, 4))} placeholder="뒷 4자리" maxLength={4} style={{ width: 160, padding: '8px 12px', background: 'rgba(255,255,255,0.06)', border: `1px solid ${A}44`, borderRadius: 8, color: '#F5E6C8', fontSize: 16, textAlign: 'center', letterSpacing: 4 }} />
+            <input value={phoneLast4} onChange={e => setPhoneLast4(e.target.value.replace(/\D/g, '').slice(0, 4))} placeholder="뒷 4자리" maxLength={4} style={{ width: '100%', maxWidth: 200, padding: '10px 12px', background: 'rgba(255,255,255,0.06)', border: `1px solid ${A}44`, borderRadius: 8, color: '#F5E6C8', fontSize: 16, textAlign: 'center', letterSpacing: 4 }} />
           </div>
         )}
-        <button onClick={handleSearch} style={{ display: 'block', width: 240, margin: '10px auto 0', padding: 10, background: A, color: '#0a0205', border: 'none', borderRadius: 8, fontWeight: 700, cursor: 'pointer', fontSize: 14 }}>🔍 확인하기</button>
+        <button onClick={handleSearch} style={{ display: 'block', width: '100%', maxWidth: 280, margin: '10px auto 0', padding: 10, background: A, color: '#0a0205', border: 'none', borderRadius: 8, fontWeight: 700, cursor: 'pointer', fontSize: 14 }}>🔍 확인하기</button>
         {error && <div style={{ marginTop: 8, color: '#ef4444', fontSize: 13 }}>{error}</div>}
       </>) : (<>
         <div style={{ width: '100%', maxWidth: 400, background: `${A}08`, border: `1px solid ${A}33`, borderRadius: 12, padding: '1.2rem', textAlign: 'center' }}>
