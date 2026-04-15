@@ -35,7 +35,7 @@ export default function MyCardPage() {
       <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&display=swap" rel="stylesheet" />
       {!data ? (<>
         <div style={{ fontSize: 40, marginBottom: 12 }}>🏅</div>
-        <div style={{ fontSize: 18, fontWeight: 700, color: A, marginBottom: 4 }}>나의 공덕카드</div>
+        <div style={{ fontSize: 18, fontWeight: 700, color: A, marginBottom: 4 }}>나의 기도동참</div>
         <div style={{ fontSize: 13, opacity: 0.5, marginBottom: 20 }}>{tName}</div>
         <div style={{ fontSize: 12, opacity: 0.4, marginBottom: 12, textAlign: 'center' }}>성함을 입력하시면<br/>기도 접수 현황을 확인하실 수 있습니다.</div>
         <input value={nameInput} onChange={e => setNameInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSearch()} placeholder="성함을 입력하세요" style={{ width: 240, padding: '10px 14px', background: 'rgba(255,255,255,0.06)', border: `1px solid ${A}44`, borderRadius: 8, color: '#F5E6C8', fontSize: 15, textAlign: 'center', marginBottom: 8 }} />

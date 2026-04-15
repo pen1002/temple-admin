@@ -110,7 +110,7 @@ export default function JungmusoPage() {
         </div>
       </div>
       <div style={{ display: 'flex', borderBottom: `1px solid ${A}22`, background: 'rgba(0,0,0,0.3)' }}>
-        {([{ key: 'members' as Tab, icon: '👥', label: '신도카드' }, { key: 'offerings' as Tab, icon: '🙏', label: '기도접수' }, { key: 'mycard' as Tab, icon: '🏅', label: '공덕카드' }]).map(t => (
+        {([{ key: 'members' as Tab, icon: '👥', label: '신도카드' }, { key: 'offerings' as Tab, icon: '🙏', label: '기도접수' }, { key: 'mycard' as Tab, icon: '🏅', label: '나의기도동참' }]).map(t => (
           <button key={t.key} onClick={() => setActiveTab(t.key)} style={{ flex: 1, padding: '0.8rem 0.4rem', background: activeTab === t.key ? `${A}11` : 'transparent', border: 'none', borderBottom: activeTab === t.key ? `2px solid ${A}` : '2px solid transparent', color: activeTab === t.key ? A : `${A}55`, cursor: 'pointer', fontSize: 13, fontWeight: activeTab === t.key ? 700 : 400, fontFamily: "'Noto Serif KR',serif" }}>{t.icon} {t.label}</button>
         ))}
       </div>
@@ -130,25 +130,24 @@ export default function JungmusoPage() {
         <div className="shelf-plank" />
         <div className="shelf-row">
           <div className="shelf-slot" onClick={() => openProtectedTab('members')}><div className="slot-icon">📋</div><div className="slot-label">신도카드</div><div className="slot-sub">등록/검색 🔒</div></div>
-          <div className="shelf-slot" onClick={() => window.location.href = `/${slug}/cyber/notice`}><div className="slot-icon">📊</div><div className="slot-label">접수현황</div><div className="slot-sub">기도/공양 현황</div></div>
-          <div className="shelf-slot"><div className="slot-icon">📅</div><div className="slot-label">법회일정</div><div className="slot-sub">음력 기준</div></div>
+          <div className="shelf-slot" onClick={() => openProtectedTab('offerings')}><div className="slot-icon">🙏</div><div className="slot-label">기도접수</div><div className="slot-sub">기도/공양 🔒</div></div>
+          <div className="shelf-slot"><div className="slot-icon">📊</div><div className="slot-label">접수현황</div><div className="slot-sub">기도/공양 현황</div></div>
         </div>
         <div className="shelf-plank" />
         <div className="shelf-row">
           <div className="shelf-slot"><div className="slot-icon">📺</div><div className="slot-label">사찰 홍보</div><div className="slot-sub">유튜브/블로그</div></div>
           <div className="shelf-slot"><div className="slot-icon">🏛️</div><div className="slot-label">사찰 안내</div><div className="slot-sub">소개/오시는길</div></div>
-          <div className="shelf-slot" onClick={() => openProtectedTab('offerings')}><div className="slot-icon">🙏</div><div className="slot-label">기도접수</div><div className="slot-sub">기도/공양 🔒</div></div>
+          <div className="shelf-slot"><div className="slot-icon">📅</div><div className="slot-label">법회일정</div><div className="slot-sub">음력 기준</div></div>
         </div>
         <div className="shelf-plank" />
         <div className="shelf-row">
+          <div className="shelf-slot" onClick={() => window.location.href = `/${slug}/cyber/mycard`}><div className="slot-icon">🏅</div><div className="slot-label">나의기도동참</div><div className="slot-sub">기도 현황 확인</div></div>
           <div className="shelf-slot" onClick={() => window.location.href = `/${slug}/cyber/notice`}><div className="slot-icon">🔔</div><div className="slot-label">공지사항</div><div className="slot-sub">{tName} 소식</div></div>
         </div>
         <div className="shelf-plank" />
       </div>
 
       <div style={{ textAlign: 'center', marginTop: 16, paddingBottom: 40 }}>
-        <a href={`/${slug}/cyber/mycard`} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: `${A}12`, border: `1px solid ${A}33`, color: A, borderRadius: 8, padding: '10px 20px', fontSize: 13, textDecoration: 'none', marginBottom: 10 }}>🪷 나의 공덕카드 확인</a>
-        <br />
         <a href={`/${slug}/dharma-wheel?grid=1`} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: `${A}12`, border: `1px solid ${A}33`, color: A, borderRadius: 8, padding: '10px 24px', fontSize: 13, textDecoration: 'none' }}>☸ 도량으로 돌아가기</a>
       </div>
 
@@ -159,7 +158,7 @@ export default function JungmusoPage() {
         .shelf-row{display:grid;grid-template-columns:repeat(3,1fr);gap:0}
         .shelf-slot{background:#2a1a0a;border-left:3px solid #5C3A1E;border-right:3px solid #5C3A1E;padding:16px 8px;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:130px;cursor:pointer;transition:background 0.3s}.shelf-slot:hover{background:#3a2a1a}.shelf-slot:active{transform:scale(0.97)}
         .slot-icon{font-size:32px;margin-bottom:6px}.slot-label{font-size:12px;font-weight:700;color:#F5D060;letter-spacing:1px;text-align:center}.slot-sub{font-size:9px;color:rgba(245,230,184,0.35);margin-top:2px;text-align:center}
-        @media(max-width:500px){.shelf-row{grid-template-columns:repeat(2,1fr)}.shelf-row:last-of-type{grid-template-columns:1fr}.shelf-slot{min-height:100px;padding:12px 6px}.jm-title{font-size:20px}}
+        @media(max-width:500px){.shelf-row{grid-template-columns:repeat(2,1fr)}.shelf-slot{min-height:100px;padding:12px 6px}.jm-title{font-size:20px}}
       `}</style>
     </div>
   )
@@ -423,7 +422,7 @@ function MycardTab({ slug, config, tName }: { slug: string; config: any; tName: 
     <div style={{ padding: '1.5rem 1rem', maxWidth: 400, margin: '0 auto', textAlign: 'center' }}>
       {!data ? (<>
         <div style={{ fontSize: 32, marginBottom: 8 }}>🏅</div>
-        <div style={{ fontSize: 15, fontWeight: 700, color: A, marginBottom: 4 }}>나의 공덕카드</div>
+        <div style={{ fontSize: 15, fontWeight: 700, color: A, marginBottom: 4 }}>나의 기도동참</div>
         <div style={{ fontSize: 12, opacity: 0.5, marginBottom: 16 }}>성함을 입력하시면<br/>기도 접수 현황을 확인하실 수 있습니다.</div>
         <input value={nameInput} onChange={e => setNameInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSearch()} placeholder="성함을 입력하세요" style={{ width: 240, padding: '10px 14px', background: 'rgba(255,255,255,0.06)', border: `1px solid ${A}44`, borderRadius: 8, color: '#F5E6C8', fontSize: 15, textAlign: 'center', marginBottom: 8 }} />
         {multiple && (
