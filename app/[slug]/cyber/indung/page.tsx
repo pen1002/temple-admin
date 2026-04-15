@@ -45,7 +45,7 @@ export default function IndungPage() {
       <div style={{ textAlign: 'center', marginBottom: 20 }}>
         <div style={{ width: 120, height: 140, margin: '0 auto 8px', position: 'relative', animation: 'id-pulse 2s ease-in-out infinite alternate' }}>
           {/* 불꽃 */}
-          <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: 16, height: 28, background: 'radial-gradient(ellipse at 50% 80%, rgba(255,220,80,1), rgba(255,160,30,0.9) 60%, transparent)', borderRadius: '50% 50% 40% 40%', boxShadow: '0 0 20px rgba(255,200,50,0.9), 0 0 40px rgba(255,180,40,0.4)', animation: 'id-flame 0.8s ease-in-out infinite alternate', zIndex: 2 }} />
+          <div style={{ position: 'absolute', top: 6, left: '46%', transform: 'translateX(-50%)', width: 16, height: 28, background: 'radial-gradient(ellipse at 50% 80%, rgba(255,220,80,1), rgba(255,160,30,0.9) 60%, transparent)', borderRadius: '50% 50% 40% 40%', boxShadow: '0 0 20px rgba(255,200,50,0.9), 0 0 40px rgba(255,180,40,0.4)', animation: 'id-flame 0.8s ease-in-out infinite alternate', zIndex: 2 }} />
           {/* 인등 */}
           <svg viewBox="0 0 44 50" style={{ width: '100%', height: '100%', marginTop: 20, filter: 'drop-shadow(0 0 16px rgba(255,200,50,0.6))' }}>
             <rect x="19" y="2" width="6" height="6" rx="1.5" fill="#d4c8a0" />
