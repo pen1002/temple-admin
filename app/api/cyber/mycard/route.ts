@@ -20,15 +20,16 @@ export async function GET(req: NextRequest) {
     const temple = await prisma.temple.findUnique({ where: { code: slug }, select: { id: true } })
     if (!temple) return NextResponse.json({ error: '사찰 없음' }, { status: 404 })
 
+    // 1차: believers에서 검색
     let where: Record<string, unknown> = { temple_id: temple.id, status: '활동' }
     if (code) {
       where.chukwon_no = code
     } else if (name) {
-      where.full_name = name
+      where.OR = [{ full_name: { contains: name } }, { buddhist_name: { contains: name } }]
       if (phoneLast4) where.phone = { endsWith: phoneLast4 }
     }
 
-    const believers = await prisma.believer.findMany({
+    let believers = await prisma.believer.findMany({
       where,
       select: {
         id: true, full_name: true, buddhist_name: true, chukwon_no: true, phone: true,
@@ -36,6 +37,28 @@ export async function GET(req: NextRequest) {
         believerOfferings: { where: { status: 'active' }, select: { offering_type: true, participant_name: true, status: true } },
       },
     })
+
+    // 2차: believers에서 못 찾으면 believerOfferings.participant_name에서 검색
+    if (believers.length === 0 && name) {
+      const offerings = await prisma.believerOffering.findMany({
+        where: { temple_id: temple.id, participant_name: { contains: name }, status: 'active' },
+        select: { offering_type: true, participant_name: true, status: true },
+      })
+      if (offerings.length > 0) {
+        // 기도접수만 있고 신도카드 미등록인 경우
+        return NextResponse.json({
+          full_name: name,
+          buddhist_name: null,
+          chukwon_no: null,
+          family_count: 1,
+          offerings: offerings.map(o => ({
+            type: o.offering_type,
+            participant_name: o.participant_name,
+            status: o.status,
+          })),
+        })
+      }
+    }
 
     if (believers.length === 0) return NextResponse.json({ error: '등록된 신도를 찾을 수 없습니다.' }, { status: 404 })
 
