@@ -200,10 +200,16 @@ model Believer {
   family_relation String?                                   // 세주와의 관계
   relation_type   String    @default("self")                // self/father/mother/child/grandchild/relative
 
+  // 영가 관리 (사후 세계 통합)
+  is_deceased     Boolean   @default(false)                 // 영가 여부
+  death_date      DateTime? @db.Date                        // 기일
+  ancestor_type   String?                                   // 위패 종류 (일반/천도/49재/기타)
+
   // 신도 관리
   status          String    @default("활동")                // 활동/휴면/망자/탈퇴
   initiation_date DateTime? @db.Date                        // 수계/입교일
   memo            String?   @db.Text                        // 비고
+  prayer_tags     Json?                                     // 태그 ["초하루","백일기도"] (검색용)
   sms_consent     Boolean   @default(false)                 // SMS 수신동의
   offering_total  Int       @default(0)                     // 누적 공양 금액
 
