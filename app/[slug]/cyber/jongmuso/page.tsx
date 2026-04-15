@@ -129,8 +129,8 @@ export default function JungmusoPage() {
       <div className="shelf">
         <div className="shelf-plank" />
         <div className="shelf-row">
-          <div className="shelf-slot" onClick={() => openProtectedTab('members')}><div className="slot-icon">📋</div><div className="slot-label">신도카드</div><div className="slot-sub">등록/검색 🔒</div></div>
-          <div className="shelf-slot" onClick={() => openProtectedTab('offerings')}><div className="slot-icon">🙏</div><div className="slot-label">기도접수</div><div className="slot-sub">기도/공양 🔒</div></div>
+          <div className="shelf-slot" onClick={() => openProtectedTab('members')}><div className="slot-icon">📋</div><div className="slot-label">신도카드</div><div className="slot-sub">등록/검색 🔐</div></div>
+          <div className="shelf-slot" onClick={() => openProtectedTab('offerings')}><div className="slot-icon">🙏</div><div className="slot-label">기도접수</div><div className="slot-sub">기도/공양 🔐</div></div>
           <div className="shelf-slot"><div className="slot-icon">📊</div><div className="slot-label">접수현황</div><div className="slot-sub">기도/공양 현황</div></div>
         </div>
         <div className="shelf-plank" />
