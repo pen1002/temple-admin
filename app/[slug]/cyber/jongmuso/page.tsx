@@ -22,12 +22,19 @@ export default function JungmusoPage() {
   const [pinLocked, setPinLocked] = useState(false)
   const [showChangePin, setShowChangePin] = useState(false)
   const [newPin, setNewPin] = useState('')
-  const [activeTab, setActiveTab] = useState<Tab>((searchParams.get('tab') as Tab) || 'members')
+  const [activeTab, setActiveTab] = useState<Tab | null>((searchParams.get('tab') as Tab) || null)
+  const [pendingTab, setPendingTab] = useState<Tab | null>(null)
 
   useEffect(() => {
     const saved = sessionStorage.getItem(`${slug}_members_role`)
     if (saved === 'super' || saved === 'admin') setRole(saved)
   }, [slug])
+
+  // PIN 필요한 탭 클릭 시
+  const openProtectedTab = (tab: Tab) => {
+    if (role) { setActiveTab(tab); return }
+    setPendingTab(tab) // PIN 인증 후 이동할 탭 기억
+  }
 
   const handlePin = async (input: string) => {
     if (pinLocked) return
@@ -35,6 +42,7 @@ export default function JungmusoPage() {
     if (res.ok) {
       const { role: r, pin_changed } = await res.json()
       setRole(r); sessionStorage.setItem(`${slug}_members_role`, r); setPinError(0)
+      if (pendingTab) { setActiveTab(pendingTab); setPendingTab(null) }
       if (!pin_changed && r === 'admin') setShowChangePin(true)
     } else {
       const next = pinError + 1; setPinError(next)
@@ -49,10 +57,10 @@ export default function JungmusoPage() {
     setShowChangePin(false); setNewPin('')
   }
 
-  const logout = () => { setRole(null); sessionStorage.removeItem(`${slug}_members_role`) }
+  const logout = () => { setRole(null); setActiveTab(null); sessionStorage.removeItem(`${slug}_members_role`) }
 
-  // PIN 화면
-  if (!role) {
+  // PIN 화면 (신도카드/기도접수 진입 시에만)
+  if (pendingTab && !role) {
     const append = (d: string) => { if (pin.length < 6) setPin(p => p + d) }
     const del = () => setPin(p => p.slice(0, -1))
     return (
@@ -71,10 +79,7 @@ export default function JungmusoPage() {
         </div>
         {pinError > 0 && !pinLocked && <div style={{ marginTop: 12, color: '#ef4444', fontSize: 13 }}>PIN 불일치 ({pinError}/3)</div>}
         {pinLocked && <div style={{ marginTop: 12, color: '#ef4444', fontSize: 13 }}>30초 후 재시도</div>}
-        <div style={{ marginTop: 24, borderTop: `1px solid ${A}22`, paddingTop: 16, textAlign: 'center' }}>
-          <div style={{ fontSize: 12, opacity: 0.4, marginBottom: 8 }}>신도이신가요?</div>
-          <a href={`/${slug}/cyber/mycard`} style={{ color: A, fontSize: 13, textDecoration: 'none' }}>🪷 나의 공덕카드 확인 →</a>
-        </div>
+        <button onClick={() => setPendingTab(null)} style={{ marginTop: 20, padding: '8px 24px', background: 'transparent', border: `1px solid ${A}44`, borderRadius: 6, color: `${A}77`, cursor: 'pointer', fontSize: 12 }}>← 종무소로 돌아가기</button>
       </div>
     )
   }
@@ -90,35 +95,72 @@ export default function JungmusoPage() {
     </div>
   )
 
-  // 종무소 대시보드
-  return (
+  // 신도카드/기도접수 탭 (PIN 인증 후)
+  if (activeTab && role) return (
     <div style={{ minHeight: '100vh', background: 'linear-gradient(180deg,#0a0205,#120308)', color: '#F5E6C8', fontFamily: "'Noto Serif KR',serif" }}>
       <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&display=swap" rel="stylesheet" />
-      {/* 헤더 */}
       <div style={{ background: 'linear-gradient(90deg,#1a0408,#2d0a10)', borderBottom: `2px solid ${A}`, padding: '0.9rem 1.2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
           <div style={{ fontSize: 11, color: A, letterSpacing: '0.12em' }}>{tName} 종무소</div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
-            <span style={{ fontSize: 10, background: role === 'super' ? '#DC2626' : '#D97706', color: '#fff', borderRadius: 4, padding: '1px 6px', fontWeight: 700 }}>{role === 'super' ? '슈퍼' : '관리자'}</span>
-          </div>
+          <span style={{ fontSize: 10, background: role === 'super' ? '#DC2626' : '#D97706', color: '#fff', borderRadius: 4, padding: '1px 6px', fontWeight: 700 }}>{role === 'super' ? '슈퍼' : '관리자'}</span>
         </div>
         <div style={{ display: 'flex', gap: 6 }}>
+          <button onClick={() => setActiveTab(null)} style={{ background: 'transparent', border: `1px solid ${A}44`, borderRadius: 6, color: `${A}88`, padding: '5px 10px', fontSize: 11, cursor: 'pointer' }}>← 종무소</button>
           <button onClick={logout} style={{ background: 'transparent', border: `1px solid ${A}44`, borderRadius: 6, color: `${A}88`, padding: '5px 10px', fontSize: 11, cursor: 'pointer' }}>로그아웃</button>
-          <a href={`/${slug}/dharma-wheel?grid=1`} style={{ display: 'flex', alignItems: 'center', background: `${A}22`, border: `1px solid ${A}44`, color: A, borderRadius: 6, padding: '5px 8px', textDecoration: 'none', fontSize: 12 }}>☸</a>
         </div>
       </div>
-
-      {/* 탭 */}
       <div style={{ display: 'flex', borderBottom: `1px solid ${A}22`, background: 'rgba(0,0,0,0.3)' }}>
         {([{ key: 'members' as Tab, icon: '👥', label: '신도카드' }, { key: 'offerings' as Tab, icon: '🙏', label: '기도접수' }, { key: 'mycard' as Tab, icon: '🏅', label: '공덕카드' }]).map(t => (
           <button key={t.key} onClick={() => setActiveTab(t.key)} style={{ flex: 1, padding: '0.8rem 0.4rem', background: activeTab === t.key ? `${A}11` : 'transparent', border: 'none', borderBottom: activeTab === t.key ? `2px solid ${A}` : '2px solid transparent', color: activeTab === t.key ? A : `${A}55`, cursor: 'pointer', fontSize: 13, fontWeight: activeTab === t.key ? 700 : 400, fontFamily: "'Noto Serif KR',serif" }}>{t.icon} {t.label}</button>
         ))}
       </div>
-
-      {/* 탭 컨텐츠 */}
       {activeTab === 'members' && <MembersTab slug={slug} role={role} tName={tName} />}
       {activeTab === 'offerings' && <OfferingsTab slug={slug} config={config} tName={tName} />}
       {activeTab === 'mycard' && <MycardTab slug={slug} config={config} tName={tName} />}
+    </div>
+  )
+
+  // 종무소 메인 — 7카드 책장
+  return (
+    <div className="jm-root">
+      <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&display=swap" rel="stylesheet" />
+      <div className="jm-header"><div className="jm-title">宗 務 所</div><div className="jm-sub">{temple?.denomination || '대한불교조계종'} {tName} 디지털 종무소</div></div>
+
+      <div className="shelf">
+        <div className="shelf-plank" />
+        <div className="shelf-row">
+          <div className="shelf-slot" onClick={() => openProtectedTab('members')}><div className="slot-icon">📋</div><div className="slot-label">신도카드</div><div className="slot-sub">등록/검색 🔒</div></div>
+          <div className="shelf-slot" onClick={() => window.location.href = `/${slug}/cyber/notice`}><div className="slot-icon">📊</div><div className="slot-label">접수현황</div><div className="slot-sub">기도/공양 현황</div></div>
+          <div className="shelf-slot"><div className="slot-icon">📅</div><div className="slot-label">법회일정</div><div className="slot-sub">음력 기준</div></div>
+        </div>
+        <div className="shelf-plank" />
+        <div className="shelf-row">
+          <div className="shelf-slot"><div className="slot-icon">📺</div><div className="slot-label">사찰 홍보</div><div className="slot-sub">유튜브/블로그</div></div>
+          <div className="shelf-slot"><div className="slot-icon">🏛️</div><div className="slot-label">사찰 안내</div><div className="slot-sub">소개/오시는길</div></div>
+          <div className="shelf-slot" onClick={() => openProtectedTab('offerings')}><div className="slot-icon">🙏</div><div className="slot-label">기도접수</div><div className="slot-sub">기도/공양 🔒</div></div>
+        </div>
+        <div className="shelf-plank" />
+        <div className="shelf-row">
+          <div className="shelf-slot" onClick={() => window.location.href = `/${slug}/cyber/notice`}><div className="slot-icon">🔔</div><div className="slot-label">공지사항</div><div className="slot-sub">{tName} 소식</div></div>
+        </div>
+        <div className="shelf-plank" />
+      </div>
+
+      <div style={{ textAlign: 'center', marginTop: 16, paddingBottom: 40 }}>
+        <a href={`/${slug}/cyber/mycard`} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: `${A}12`, border: `1px solid ${A}33`, color: A, borderRadius: 8, padding: '10px 20px', fontSize: 13, textDecoration: 'none', marginBottom: 10 }}>🪷 나의 공덕카드 확인</a>
+        <br />
+        <a href={`/${slug}/dharma-wheel?grid=1`} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: `${A}12`, border: `1px solid ${A}33`, color: A, borderRadius: 8, padding: '10px 24px', fontSize: 13, textDecoration: 'none' }}>☸ 도량으로 돌아가기</a>
+      </div>
+
+      <style>{`
+        .jm-root{width:100%;min-height:100vh;display:flex;flex-direction:column;align-items:center;background:#1e140a;font-family:'Noto Serif KR',serif;color:#F5E6B8;padding:20px 12px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+        .jm-header{text-align:center;margin-bottom:16px}.jm-title{font-size:clamp(20px,5vw,24px);font-weight:900;color:#F5D060;letter-spacing:6px}.jm-sub{font-size:11px;color:rgba(245,230,184,0.4);letter-spacing:2px;margin-top:2px}
+        .shelf{width:100%;max-width:520px}.shelf-plank{height:10px;background:linear-gradient(180deg,#8B6914,#6B4400);border-radius:2px;margin:0 -4px}
+        .shelf-row{display:grid;grid-template-columns:repeat(3,1fr);gap:0}
+        .shelf-slot{background:#2a1a0a;border-left:3px solid #5C3A1E;border-right:3px solid #5C3A1E;padding:16px 8px;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:130px;cursor:pointer;transition:background 0.3s}.shelf-slot:hover{background:#3a2a1a}.shelf-slot:active{transform:scale(0.97)}
+        .slot-icon{font-size:32px;margin-bottom:6px}.slot-label{font-size:12px;font-weight:700;color:#F5D060;letter-spacing:1px;text-align:center}.slot-sub{font-size:9px;color:rgba(245,230,184,0.35);margin-top:2px;text-align:center}
+        @media(max-width:500px){.shelf-row{grid-template-columns:repeat(2,1fr)}.shelf-row:last-of-type{grid-template-columns:1fr}.shelf-slot{min-height:100px;padding:12px 6px}.jm-title{font-size:20px}}
+      `}</style>
     </div>
   )
 }
