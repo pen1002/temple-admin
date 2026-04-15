@@ -151,6 +151,8 @@ model CyberOffering {
   wish           String?  @db.Text
   amount         Int      @default(0)
   bank_confirmed Boolean  @default(false)
+  vow_text       String?  @db.Text
+  believer_offering_id String?
   created_at     DateTime @default(now())
 
   @@index([temple_slug, type, created_at])
@@ -216,10 +218,101 @@ model Believer {
   created_at      DateTime  @default(now())
   updated_at      DateTime  @updatedAt
 
+  // 확장 필드
+  gender_type     String?   @default("gonmyeong")           // 건명/곤명
+  birth_year      String?
+  birth_month     String?
+  birth_day       String?
+  address1        String?
+  phone_land      String?                                   // 집전화
+  chukwon_no      String?                                   // 축원번호
+
+  // 하위 테이블
+  familyMembers   BelieverFamily[]
+  haenghyo        BelieverHaenghyo[]
+  youngga         BelieverYoungga[]
+  believerOfferings BelieverOffering[]
+
   @@index([full_name])
   @@index([phone])
   @@index([temple_id])
   @@index([family_id])
   @@index([families_id])
   @@map("believers")
+}
+
+// 가족 구성원 (무제한)
+model BelieverFamily {
+  id            String    @id @default(uuid())
+  believer_id   String
+  believer      Believer  @relation(fields: [believer_id], references: [id], onDelete: Cascade)
+  relation_type String
+  gender_type   String    @default("gonmyeong")
+  name          String
+  birth_year    String?
+  birth_month   String?
+  birth_day     String?
+  is_lunar      Boolean   @default(false)
+  birth_event   String?
+  sort_order    Int       @default(0)
+  created_at    DateTime  @default(now())
+
+  @@index([believer_id])
+  @@map("believers_family")
+}
+
+// 행효(行孝) — 최대 3개
+model BelieverHaenghyo {
+  id            String    @id @default(uuid())
+  believer_id   String
+  believer      Believer  @relation(fields: [believer_id], references: [id], onDelete: Cascade)
+  name          String
+  birth_year    String?
+  birth_month   String?
+  birth_day     String?
+  is_lunar      Boolean   @default(false)
+  relation_type String    @default("자")
+  sort_order    Int       @default(0)
+  created_at    DateTime  @default(now())
+
+  @@index([believer_id])
+  @@map("believers_haenghyo")
+}
+
+// 망 영가(亡) — 최대 10개
+model BelieverYoungga {
+  id            String    @id @default(uuid())
+  believer_id   String
+  believer      Believer  @relation(fields: [believer_id], references: [id], onDelete: Cascade)
+  name          String
+  birth_year    String?
+  death_year    String?
+  relation_type String?
+  memo          String?
+  sort_order    Int       @default(0)
+  created_at    DateTime  @default(now())
+
+  @@index([believer_id])
+  @@map("believers_youngga")
+}
+
+// 기도접수 연동
+model BelieverOffering {
+  id                String    @id @default(uuid())
+  believer_id       String
+  believer          Believer  @relation(fields: [believer_id], references: [id], onDelete: Cascade)
+  temple_id         String
+  offering_type     String                                  // lantern/wonbul/indung
+  participant_name  String
+  vow_text          String?
+  price             Int?
+  period            String?
+  cyber_offering_id String?
+  status            String    @default("active")
+  created_at        DateTime  @default(now())
+  expires_at        DateTime?
+
+  @@index([offering_type, temple_id, status])
+  @@index([believer_id])
+  @@map("believers_offerings")
 }

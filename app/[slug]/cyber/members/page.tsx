@@ -2,287 +2,296 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
 import { useCyberTemple } from '@/lib/useCyberTemple'
+import { TEMPLE_OFFERINGS } from '@/lib/constants/templeOfferings'
 
-const ACCENT = '#C9A84C'
-const RELATION_MAP: Record<string, string> = {
-  self: '본인(세주)', father: '부(父)', mother: '모(母)',
-  child: '자녀', grandchild: '손자녀', relative: '친인척',
-}
-const RELATION_ICONS: Record<string, string> = {
-  self: '👤', father: '👨', mother: '👩', child: '👶', grandchild: '👧', relative: '🧑',
-}
-const RELATIONS = Object.entries(RELATION_MAP)
-const ANCESTOR_TYPES = ['일반위패', '천도위패', '49재위패', '기타']
-
-interface Family { id: string; family_code: string; head_name: string; address?: string; sms_consent: boolean }
-interface FamilyMember { id: string; full_name: string; relation_type: string; gender?: string; is_deceased: boolean; status: string }
-interface Believer {
-  id: string; full_name: string; buddhist_name?: string; gender?: string
-  birth_date?: string; is_lunar?: boolean; phone?: string; address?: string
-  relation_type: string; sms_consent: boolean; initiation_date?: string
-  memo?: string; status: string; offering_total: number; family?: Family
-  is_deceased: boolean; death_date?: string; ancestor_type?: string
-  families_id?: string
-}
+const A = '#C9A84C'
+const GENDERS = [['gonmyeong', '건명(男)'], ['gonmyeong_f', '곤명(女)']] as const
+const RELS = ['부', '모', '자', '녀', '손자', '손녀', '배우자', '형제', '기타']
 
 export default function MembersPage() {
   const { slug } = useParams<{ slug: string }>()
   const temple = useCyberTemple(slug)
   const tName = temple?.name || slug
+  const config = TEMPLE_OFFERINGS[slug]
 
-  const [believers, setBelievers] = useState<Believer[]>([])
+  const [authed, setAuthed] = useState(false)
+  const [pin, setPin] = useState('')
+  const [view, setView] = useState<'list' | 'form'>('list')
+  const [believers, setBelievers] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
-  const [view, setView] = useState<'list' | 'register'>('list')
   const [selected, setSelected] = useState<string | null>(null)
-  const [familyTree, setFamilyTree] = useState<FamilyMember[]>([])
-  const [stickyPhone, setStickyPhone] = useState<string | null>(null)
 
-  const fetchBelievers = useCallback(async () => {
+  // PIN 인증
+  useEffect(() => {
+    if (typeof window !== 'undefined' && sessionStorage.getItem(`${slug}_members_auth`) === '1') setAuthed(true)
+  }, [slug])
+  const tPin = temple?.pin || '1080'
+  const doAuth = () => { if (pin === tPin) { setAuthed(true); sessionStorage.setItem(`${slug}_members_auth`, '1') } else alert('비밀번호가 일치하지 않습니다.') }
+
+  const fetchList = useCallback(async () => {
     setLoading(true)
-    const res = await fetch(`/api/cyber/members?temple_slug=${slug}&q=${encodeURIComponent(search)}`)
-    const data = await res.json()
-    setBelievers(Array.isArray(data) ? data : [])
+    const r = await fetch(`/api/cyber/members?temple_slug=${slug}&q=${encodeURIComponent(search)}`)
+    const d = await r.json()
+    setBelievers(Array.isArray(d) ? d : [])
     setLoading(false)
   }, [slug, search])
+  useEffect(() => { if (authed) fetchList() }, [authed, fetchList])
 
-  useEffect(() => { fetchBelievers() }, [fetchBelievers])
-
-  // 카드 선택 시 가족 트리 로드
-  const selectCard = async (b: Believer) => {
-    if (selected === b.id) { setSelected(null); setFamilyTree([]); setStickyPhone(null); return }
-    setSelected(b.id)
-    setStickyPhone(b.phone || null)
-    if (b.families_id) {
-      const res = await fetch(`/api/cyber/members?temple_slug=${slug}&family_members=${b.families_id}`)
-      const data = await res.json()
-      setFamilyTree(Array.isArray(data) ? data : [])
-    } else {
-      setFamilyTree([])
-    }
-  }
-
-  const stats = {
-    total: believers.length,
-    active: believers.filter(b => b.status === '활동').length,
-    deceased: believers.filter(b => b.is_deceased).length,
-  }
+  if (!authed) return (
+    <div style={{ minHeight: '100vh', background: '#0a0205', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', fontFamily: "'Noto Serif KR',serif", color: '#F5E6C8' }}>
+      <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&display=swap" rel="stylesheet" />
+      <div style={{ fontSize: 48, marginBottom: 16 }}>🔒</div>
+      <div style={{ fontSize: 18, fontWeight: 700, color: A, marginBottom: 8 }}>{tName} 신도대장</div>
+      <div style={{ fontSize: 12, opacity: 0.5, marginBottom: 20 }}>스님 전용 · 비밀번호를 입력하세요</div>
+      <input value={pin} onChange={e => setPin(e.target.value)} type="password" maxLength={8} placeholder="비밀번호" onKeyDown={e => e.key === 'Enter' && doAuth()} style={{ width: 200, padding: '12px 16px', background: 'rgba(255,255,255,0.06)', border: `1px solid ${A}55`, borderRadius: 8, color: '#F5E6C8', fontSize: 18, textAlign: 'center', letterSpacing: 8 }} />
+      <button onClick={doAuth} style={{ marginTop: 12, padding: '10px 40px', background: A, color: '#0a0205', border: 'none', borderRadius: 8, fontWeight: 700, cursor: 'pointer', fontSize: 14 }}>인증</button>
+    </div>
+  )
 
   return (
-    <div style={{ minHeight: '100vh', background: 'linear-gradient(180deg,#0a0205 0%,#120308 100%)', color: '#F5E6C8', fontFamily: "'Noto Serif KR',serif", paddingBottom: stickyPhone ? '5rem' : '2rem' }}>
+    <div style={{ minHeight: '100vh', background: 'linear-gradient(180deg,#0a0205,#120308)', color: '#F5E6C8', fontFamily: "'Noto Serif KR',serif", paddingBottom: '2rem' }}>
       <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&display=swap" rel="stylesheet" />
 
-      {/* 헤더 */}
-      <div style={{ background: 'linear-gradient(90deg,#1a0408,#2d0a10)', borderBottom: `2px solid ${ACCENT}`, padding: '1.2rem 1.2rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      {/* 단청 헤더 */}
+      <div style={{ background: 'linear-gradient(90deg,#1a0408,#2d0a10)', borderBottom: `2px solid ${A}`, padding: '1rem 1.2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <div style={{ fontSize: '0.72rem', color: ACCENT, letterSpacing: '0.15em' }}>{tName} 온라인도량</div>
-          <h1 style={{ fontSize: '1.2rem', fontWeight: 700, margin: 0 }}>신도대장</h1>
+          <div style={{ fontSize: '0.7rem', color: A, letterSpacing: '0.15em' }}>卍 {tName} 축원문 卍</div>
+          <h1 style={{ fontSize: '1.15rem', fontWeight: 700, margin: 0 }}>신도대장</h1>
         </div>
-        <div style={{ display: 'flex', gap: '0.4rem' }}>
-          <button onClick={() => setView(view === 'list' ? 'register' : 'list')} style={{ background: view === 'register' ? 'rgba(201,168,76,0.15)' : ACCENT, color: view === 'register' ? ACCENT : '#0a0205', border: `1px solid ${ACCENT}`, borderRadius: 8, padding: '0.45rem 0.8rem', fontWeight: 700, cursor: 'pointer', fontSize: '0.85rem' }}>
-            {view === 'register' ? '← 목록' : '+ 등록'}
-          </button>
-          <a href={`/${slug}/dharma-wheel?grid=1`} style={{ display: 'flex', alignItems: 'center', background: 'rgba(201,168,76,0.12)', border: '1px solid rgba(201,168,76,0.3)', color: ACCENT, borderRadius: 8, padding: '0.45rem 0.7rem', textDecoration: 'none', fontSize: '0.85rem' }}>☸</a>
+        <div style={{ display: 'flex', gap: 6 }}>
+          <button onClick={() => setView(view === 'form' ? 'list' : 'form')} style={{ background: view === 'form' ? `${A}22` : A, color: view === 'form' ? A : '#0a0205', border: `1px solid ${A}`, borderRadius: 8, padding: '6px 12px', fontWeight: 700, cursor: 'pointer', fontSize: 13 }}>{view === 'form' ? '← 목록' : '+ 등록'}</button>
+          <a href={`/${slug}/dharma-wheel?grid=1`} style={{ display: 'flex', alignItems: 'center', background: `${A}22`, border: `1px solid ${A}44`, color: A, borderRadius: 8, padding: '6px 10px', textDecoration: 'none' }}>☸</a>
         </div>
       </div>
 
       {view === 'list' ? (
-        <div style={{ padding: '1rem', maxWidth: 600, margin: '0 auto' }}>
-          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="이름 · 법명 · 연락처 검색..." style={{ width: '100%', padding: '0.7rem 1rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(201,168,76,0.3)', borderRadius: 8, color: '#F5E6C8', fontSize: '0.9rem', marginBottom: '0.8rem', boxSizing: 'border-box' }} />
-
-          <div style={{ display: 'flex', gap: 10, marginBottom: '1rem', fontSize: '0.78rem' }}>
-            <span style={{ color: ACCENT }}>전체 {stats.total}</span>
-            <span style={{ color: '#22c55e' }}>활동 {stats.active}</span>
-            {stats.deceased > 0 && <span style={{ color: '#9b7acc' }}>영가 {stats.deceased}</span>}
-          </div>
-
-          {loading ? (
-            <div style={{ textAlign: 'center', padding: '3rem', color: ACCENT }}>불러오는 중...</div>
-          ) : believers.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '3rem', opacity: 0.5 }}>등록된 신도가 없습니다</div>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-              {believers.map(b => (
-                <div key={b.id} onClick={() => selectCard(b)} style={{ background: selected === b.id ? 'linear-gradient(135deg,#1a0408,#2d1008)' : 'rgba(255,255,255,0.04)', border: `1px solid ${selected === b.id ? ACCENT : 'rgba(201,168,76,0.15)'}`, borderRadius: 12, padding: '0.9rem', cursor: 'pointer', transition: 'all 0.2s' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                    <div>
-                      <span style={{ fontWeight: 700, fontSize: '1rem' }}>
-                        {b.is_deceased && '🪷 '}{b.full_name}
-                      </span>
-                      {b.buddhist_name && <span style={{ color: ACCENT, fontSize: '0.82rem', marginLeft: '0.4rem' }}>({b.buddhist_name})</span>}
-                      <div style={{ fontSize: '0.75rem', opacity: 0.6, marginTop: 2 }}>
-                        {RELATION_MAP[b.relation_type] || b.relation_type}
-                        {b.gender && ` · ${b.gender}`}
-                        {b.is_deceased && b.ancestor_type && ` · ${b.ancestor_type}`}
-                        {b.status !== '활동' && !b.is_deceased && <span style={{ color: '#ef4444', marginLeft: 4 }}>[{b.status}]</span>}
-                      </div>
-                    </div>
-                    {b.family?.family_code && <span style={{ fontSize: '0.65rem', color: ACCENT, border: `1px solid ${ACCENT}`, borderRadius: 4, padding: '1px 5px' }}>{b.family.family_code}</span>}
-                  </div>
-
-                  {/* 카드 펼침 */}
-                  {selected === b.id && (
-                    <div style={{ marginTop: '0.8rem', borderTop: '1px solid rgba(201,168,76,0.15)', paddingTop: '0.8rem' }}>
-                      {/* 가족 트리 시각화 */}
-                      {familyTree.length > 1 && (
-                        <div style={{ marginBottom: '0.8rem', padding: '0.6rem', background: 'rgba(201,168,76,0.04)', borderRadius: 8, border: '1px solid rgba(201,168,76,0.1)' }}>
-                          <div style={{ fontSize: '0.75rem', color: ACCENT, marginBottom: '0.4rem', fontWeight: 700 }}>가족 구성원</div>
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                            {familyTree.map((m, i) => (
-                              <div key={m.id} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.82rem' }}>
-                                {i > 0 && <span style={{ color: 'rgba(201,168,76,0.3)', marginLeft: 4 }}>└</span>}
-                                <span>{RELATION_ICONS[m.relation_type] || '🧑'}</span>
-                                <span style={{ color: m.id === b.id ? ACCENT : '#F5E6C8', fontWeight: m.id === b.id ? 700 : 400 }}>{m.full_name}</span>
-                                <span style={{ fontSize: '0.7rem', opacity: 0.5 }}>({RELATION_MAP[m.relation_type] || m.relation_type})</span>
-                                {m.is_deceased && <span style={{ fontSize: '0.65rem', color: '#9b7acc' }}>영가</span>}
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-
-                      {b.birth_date && <InfoRow label="생년월일" value={`${new Date(b.birth_date).toLocaleDateString('ko-KR')}${b.is_lunar ? ' (음력)' : ''}`} />}
-                      {b.phone && <InfoRow label="연락처" value={b.phone} />}
-                      {b.address && <InfoRow label="주소" value={b.address} />}
-                      {b.initiation_date && <InfoRow label="수계일" value={new Date(b.initiation_date).toLocaleDateString('ko-KR')} />}
-                      {b.is_deceased && b.death_date && <InfoRow label="기일" value={new Date(b.death_date).toLocaleDateString('ko-KR')} />}
-                      {b.offering_total > 0 && <InfoRow label="누적공양" value={`${b.offering_total.toLocaleString()}원`} />}
-                      {b.memo && <div style={{ marginTop: '0.5rem', fontSize: '0.8rem', opacity: 0.7, background: 'rgba(255,255,255,0.04)', borderRadius: 6, padding: '0.4rem 0.6rem', whiteSpace: 'pre-wrap' }}>{b.memo}</div>}
-
-                      <div style={{ display: 'flex', gap: '0.4rem', marginTop: '0.7rem' }}>
-                        <button onClick={async (e) => { e.stopPropagation(); if (!confirm(`${b.full_name} 신도를 탈퇴 처리하시겠습니까?`)) return; await fetch('/api/cyber/members', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: b.id, temple_slug: slug }) }); fetchBelievers() }} style={{ flex: 1, padding: '0.4rem', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 6, color: '#ef4444', fontSize: '0.78rem', fontWeight: 700, cursor: 'pointer' }}>탈퇴</button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+        <ListView believers={believers} loading={loading} search={search} setSearch={setSearch} selected={selected} setSelected={setSelected} slug={slug} fetchList={fetchList} />
       ) : (
-        <RegisterSection slug={slug} tName={tName} onSuccess={() => { setView('list'); fetchBelievers() }} />
-      )}
-
-      {/* Sticky 원터치 사자후 바 */}
-      {stickyPhone && selected && view === 'list' && (
-        <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: 'linear-gradient(90deg,#1a0408,#2d0a10)', borderTop: `2px solid ${ACCENT}`, padding: '0.7rem 1rem', display: 'flex', gap: '0.5rem', justifyContent: 'center', zIndex: 50 }}>
-          <a href={`tel:${stickyPhone}`} style={{ flex: 1, maxWidth: 200, textAlign: 'center', padding: '0.6rem', background: `${ACCENT}`, borderRadius: 8, color: '#0a0205', fontSize: '0.9rem', fontWeight: 700, textDecoration: 'none' }}>📞 전화</a>
-          <a href={`sms:${stickyPhone}`} style={{ flex: 1, maxWidth: 200, textAlign: 'center', padding: '0.6rem', background: `${ACCENT}33`, border: `1px solid ${ACCENT}`, borderRadius: 8, color: ACCENT, fontSize: '0.9rem', fontWeight: 700, textDecoration: 'none' }}>💬 문자</a>
-        </div>
+        <FormView slug={slug} tName={tName} config={config} onSuccess={() => { setView('list'); fetchList() }} />
       )}
     </div>
   )
 }
 
-function InfoRow({ label, value }: { label: string; value: string }) {
-  return <div style={{ display: 'flex', gap: '0.5rem', fontSize: '0.82rem', marginBottom: 3 }}><span style={{ opacity: 0.5, minWidth: 56 }}>{label}</span><span>{value}</span></div>
+/* ━━ 목록 ━━ */
+function ListView({ believers, loading, search, setSearch, selected, setSelected, slug, fetchList }: any) {
+  return (
+    <div style={{ padding: '1rem', maxWidth: 600, margin: '0 auto' }}>
+      <input value={search} onChange={e => setSearch(e.target.value)} placeholder="이름 · 법명 · 연락처" style={{ width: '100%', padding: '0.65rem 0.9rem', background: 'rgba(255,255,255,0.05)', border: `1px solid ${A}44`, borderRadius: 8, color: '#F5E6C8', fontSize: 14, marginBottom: 10, boxSizing: 'border-box' }} />
+      <div style={{ fontSize: 12, color: `${A}99`, marginBottom: 10 }}>전체 {believers.length}명</div>
+      {loading ? <div style={{ textAlign: 'center', padding: '3rem', color: A }}>불러오는 중...</div> :
+       believers.length === 0 ? <div style={{ textAlign: 'center', padding: '3rem', opacity: 0.4 }}>등록된 신도가 없습니다</div> :
+       believers.map((b: any) => (
+        <div key={b.id} onClick={() => setSelected(selected === b.id ? null : b.id)} style={{ background: selected === b.id ? `${A}11` : 'rgba(255,255,255,0.03)', border: `1px solid ${selected === b.id ? A : `${A}22`}`, borderRadius: 10, padding: '0.85rem', marginBottom: 8, cursor: 'pointer' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <div>
+              <span style={{ fontWeight: 700 }}>{b.is_deceased ? '🪷 ' : ''}{b.full_name}</span>
+              {b.buddhist_name && <span style={{ color: A, fontSize: 13, marginLeft: 6 }}>({b.buddhist_name})</span>}
+              {b.chukwon_no && <span style={{ fontSize: 10, color: `${A}77`, marginLeft: 8 }}>{b.chukwon_no}</span>}
+            </div>
+            {/* 기도접수 뱃지 */}
+            {b.believerOfferings?.length > 0 && (
+              <div style={{ display: 'flex', gap: 3 }}>
+                {b.believerOfferings.map((o: any) => <span key={o.id} style={{ fontSize: 10, background: `${A}22`, border: `1px solid ${A}44`, borderRadius: 4, padding: '1px 4px', color: A }}>{o.offering_type === 'yeondeung' ? '🏮' : o.offering_type === 'indung' ? '🕯️' : '🪷'}</span>)}
+              </div>
+            )}
+          </div>
+          {b.phone && <div style={{ fontSize: 12, opacity: 0.5, marginTop: 2 }}>{b.phone}</div>}
+
+          {/* 펼침 */}
+          {selected === b.id && (
+            <div style={{ marginTop: 10, borderTop: `1px solid ${A}22`, paddingTop: 10, fontSize: 13 }}>
+              {/* 가족 */}
+              {b.familyMembers?.length > 0 && (
+                <div style={{ marginBottom: 8, padding: 8, background: `${A}08`, borderRadius: 6 }}>
+                  <div style={{ fontSize: 11, color: A, fontWeight: 700, marginBottom: 4 }}>가족 구성원</div>
+                  {b.familyMembers.map((f: any) => <div key={f.id} style={{ fontSize: 12, marginBottom: 2 }}>└ {f.name} ({f.relation_type}) {f.birth_year && `${f.birth_year}년`}</div>)}
+                </div>
+              )}
+              {/* 행효 */}
+              {b.haenghyo?.length > 0 && (
+                <div style={{ marginBottom: 8, padding: 8, background: 'rgba(155,122,204,0.06)', borderRadius: 6 }}>
+                  <div style={{ fontSize: 11, color: '#9b7acc', fontWeight: 700, marginBottom: 4 }}>行孝</div>
+                  {b.haenghyo.map((h: any) => <div key={h.id} style={{ fontSize: 12 }}>└ {h.name} ({h.relation_type}) {h.birth_year && `${h.birth_year}년`}</div>)}
+                </div>
+              )}
+              {/* 영가 */}
+              {b.youngga?.length > 0 && (
+                <div style={{ marginBottom: 8, padding: 8, background: 'rgba(100,100,140,0.06)', borderRadius: 6 }}>
+                  <div style={{ fontSize: 11, color: '#8888bb', fontWeight: 700, marginBottom: 4 }}>亡 영가</div>
+                  {b.youngga.map((y: any) => <div key={y.id} style={{ fontSize: 12 }}>└ {y.name} {y.birth_year && `(${y.birth_year})`} {y.death_year && `→ ${y.death_year}`}</div>)}
+                </div>
+              )}
+              {b.memo && <div style={{ fontSize: 12, opacity: 0.6, background: 'rgba(255,255,255,0.03)', borderRadius: 6, padding: 6, marginBottom: 8, whiteSpace: 'pre-wrap' }}>{b.memo}</div>}
+              <div style={{ display: 'flex', gap: 6 }}>
+                {b.phone && <><a href={`tel:${b.phone}`} style={{ flex: 1, textAlign: 'center', padding: 6, background: A, borderRadius: 6, color: '#0a0205', fontWeight: 700, fontSize: 12, textDecoration: 'none' }}>📞 전화</a><a href={`sms:${b.phone}`} style={{ flex: 1, textAlign: 'center', padding: 6, background: `${A}33`, border: `1px solid ${A}`, borderRadius: 6, color: A, fontWeight: 700, fontSize: 12, textDecoration: 'none' }}>💬 문자</a></>}
+                <button onClick={async (e) => { e.stopPropagation(); if (!confirm(`${b.full_name} 탈퇴?`)) return; await fetch('/api/cyber/members', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: b.id, temple_slug: slug }) }); fetchList() }} style={{ flex: 1, padding: 6, background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 6, color: '#ef4444', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>탈퇴</button>
+              </div>
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  )
 }
 
-function RegisterSection({ slug, tName, onSuccess }: { slug: string; tName: string; onSuccess: () => void }) {
-  const [isNewFamily, setIsNewFamily] = useState(true)
-  const [isDeceased, setIsDeceased] = useState(false)
-  const [form, setForm] = useState({ full_name: '', buddhist_name: '', gender: '', birth_date: '', is_lunar: true, phone: '', address: '', relation_type: 'self', sms_consent: false, head_name: '', family_address: '', initiation_date: '', vow_text: '', memo: '', death_date: '', ancestor_type: '' })
+/* ━━ 등록 폼 (앞면+뒷면) ━━ */
+function FormView({ slug, tName, config, onSuccess }: any) {
+  const [page, setPage] = useState<'front' | 'back'>('front')
+  const [form, setForm] = useState({ full_name: '', buddhist_name: '', gender_type: 'gonmyeong', birth_year: '', birth_month: '', birth_day: '', is_lunar: true, phone: '', phone_land: '', address1: '', sms_consent: false, vow_text: '', is_new_family: true, head_name: '', family_address: '' })
+  const [familyRows, setFamilyRows] = useState<any[]>([])
+  const [haengRows, setHaengRows] = useState<any[]>([])
+  const [younggaRows, setYounggaRows] = useState<any[]>([])
+  const [offeringChecks, setOfferingChecks] = useState<Record<string, { checked: boolean; name: string; vow: string }>>({})
   const [submitting, setSubmitting] = useState(false)
   const [msg, setMsg] = useState('')
   const u = (k: string, v: unknown) => setForm(f => ({ ...f, [k]: v }))
+  const inp: React.CSSProperties = { width: '100%', padding: '8px 10px', background: 'rgba(255,255,255,0.06)', border: `1px solid ${A}44`, borderRadius: 6, color: '#F5E6C8', fontSize: 13, boxSizing: 'border-box' }
+  const sInp: React.CSSProperties = { ...inp, width: 'auto', flex: 1, minWidth: 0 }
 
-  const inp: React.CSSProperties = { width: '100%', padding: '0.6rem 0.8rem', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(201,168,76,0.3)', borderRadius: 8, color: '#F5E6C8', fontSize: '0.9rem', boxSizing: 'border-box' }
+  const offerings = config?.offerings || TEMPLE_OFFERINGS.miraesa.offerings
+  const bank = config?.bank || TEMPLE_OFFERINGS.miraesa.bank
 
   const handleSubmit = async () => {
     if (!form.full_name.trim()) { setMsg('이름을 입력하세요'); return }
     setSubmitting(true)
-    const res = await fetch('/api/cyber/members', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ temple_slug: slug, is_new_family: isNewFamily, is_deceased: isDeceased, ...form }) })
+
+    // 1. 신도 등록
+    const res = await fetch('/api/cyber/members', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ temple_slug: slug, ...form, family: familyRows, haenghyo: haengRows, youngga: younggaRows }) })
+    const result = await res.json()
+    if (!res.ok) { setMsg(result.error || '등록 실패'); setSubmitting(false); return }
+
+    // 2. 기도접수 연동
+    for (const [type, o] of Object.entries(offeringChecks)) {
+      if (o.checked && o.name.trim()) {
+        await fetch('/api/cyber/members/offerings', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ believer_id: result.id, temple_slug: slug, offering_type: type, participant_name: o.name.trim(), vow_text: o.vow.trim() || null }) })
+      }
+    }
+
+    setMsg(`나무아미타불 🙏 축원번호 ${result.chukwon_no}`)
     setSubmitting(false)
-    if (res.ok) { setMsg('나무아미타불 🙏 등록 완료'); setTimeout(onSuccess, 1200) }
-    else { const d = await res.json(); setMsg(d.error || '등록 실패') }
+    setTimeout(onSuccess, 1500)
   }
 
   return (
-    <div style={{ padding: '1rem', maxWidth: 480, margin: '0 auto' }}>
-      <h2 style={{ color: ACCENT, fontSize: '1.05rem', marginBottom: '1rem' }}>🪷 신도카드 등록 — {tName}</h2>
-
-      {/* 생자/영가 구분 */}
-      <SectionTitle title="구분" />
-      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
-        {[{ v: false, l: '👤 생자(신도)' }, { v: true, l: '🪷 영가(위패)' }].map(o => (
-          <button key={String(o.v)} onClick={() => setIsDeceased(o.v)} style={{ flex: 1, padding: '0.6rem', background: isDeceased === o.v ? `${ACCENT}33` : 'transparent', border: `1px solid ${isDeceased === o.v ? ACCENT : 'rgba(201,168,76,0.3)'}`, borderRadius: 8, color: isDeceased === o.v ? ACCENT : '#F5E6C8', cursor: 'pointer', fontWeight: isDeceased === o.v ? 700 : 400 }}>{o.l}</button>
+    <div style={{ padding: '1rem', maxWidth: 500, margin: '0 auto' }}>
+      {/* 탭 */}
+      <div style={{ display: 'flex', marginBottom: 12 }}>
+        {[['front', '앞면 (인적사항)'] as const, ['back', '뒷면 (행효·영가·기도)'] as const].map(([v, l]) => (
+          <button key={v} onClick={() => setPage(v)} style={{ flex: 1, padding: 10, background: page === v ? `${A}22` : 'transparent', borderBottom: page === v ? `2px solid ${A}` : '2px solid transparent', border: 'none', borderTop: 'none', borderLeft: 'none', borderRight: 'none', color: page === v ? A : '#F5E6C8', fontWeight: page === v ? 700 : 400, cursor: 'pointer', fontSize: 13 }}>{l}</button>
         ))}
       </div>
 
-      {/* 가족 구분 */}
-      <SectionTitle title="가족 구분" />
-      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
-        {[{ v: true, l: '신규 가족' }, { v: false, l: '기존 가족 추가' }].map(o => (
-          <button key={String(o.v)} onClick={() => setIsNewFamily(o.v)} style={{ flex: 1, padding: '0.5rem', background: isNewFamily === o.v ? `${ACCENT}33` : 'transparent', border: `1px solid ${isNewFamily === o.v ? ACCENT : 'rgba(201,168,76,0.3)'}`, borderRadius: 8, color: isNewFamily === o.v ? ACCENT : '#F5E6C8', cursor: 'pointer', fontWeight: isNewFamily === o.v ? 700 : 400, fontSize: '0.85rem' }}>{o.l}</button>
-        ))}
-      </div>
-
-      {isNewFamily && <>
-        <Field label="세대주명"><input value={form.head_name} onChange={e => u('head_name', e.target.value)} placeholder="비우면 본인" style={inp} /></Field>
-        <Field label="주소"><input value={form.family_address} onChange={e => u('family_address', e.target.value)} placeholder="주소" style={inp} /></Field>
-      </>}
-
-      {/* 인적 사항 */}
-      <SectionTitle title={isDeceased ? '영가 정보' : '개인 정보'} />
-      <Field label={isDeceased ? '영가 존함 *' : '이름 *'}><input value={form.full_name} onChange={e => u('full_name', e.target.value)} placeholder={isDeceased ? '영가 존함' : '홍길동'} style={inp} /></Field>
-      <Field label="법명"><input value={form.buddhist_name} onChange={e => u('buddhist_name', e.target.value)} placeholder="선택" style={inp} /></Field>
-      <Field label="성별">
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
-          {[['여', '보살(여)'], ['남', '거사(남)']].map(([v, l]) => (
-            <button key={v} onClick={() => u('gender', v)} style={{ flex: 1, padding: '0.45rem', background: form.gender === v ? `${ACCENT}33` : 'transparent', border: `1px solid ${form.gender === v ? ACCENT : 'rgba(201,168,76,0.3)'}`, borderRadius: 8, color: form.gender === v ? ACCENT : '#F5E6C8', cursor: 'pointer', fontSize: '0.85rem' }}>{l}</button>
-          ))}
+      {page === 'front' ? (<>
+        {/* 앞면 */}
+        <Sec title="개인 정보" />
+        <div style={{ display: 'flex', gap: 6, marginBottom: 8 }}>
+          {GENDERS.map(([v, l]) => <button key={v} onClick={() => u('gender_type', v)} style={{ flex: 1, padding: 8, background: form.gender_type === v ? `${A}33` : 'transparent', border: `1px solid ${form.gender_type === v ? A : `${A}44`}`, borderRadius: 6, color: form.gender_type === v ? A : '#F5E6C8', cursor: 'pointer', fontSize: 13 }}>{l}</button>)}
         </div>
-      </Field>
-
-      {isDeceased ? <>
-        <Field label="기일"><input type="date" value={form.death_date} onChange={e => u('death_date', e.target.value)} style={inp} /></Field>
-        <Field label="위패 종류">
-          <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
-            {ANCESTOR_TYPES.map(t => (
-              <button key={t} onClick={() => u('ancestor_type', t)} style={{ padding: '0.4rem 0.7rem', background: form.ancestor_type === t ? `${ACCENT}33` : 'transparent', border: `1px solid ${form.ancestor_type === t ? ACCENT : 'rgba(201,168,76,0.3)'}`, borderRadius: 6, color: form.ancestor_type === t ? ACCENT : '#F5E6C8', cursor: 'pointer', fontSize: '0.8rem' }}>{t}</button>
-            ))}
+        <F label="성명 *"><input value={form.full_name} onChange={e => u('full_name', e.target.value)} placeholder="홍길동" style={inp} /></F>
+        <F label="법명"><input value={form.buddhist_name} onChange={e => u('buddhist_name', e.target.value)} placeholder="선택" style={inp} /></F>
+        <F label="생년월일">
+          <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+            <input value={form.birth_year} onChange={e => u('birth_year', e.target.value)} placeholder="년" style={{ ...sInp, maxWidth: 80 }} />
+            <input value={form.birth_month} onChange={e => u('birth_month', e.target.value)} placeholder="월" style={{ ...sInp, maxWidth: 60 }} />
+            <input value={form.birth_day} onChange={e => u('birth_day', e.target.value)} placeholder="일" style={{ ...sInp, maxWidth: 60 }} />
+            <label style={{ display: 'flex', alignItems: 'center', gap: 3, fontSize: 12, whiteSpace: 'nowrap', cursor: 'pointer' }}><input type="checkbox" checked={form.is_lunar} onChange={e => u('is_lunar', e.target.checked)} />음력</label>
           </div>
-        </Field>
-      </> : <>
-        <Field label="생년월일">
-          <input type="date" value={form.birth_date} onChange={e => u('birth_date', e.target.value)} style={inp} />
-          <label style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginTop: '0.3rem', fontSize: '0.82rem', cursor: 'pointer' }}>
-            <input type="checkbox" checked={form.is_lunar} onChange={e => u('is_lunar', e.target.checked)} /> 음력
-          </label>
-        </Field>
-        <Field label="연락처"><input type="tel" value={form.phone} onChange={e => u('phone', e.target.value)} placeholder="010-0000-0000" style={inp} /></Field>
-        <Field label="수계일"><input type="date" value={form.initiation_date} onChange={e => u('initiation_date', e.target.value)} style={inp} /></Field>
-      </>}
+        </F>
+        <F label="주소"><input value={form.address1} onChange={e => u('address1', e.target.value)} placeholder="주소" style={inp} /></F>
+        <div style={{ display: 'flex', gap: 6, marginBottom: 8 }}>
+          <div style={{ flex: 1 }}><div style={{ fontSize: 11, color: `${A}aa`, marginBottom: 3 }}>집전화</div><input value={form.phone_land} onChange={e => u('phone_land', e.target.value)} placeholder="02-000-0000" style={inp} /></div>
+          <div style={{ flex: 1 }}><div style={{ fontSize: 11, color: `${A}aa`, marginBottom: 3 }}>핸드폰</div><input value={form.phone} onChange={e => u('phone', e.target.value)} placeholder="010-0000-0000" style={inp} /></div>
+        </div>
 
-      <Field label="관계">
-        <select value={form.relation_type} onChange={e => u('relation_type', e.target.value)} style={{ ...inp, appearance: 'none' as const }}>
-          {RELATIONS.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
-        </select>
-      </Field>
+        {/* 가족 축원 테이블 */}
+        <Sec title="가족 축원" />
+        {familyRows.map((r, i) => (
+          <div key={i} style={{ display: 'flex', gap: 4, marginBottom: 6, alignItems: 'center' }}>
+            <select value={r.relation_type} onChange={e => { const n = [...familyRows]; n[i].relation_type = e.target.value; setFamilyRows(n) }} style={{ ...sInp, maxWidth: 60 }}>{RELS.map(r => <option key={r} value={r}>{r}</option>)}</select>
+            <select value={r.gender_type} onChange={e => { const n = [...familyRows]; n[i].gender_type = e.target.value; setFamilyRows(n) }} style={{ ...sInp, maxWidth: 70 }}><option value="gonmyeong">건명</option><option value="gonmyeong_f">곤명</option></select>
+            <input value={r.name} onChange={e => { const n = [...familyRows]; n[i].name = e.target.value; setFamilyRows(n) }} placeholder="성명" style={{ ...sInp, maxWidth: 90 }} />
+            <input value={r.birth_year} onChange={e => { const n = [...familyRows]; n[i].birth_year = e.target.value; setFamilyRows(n) }} placeholder="년" style={{ ...sInp, maxWidth: 55 }} />
+            <button onClick={() => setFamilyRows(familyRows.filter((_, j) => j !== i))} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', fontSize: 16, padding: 0 }}>×</button>
+          </div>
+        ))}
+        <button onClick={() => setFamilyRows([...familyRows, { relation_type: '자', gender_type: 'gonmyeong', name: '', birth_year: '', birth_month: '', birth_day: '', is_lunar: false }])} style={{ width: '100%', padding: 8, background: `${A}11`, border: `1px dashed ${A}44`, borderRadius: 6, color: A, cursor: 'pointer', fontSize: 12, marginBottom: 12 }}>+ 가족 추가</button>
 
-      <SectionTitle title="발원 · 비고" />
-      <Field label="발원문"><textarea value={form.vow_text} onChange={e => u('vow_text', e.target.value)} placeholder="나무아미타불..." rows={3} style={{ ...inp, resize: 'vertical' as const, fontFamily: "'Noto Serif KR',serif" }} /></Field>
-      <Field label="비고"><input value={form.memo} onChange={e => u('memo', e.target.value)} placeholder="특이사항" style={inp} /></Field>
-
-      {!isDeceased && (
-        <label style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', margin: '0.8rem 0', fontSize: '0.8rem', cursor: 'pointer', padding: '0.7rem', background: 'rgba(201,168,76,0.06)', borderRadius: 8, border: '1px solid rgba(201,168,76,0.2)' }}>
-          <input type="checkbox" checked={form.sms_consent} onChange={e => u('sms_consent', e.target.checked)} style={{ marginTop: 2 }} />
-          <span>{tName}의 법회·기도·행사 안내를 SMS/카카오로 받겠습니다.</span>
+        <F label="발원문"><textarea value={form.vow_text} onChange={e => u('vow_text', e.target.value)} placeholder="나무아미타불..." rows={3} style={{ ...inp, resize: 'vertical', fontFamily: "'Noto Serif KR',serif" }} /></F>
+        <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, cursor: 'pointer', marginBottom: 12 }}>
+          <input type="checkbox" checked={form.sms_consent} onChange={e => u('sms_consent', e.target.checked)} />
+          {tName} 법회·기도·행사 SMS/카카오 수신동의
         </label>
-      )}
 
-      {msg && <div style={{ textAlign: 'center', padding: '0.6rem', color: msg.includes('완료') ? '#22c55e' : '#ef4444', fontSize: '0.85rem', fontWeight: 700 }}>{msg}</div>}
+        <button onClick={() => setPage('back')} style={{ width: '100%', padding: 12, background: `${A}22`, border: `1px solid ${A}`, borderRadius: 8, color: A, fontWeight: 700, cursor: 'pointer', fontSize: 14 }}>뒷면으로 →</button>
+      </>) : (<>
+        {/* 뒷면 */}
+        <Sec title="行孝 (최대 3명)" />
+        {haengRows.map((r, i) => (
+          <div key={i} style={{ display: 'flex', gap: 4, marginBottom: 6, alignItems: 'center' }}>
+            <span style={{ fontSize: 12, color: `${A}88`, minWidth: 28 }}>行孝</span>
+            <input value={r.name} onChange={e => { const n = [...haengRows]; n[i].name = e.target.value; setHaengRows(n) }} placeholder="성명" style={{ ...sInp, maxWidth: 100 }} />
+            <input value={r.birth_year} onChange={e => { const n = [...haengRows]; n[i].birth_year = e.target.value; setHaengRows(n) }} placeholder="년" style={{ ...sInp, maxWidth: 60 }} />
+            <select value={r.relation_type} onChange={e => { const n = [...haengRows]; n[i].relation_type = e.target.value; setHaengRows(n) }} style={{ ...sInp, maxWidth: 50 }}><option value="자">자</option><option value="녀">녀</option></select>
+            <button onClick={() => setHaengRows(haengRows.filter((_, j) => j !== i))} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', fontSize: 16, padding: 0 }}>×</button>
+          </div>
+        ))}
+        {haengRows.length < 3 && <button onClick={() => setHaengRows([...haengRows, { name: '', birth_year: '', birth_month: '', birth_day: '', is_lunar: false, relation_type: '자' }])} style={{ width: '100%', padding: 7, background: `${A}11`, border: `1px dashed ${A}44`, borderRadius: 6, color: A, cursor: 'pointer', fontSize: 12, marginBottom: 16 }}>+ 행효 추가</button>}
 
-      <button onClick={handleSubmit} disabled={submitting} style={{ width: '100%', padding: '0.85rem', background: submitting ? 'rgba(201,168,76,0.15)' : 'linear-gradient(135deg,#8B6914,#C8961E)', color: '#fff', border: 'none', borderRadius: 10, fontSize: '0.95rem', fontWeight: 700, cursor: 'pointer', letterSpacing: 2, fontFamily: "'Noto Serif KR',serif" }}>
-        {submitting ? '등록 중...' : isDeceased ? '🪷 영가 봉안' : '🪷 신도 등록'}
-      </button>
+        <Sec title="亡 영가 (최대 10위)" />
+        {younggaRows.map((r, i) => (
+          <div key={i} style={{ display: 'flex', gap: 4, marginBottom: 6, alignItems: 'center' }}>
+            <span style={{ fontSize: 12, color: '#8888bb', minWidth: 20 }}>亡</span>
+            <input value={r.name} onChange={e => { const n = [...younggaRows]; n[i].name = e.target.value; setYounggaRows(n) }} placeholder="존함" style={{ ...sInp, maxWidth: 90 }} />
+            <input value={r.birth_year} onChange={e => { const n = [...younggaRows]; n[i].birth_year = e.target.value; setYounggaRows(n) }} placeholder="생년" style={{ ...sInp, maxWidth: 55 }} />
+            <input value={r.death_year} onChange={e => { const n = [...younggaRows]; n[i].death_year = e.target.value; setYounggaRows(n) }} placeholder="기년" style={{ ...sInp, maxWidth: 55 }} />
+            <button onClick={() => setYounggaRows(younggaRows.filter((_, j) => j !== i))} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', fontSize: 16, padding: 0 }}>×</button>
+          </div>
+        ))}
+        {younggaRows.length < 10 && <button onClick={() => setYounggaRows([...younggaRows, { name: '', birth_year: '', death_year: '', relation_type: '', memo: '' }])} style={{ width: '100%', padding: 7, background: 'rgba(100,100,140,0.08)', border: '1px dashed rgba(100,100,140,0.3)', borderRadius: 6, color: '#8888bb', cursor: 'pointer', fontSize: 12, marginBottom: 16 }}>+ 영가 추가</button>}
+
+        {/* 기도접수 */}
+        <Sec title="기도접수" />
+        {offerings.map((o: any) => {
+          const oc = offeringChecks[o.type] || { checked: false, name: '', vow: '' }
+          return (
+            <div key={o.type} style={{ border: `1px solid ${oc.checked ? A : `${A}22`}`, borderRadius: 8, padding: 10, marginBottom: 8, background: oc.checked ? `${A}08` : 'transparent' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: oc.checked ? 8 : 0 }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: 13 }}>
+                  <input type="checkbox" checked={oc.checked} onChange={e => setOfferingChecks({ ...offeringChecks, [o.type]: { ...oc, checked: e.target.checked } })} />
+                  <span>{o.icon} {o.label}</span>
+                </label>
+                <span style={{ fontSize: 12, color: A }}>{o.period} {o.price.toLocaleString()}원</span>
+              </div>
+              {oc.checked && (
+                <div style={{ display: 'flex', gap: 6 }}>
+                  <input value={oc.name} onChange={e => setOfferingChecks({ ...offeringChecks, [o.type]: { ...oc, name: e.target.value } })} placeholder="성함" style={{ ...sInp, maxWidth: 120 }} />
+                  <input value={oc.vow} onChange={e => setOfferingChecks({ ...offeringChecks, [o.type]: { ...oc, vow: e.target.value } })} placeholder="발원내용" style={sInp} />
+                </div>
+              )}
+            </div>
+          )
+        })}
+
+        {/* 계좌 안내 */}
+        <div style={{ marginTop: 12, padding: 12, background: `${A}08`, border: `1px solid ${A}33`, borderRadius: 8 }}>
+          <div style={{ fontSize: 12, color: A, fontWeight: 700, marginBottom: 6 }}>입금 계좌</div>
+          <div style={{ fontSize: 13 }}>{bank.name} {bank.account}</div>
+          <div style={{ fontSize: 12, opacity: 0.6 }}>예금주: {bank.holder}</div>
+          <button onClick={() => { navigator.clipboard.writeText(bank.account); alert('계좌번호 복사됨') }} style={{ marginTop: 6, padding: '5px 14px', background: `${A}22`, border: `1px solid ${A}`, borderRadius: 6, color: A, fontSize: 11, fontWeight: 700, cursor: 'pointer' }}>계좌번호 복사</button>
+        </div>
+
+        {msg && <div style={{ textAlign: 'center', padding: 10, color: msg.includes('나무') ? '#22c55e' : '#ef4444', fontWeight: 700, fontSize: 14 }}>{msg}</div>}
+
+        <div style={{ display: 'flex', gap: 8, marginTop: 16 }}>
+          <button onClick={() => setPage('front')} style={{ flex: 1, padding: 12, background: `${A}22`, border: `1px solid ${A}`, borderRadius: 8, color: A, fontWeight: 700, cursor: 'pointer', fontSize: 14 }}>← 앞면</button>
+          <button onClick={handleSubmit} disabled={submitting} style={{ flex: 2, padding: 12, background: submitting ? `${A}33` : 'linear-gradient(135deg,#8B6914,#C8961E)', color: '#fff', border: 'none', borderRadius: 8, fontWeight: 700, cursor: 'pointer', fontSize: 14, letterSpacing: 2 }}>{submitting ? '등록 중...' : '🪷 신도카드 안치'}</button>
+        </div>
+      </>)}
     </div>
   )
 }
 
-function SectionTitle({ title }: { title: string }) {
-  return <div style={{ fontSize: '0.82rem', color: ACCENT, fontWeight: 700, margin: '1rem 0 0.5rem', borderBottom: '1px solid rgba(201,168,76,0.15)', paddingBottom: 3 }}>{title}</div>
-}
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return <div style={{ marginBottom: '0.7rem' }}><div style={{ fontSize: '0.78rem', color: 'rgba(201,168,76,0.7)', marginBottom: 3 }}>{label}</div>{children}</div>
-}
+function Sec({ title }: { title: string }) { return <div style={{ fontSize: 13, color: A, fontWeight: 700, margin: '14px 0 8px', borderBottom: `1px solid ${A}22`, paddingBottom: 3 }}>{title}</div> }
+function F({ label, children }: { label: string; children: React.ReactNode }) { return <div style={{ marginBottom: 8 }}><div style={{ fontSize: 11, color: `${A}aa`, marginBottom: 3 }}>{label}</div>{children}</div> }
