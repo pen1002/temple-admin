@@ -111,7 +111,7 @@ export default function JijangjeonPage() {
       <div className="jj-credit">3D 모델: Truong Kieu Van (Sketchfab CC Attribution) | 지장보살상</div>
       <div className="jj-counter">{[candlesLit > 0 && `촛불 ${candlesLit}개`, incenseBurning && '향 공양', spiritLanterns > 0 && `영가등 ${spiritLanterns}개`].filter(Boolean).join(' · ')}</div>
       <div className="jj-actions">
-        <button className="jj-btn" onClick={() => candlesLit < 2 && setCandlesLit(p => p + 1)} disabled={candlesLit >= 2}>{candlesLit >= 2 ? '촛불 완료' : '🕯 촛불 켜기'}</button>
+        <button className="jj-btn" onClick={() => setCandlesLit(2)} disabled={candlesLit >= 2}>{candlesLit >= 2 ? '촛불 완료' : '🕯 촛불 켜기'}</button>
         <button className="jj-btn" onClick={() => setIncenseBurning(true)} disabled={incenseBurning}>{incenseBurning ? '향 공양 중' : '🪔 향 피우기'}</button>
         <button className="jj-btn" onClick={() => spiritLanterns < 8 && setSpiritLanterns(p => p + 1)} disabled={spiritLanterns >= 8}>🪷 영가등 켜기</button>
       </div>
@@ -137,7 +137,7 @@ export default function JijangjeonPage() {
               <div key={i} onMouseEnter={e => m && setTooltip({ x: e.clientX, y: e.clientY, deceased: m.deceased, name: m.name, rel: m.relationship, wish: m.wish, date: m.created_at })} onMouseLeave={() => setTooltip(null)} onClick={e => m && setTooltip({ x: e.clientX, y: e.clientY, deceased: m.deceased, name: m.name, rel: m.relationship, wish: m.wish, date: m.created_at })}
                 style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '2px 0' }}>
                 {lit && <div style={{ position: 'absolute', top: -2, left: '50%', transform: 'translateX(-50%)', width: '120%', height: '80%', background: 'radial-gradient(ellipse at 50% 40%, rgba(212,184,255,0.3) 0%, transparent 75%)', borderRadius: '50%', animation: 'jjGlow 3s ease-in-out infinite alternate', pointerEvents: 'none' }} />}
-                <svg viewBox="0 0 40 70" style={{ width: '100%', maxWidth: 40, position: 'relative', zIndex: 1, filter: lit ? 'drop-shadow(0 0 4px rgba(212,184,255,0.3))' : 'grayscale(1) opacity(0.15)' }}>
+                <svg viewBox="0 0 40 70" style={{ width: '100%', maxWidth: 80, position: 'relative', zIndex: 1, filter: lit ? 'drop-shadow(0 0 8px rgba(212,184,255,0.5))' : 'grayscale(1) opacity(0.15)' }}>
                   <path d="M11 54 L11 16 Q11 6 20 6 Q29 6 29 16 L29 54 Z" fill={lit ? '#0a0a0a' : '#1a1a1a'} stroke={lit ? '#c9a84c' : '#333'} strokeWidth="0.8" />
                   <path d="M13 52 L13 18 Q13 9 20 9 Q27 9 27 18 L27 52 Z" fill="none" stroke={lit ? 'rgba(201,168,76,0.5)' : '#333'} strokeWidth="0.4" />
                   {lit && m && <text x="20" y="34" textAnchor="middle" fill="#c9a84c" fontSize="7" fontWeight="700" writingMode="tb" style={{ textShadow: '0 0 4px rgba(201,168,76,0.5)' }}>{m.deceased.slice(0, 3)}</text>}
