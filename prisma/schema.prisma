@@ -46,6 +46,7 @@ model Temple {
 
   blockConfigs          BlockConfig[]
   believers             Believer[]
+  families              Family[]
   wisdomOverrides       TempleWisdomOverride[]
 
   @@index([code])
@@ -156,6 +157,25 @@ model CyberOffering {
   @@map("cyber_offerings")
 }
 
+// 가족 대장 (세대주 단위 관리)
+model Family {
+  id            String    @id @default(uuid())
+  temple_id     String?
+  temple        Temple?   @relation(fields: [temple_id], references: [id], onDelete: Cascade)
+  family_code   String    @unique              // 예: MRS-2026-0001
+  head_name     String                         // 세대주 이름
+  address       String?
+  memo          String?   @db.Text
+  sms_consent   Boolean   @default(false)      // SMS 수신동의
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+  believers     Believer[]
+
+  @@index([temple_id])
+  @@index([family_code])
+  @@map("families")
+}
+
 // 지능형 신도 대장 (가람지기 호환)
 model Believer {
   id              String    @id @default(uuid())
@@ -174,13 +194,18 @@ model Believer {
   address         String?                                   // 주소
 
   // 가족 연합 (세주 중심 관리)
-  family_id       String?                                    // 가족 고유 ID
+  families_id     String?                                   // 가족 테이블 FK
+  family          Family?   @relation(fields: [families_id], references: [id])
+  family_id       String?                                   // 레거시 가족 ID
   family_relation String?                                   // 세주와의 관계
+  relation_type   String    @default("self")                // self/father/mother/child/grandchild/relative
 
   // 신도 관리
   status          String    @default("활동")                // 활동/휴면/망자/탈퇴
   initiation_date DateTime? @db.Date                        // 수계/입교일
   memo            String?   @db.Text                        // 비고
+  sms_consent     Boolean   @default(false)                 // SMS 수신동의
+  offering_total  Int       @default(0)                     // 누적 공양 금액
 
   created_at      DateTime  @default(now())
   updated_at      DateTime  @updatedAt
@@ -189,5 +214,6 @@ model Believer {
   @@index([phone])
   @@index([temple_id])
   @@index([family_id])
+  @@index([families_id])
   @@map("believers")
 }
