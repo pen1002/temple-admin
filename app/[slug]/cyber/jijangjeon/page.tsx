@@ -21,6 +21,7 @@ export default function JijangjeonPage() {
   const [tooltip, setTooltip] = useState<{ x: number; y: number; deceased: string; name: string; rel: string; wish?: string; date?: string } | null>(null);
   const [candlesLit, setCandlesLit] = useState(0);
   const [incenseBurning, setIncenseBurning] = useState(false);
+  const [spiritLanterns, setSpiritLanterns] = useState(0);
   const tiltRef = useRef<HTMLDivElement>(null);
   const targetTilt = useRef({ x: 0, y: 0 });
   const currentTilt = useRef({ x: 0, y: 0 });
@@ -74,13 +75,46 @@ export default function JijangjeonPage() {
         </div>
       </div>
 
-      {/* 공양대 */}
-      <div className="jj-altar-row">
-        <button className="jj-altar-btn" onClick={() => candlesLit < 2 && setCandlesLit(p => p + 1)} disabled={candlesLit >= 2}>{candlesLit >= 2 ? '🕯 완료' : '🕯 촛불'}</button>
-        <button className="jj-altar-btn" onClick={() => setIncenseBurning(true)} disabled={incenseBurning}>{incenseBurning ? '🪔 공양중' : '🪔 향'}</button>
+      {/* 공양대 SVG — 대웅전과 동일 방식 */}
+      <div className="jj-altar-area">
+        <svg viewBox="0 0 500 160" className="jj-altar-svg">
+          <rect x="100" y="60" width="300" height="90" rx="4" fill="#2a1040"/><rect x="100" y="60" width="300" height="8" rx="3" fill="#9b7acc"/><rect x="100" y="140" width="300" height="10" rx="2" fill="#1a0828"/>
+          {/* 좌측 촛불 */}
+          <g opacity={candlesLit >= 1 ? 1 : 0.25}>
+            {candlesLit >= 1 && <circle cx="170" cy="38" r="36" fill="rgba(212,184,255,0.12)"><animate attributeName="r" values="32;40;32" dur="2s" repeatCount="indefinite"/></circle>}
+            <rect x="165" y="68" width="10" height="4" rx="2" fill="#9b7acc"/><rect x="166" y="38" width="8" height="32" rx="3" fill="#F5E6B8"/><rect x="169" y="32" width="2" height="8" fill="#666"/>
+            {candlesLit >= 1 && <g><ellipse cx="170" cy="26" rx="8" ry="16" fill="#FFD700" opacity="0.9"><animate attributeName="ry" values="14;18;14" dur="2.5s" repeatCount="indefinite"/></ellipse><ellipse cx="170" cy="24" rx="5" ry="10" fill="#FFA500" opacity="0.8"/><ellipse cx="170" cy="22" rx="3" ry="6" fill="#fff" opacity="0.9"/></g>}
+          </g>
+          {/* 우측 촛불 */}
+          <g opacity={candlesLit >= 2 ? 1 : 0.25}>
+            {candlesLit >= 2 && <circle cx="330" cy="38" r="36" fill="rgba(212,184,255,0.12)"><animate attributeName="r" values="32;40;32" dur="2.3s" repeatCount="indefinite"/></circle>}
+            <rect x="325" y="68" width="10" height="4" rx="2" fill="#9b7acc"/><rect x="326" y="38" width="8" height="32" rx="3" fill="#F5E6B8"/><rect x="329" y="32" width="2" height="8" fill="#666"/>
+            {candlesLit >= 2 && <g><ellipse cx="330" cy="26" rx="8" ry="16" fill="#FFD700" opacity="0.9"><animate attributeName="ry" values="16;19;16" dur="2.2s" repeatCount="indefinite"/></ellipse><ellipse cx="330" cy="24" rx="5" ry="10" fill="#FFA500" opacity="0.8"/><ellipse cx="330" cy="22" rx="3" ry="6" fill="#fff" opacity="0.9"/></g>}
+          </g>
+          {/* 향로 */}
+          <ellipse cx="250" cy="68" rx="24" ry="4" fill="#6a4a8a"/><path d="M230,68 Q227,52 232,42 L268,42 Q273,52 270,68 Z" fill="#7a5a9a"/><rect x="236" y="40" width="28" height="4" rx="1.5" fill="#9b7acc"/><ellipse cx="250" cy="41" rx="12" ry="2" fill="#2a1040"/>
+          <line x1="247" y1="40" x2="247" y2="12" stroke={incenseBurning ? '#8B4513' : '#999'} strokeWidth="3.6"/><line x1="250" y1="40" x2="250" y2="8" stroke={incenseBurning ? '#8B4513' : '#999'} strokeWidth="3.6"/><line x1="253" y1="40" x2="253" y2="14" stroke={incenseBurning ? '#8B4513' : '#999'} strokeWidth="3.6"/>
+          {incenseBurning && <>{[{ cx: 248, cy: 4, d: 4 }, { cx: 251, cy: 0, d: 3.5 }, { cx: 250, cy: -5, d: 4.5 }, { cx: 246, cy: -2, d: 5 }, { cx: 253, cy: 2, d: 3.8 }, { cx: 249, cy: -8, d: 4.2 }].map((s, i) => <circle key={i} cx={s.cx} cy={s.cy} r="4" fill="rgba(200,200,220,0.9)"><animate attributeName="cy" values={`${s.cy};${s.cy - 60};${s.cy - 120}`} dur={`${s.d}s`} repeatCount="indefinite"/><animate attributeName="r" values="4;8;12" dur={`${s.d}s`} repeatCount="indefinite"/><animate attributeName="opacity" values="0.9;0.4;0" dur={`${s.d}s`} repeatCount="indefinite"/></circle>)}
+            <circle cx="247" cy="12" r="2.5" fill="#FF6633" opacity="0.8"/><circle cx="250" cy="8" r="2.5" fill="#FF6633" opacity="0.9"/><circle cx="253" cy="14" r="2.5" fill="#FF6633" opacity="0.7"/>
+          </>}
+        </svg>
       </div>
-
+      {/* 영가등 */}
+      <div className="jj-lanterns">
+        {Array.from({ length: spiritLanterns }).map((_, i) => {
+          const colors = ['#d4b8ff','#c9a8f0','#b898e8','#aa88dd','#9b7acc','#8a6abb','#c0a0ee','#d0b0ff'];
+          return (<div key={i} className="jj-lantern" style={{ left: `${10 + (i * 11) % 80}%`, top: `${10 + Math.sin(i * 1.5) * 30}px`, animationDelay: `${i * 0.3}s` }}>
+            <div className="jj-lantern-string" /><div className="jj-lantern-body" style={{ background: `radial-gradient(circle at 50% 30%, ${colors[i % colors.length]}, #3a1858)` }}><div className="jj-lantern-glow" /></div><div className="jj-lantern-tassel" />
+          </div>);
+        })}
+      </div>
       <div className="jj-credit">3D 모델: Truong Kieu Van (Sketchfab CC Attribution) | 지장보살상</div>
+      <div className="jj-counter">{[candlesLit > 0 && `촛불 ${candlesLit}개`, incenseBurning && '향 공양', spiritLanterns > 0 && `영가등 ${spiritLanterns}개`].filter(Boolean).join(' · ')}</div>
+      <div className="jj-actions">
+        <button className="jj-btn" onClick={() => candlesLit < 2 && setCandlesLit(p => p + 1)} disabled={candlesLit >= 2}>{candlesLit >= 2 ? '촛불 완료' : '🕯 촛불 켜기'}</button>
+        <button className="jj-btn" onClick={() => setIncenseBurning(true)} disabled={incenseBurning}>{incenseBurning ? '향 공양 중' : '🪔 향 피우기'}</button>
+        <button className="jj-btn" onClick={() => spiritLanterns < 8 && setSpiritLanterns(p => p + 1)} disabled={spiritLanterns >= 8}>🪷 영가등 켜기</button>
+      </div>
 
       {/* 위패 봉안 영역 */}
       <div style={{ width: '100%', maxWidth: 600, margin: '0 auto', padding: '16px 16px 60px' }}>
@@ -164,11 +198,20 @@ export default function JijangjeonPage() {
         .jj-loader{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:rgba(13,8,32,0.9);border-radius:8px;font-size:12px;color:rgba(212,184,255,0.5)}
         .jj-spinner{width:32px;height:32px;border:2px solid rgba(155,122,204,0.2);border-top-color:#9b7acc;border-radius:50%;animation:spin 1s linear infinite}
         @keyframes spin{to{transform:rotate(360deg)}}
-        .jj-altar-row{display:flex;gap:8px;justify-content:center;margin-top:8px;z-index:5}
-        .jj-altar-btn{background:rgba(155,122,204,0.3);color:#d4b8ff;border:1px solid rgba(155,122,204,0.4);border-radius:16px;padding:6px 16px;font-size:12px;cursor:pointer;font-family:'Noto Serif KR',serif}
-        .jj-altar-btn:disabled{opacity:0.4;cursor:not-allowed}
+        .jj-altar-area{position:relative;z-index:5;width:100%;max-width:420px;margin-top:-20px}.jj-altar-svg{width:100%;height:auto;display:block;overflow:visible}
+        .jj-lanterns{position:absolute;top:50px;left:0;width:100%;height:120px;z-index:5;pointer-events:none}
+        .jj-lantern{position:absolute;animation:jjSway 4s ease-in-out infinite alternate}
+        .jj-lantern-string{position:absolute;top:-16px;left:50%;width:1px;height:16px;background:#8a6abb}
+        .jj-lantern-body{width:28px;height:34px;border-radius:50%;border:1px solid #6a4a8a;position:relative}
+        .jj-lantern-glow{position:absolute;inset:-6px;border-radius:50%;background:radial-gradient(circle,rgba(155,122,204,0.25) 0%,transparent 70%)}
+        .jj-lantern-tassel{position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);width:2px;height:10px;background:#9b7acc}
+        @keyframes jjSway{0%{transform:rotate(-3deg)}100%{transform:rotate(3deg)}}
         .jj-credit{font-size:9px;color:rgba(212,184,255,0.15);text-align:center;margin-top:4px;z-index:5}
-        @media(max-width:500px){.jj-col{width:28px}.jj-col-l{left:2%}.jj-col-r{right:2%}.jj-buddha-wrap{max-width:280px}}
+        .jj-counter{font-size:11px;color:rgba(212,184,255,0.5);text-align:center;margin-top:8px;z-index:5;min-height:16px;letter-spacing:1px}
+        .jj-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:12px;padding:0 16px;z-index:6}
+        .jj-btn{background:rgba(155,122,204,0.85);color:#d4b8ff;border:1px solid rgba(212,184,255,0.3);border-radius:20px;padding:10px 18px;font-size:13px;font-weight:700;font-family:'Noto Serif KR',serif;cursor:pointer;letter-spacing:1px;transition:all 0.2s;white-space:nowrap}
+        .jj-btn:hover:not(:disabled){background:rgba(155,122,204,0.95);transform:scale(1.05)}.jj-btn:active:not(:disabled){transform:scale(0.96)}.jj-btn:disabled{opacity:0.4;cursor:not-allowed}
+        @media(max-width:500px){.jj-col{width:28px}.jj-col-l{left:2%}.jj-col-r{right:2%}.jj-buddha-wrap{max-width:280px}.jj-btn{padding:8px 14px;font-size:12px}}
       `}</style>
     </div>
   );
