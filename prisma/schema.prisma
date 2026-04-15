@@ -291,6 +291,8 @@ model BelieverYoungga {
   death_year    String?
   relation_type String?
   memo          String?
+  jesa_date     String?                                    // 기제사일 (월.일)
+  jesa_lunar    Boolean   @default(true)                   // 음력 여부
   sort_order    Int       @default(0)
   created_at    DateTime  @default(now())
 
