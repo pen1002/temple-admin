@@ -5,6 +5,21 @@ import { useCyberTemple } from '@/lib/useCyberTemple'
 import { TEMPLE_OFFERINGS } from '@/lib/constants/templeOfferings'
 
 const A = '#C9A84C'
+
+// 60갑자 계산
+const CHEON = ['갑','을','병','정','무','기','경','신','임','계']
+const JI = ['자','축','인','묘','진','사','오','미','신','유','술','해']
+const TTI = ['🐀쥐','🐂소','🐅범','🐇토끼','🐉용','🐍뱀','🐴말','🐏양','🐵원숭이','🐓닭','🐕개','🐖돼지']
+function getGapja(dateStr: string): string {
+  if (!dateStr || dateStr.length < 4) return ''
+  const year = parseInt(dateStr.replace(/\D/g, '').slice(0, 4))
+  if (isNaN(year) || year < 1900 || year > 2100) return ''
+  const idx = (year - 4) % 60
+  const c = CHEON[idx % 10]
+  const j = JI[idx % 12]
+  const t = TTI[idx % 12]
+  return `${c}${j}년 ${t}`
+}
 type Tab = 'members' | 'offerings' | 'mycard'
 type Role = 'super' | 'admin' | null
 const RELS = ['부', '모', '건명', '곤명', '자', '녀', '손자', '손녀', '형', '제', '기타']
@@ -261,7 +276,7 @@ function MembersTab({ slug, role, tName }: { slug: string; role: Role; tName: st
               <tr key={i} style={{ borderBottom: `1px solid ${A}11` }}>
                 <td style={{ padding: 4 }}><select value={m.relation_type} onChange={e => updateFam(i, 'relation_type', e.target.value)} style={{ width: '100%', background: 'rgba(255,255,255,0.06)', border: `1px solid ${A}33`, borderRadius: 4, color: '#F5E6C8', padding: '4px 2px', fontSize: 12 }}>{RELS.map(r => <option key={r} value={r} style={{ background: '#1a0408' }}>{r}</option>)}</select></td>
                 <td style={{ padding: 4 }}><div style={{ display: 'flex', gap: 2, justifyContent: 'center' }}>{['음', '양'].map(t => <button key={t} onClick={() => updateFam(i, 'is_lunar', t === '음')} style={{ padding: '3px 6px', background: (t === '음') === m.is_lunar ? `${A}33` : 'transparent', border: `1px solid ${A}33`, borderRadius: 3, color: (t === '음') === m.is_lunar ? A : '#F5E6C8', cursor: 'pointer', fontSize: 11 }}>{t}</button>)}</div></td>
-                <td style={{ padding: 4 }}><input value={m.birth_date || ''} onChange={e => updateFam(i, 'birth_date', e.target.value)} placeholder="1960.01.15" style={{ width: '100%', background: 'rgba(255,255,255,0.06)', border: `1px solid ${A}33`, borderRadius: 4, color: '#F5E6C8', padding: '4px 6px', fontSize: 12, boxSizing: 'border-box' }} /></td>
+                <td style={{ padding: 4 }}><input value={m.birth_date || ''} onChange={e => updateFam(i, 'birth_date', e.target.value)} placeholder="1960.01.15" style={{ width: '100%', background: 'rgba(255,255,255,0.06)', border: `1px solid ${A}33`, borderRadius: 4, color: '#F5E6C8', padding: '4px 6px', fontSize: 12, boxSizing: 'border-box' }} />{getGapja(m.birth_date) && <div style={{ fontSize: 9, color: `${A}88`, marginTop: 1 }}>{getGapja(m.birth_date)}</div>}</td>
                 <td style={{ padding: 4 }}><input value={m.name} onChange={e => updateFam(i, 'name', e.target.value)} placeholder="성명" style={{ width: '100%', background: 'rgba(255,255,255,0.06)', border: `1px solid ${A}33`, borderRadius: 4, color: '#F5E6C8', padding: '4px 6px', fontSize: 12, boxSizing: 'border-box' }} /></td>
                 <td style={{ padding: 4, textAlign: 'center' }}><button onClick={() => setFamilyRows(familyRows.filter((_, j) => j !== i))} style={{ background: 'transparent', border: 'none', color: `${A}44`, cursor: 'pointer', fontSize: 13 }}>✕</button></td>
               </tr>
