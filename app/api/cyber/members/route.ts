@@ -59,7 +59,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
-    const { temple_slug, full_name, buddhist_name, gender, gender_type, birth_year, birth_month, birth_day, is_lunar, phone, phone_land, address1, relation_type, sms_consent, memo, vow_text, is_deceased, death_date, ancestor_type,
+    const { temple_slug, full_name, buddhist_name, gender, gender_type, birth_year, birth_month, birth_day, is_lunar, phone, phone_land, address1, relation_type, sms_consent, memo, vow_text, extra_memo, is_deceased, death_date, ancestor_type,
       family = [], haenghyo = [], youngga = [], offerings = [],
       is_new_family, head_name, family_address,
     } = body
@@ -94,7 +94,8 @@ export async function POST(req: NextRequest) {
         relation_type: relation_type || 'self', sms_consent: sms_consent || false,
         memo: memoText, status: is_deceased ? '망자' : '활동',
         is_deceased: is_deceased || false, death_date: death_date ? new Date(death_date) : null,
-        ancestor_type: ancestor_type || null, chukwon_no,
+        ancestor_type: ancestor_type || null,
+        extra_memo: extra_memo?.trim()?.slice(0, 1000) || null, chukwon_no,
       },
     })
 
@@ -129,7 +130,8 @@ export async function POST(req: NextRequest) {
         data: youngga.slice(0, 10).map((y: Record<string, unknown>, i: number) => ({
           believer_id: believer.id, name: y.name as string || '',
           birth_year: y.birth_year as string, death_year: y.death_year as string,
-          relation_type: y.relation_type as string, memo: y.memo as string, sort_order: i,
+          relation_type: y.relation_type as string, memo: y.memo as string,
+          jesa_date: y.jesa_date as string, jesa_lunar: (y.jesa_lunar as boolean) ?? true, sort_order: i,
         })),
       })
     }
@@ -163,7 +165,7 @@ export async function PATCH(req: NextRequest) {
 // DELETE (soft)
 export async function DELETE(req: NextRequest) {
   try {
-    const { id, temple_slug } = await req.json()
+    const { id, temple_slug, role } = await req.json()
     if (!id) return NextResponse.json({ error: 'id 필수' }, { status: 400 })
     if (temple_slug) {
       const temple = await getTemple(temple_slug)
@@ -171,7 +173,11 @@ export async function DELETE(req: NextRequest) {
       const t = await prisma.believer.findUnique({ where: { id }, select: { temple_id: true } })
       if (t?.temple_id !== temple.id) return NextResponse.json({ error: '권한 없음' }, { status: 403 })
     }
-    await prisma.believer.update({ where: { id }, data: { status: '탈퇴' } })
+    if (role === 'super') {
+      await prisma.believer.delete({ where: { id } })
+    } else {
+      await prisma.believer.update({ where: { id }, data: { status: '탈퇴' } })
+    }
     return NextResponse.json({ ok: true })
   } catch (e: unknown) {
     return NextResponse.json({ error: e instanceof Error ? e.message : 'unknown' }, { status: 500 })

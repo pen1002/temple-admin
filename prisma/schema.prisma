@@ -213,6 +213,7 @@ model Believer {
   status          String    @default("활동")                // 활동/휴면/망자/탈퇴
   initiation_date DateTime? @db.Date                        // 수계/입교일
   memo            String?   @db.Text                        // 비고
+  extra_memo      String?   @db.Text                        // 기타사항 (최대 1000자)
   prayer_tags     Json?                                     // 태그 ["초하루","백일기도"] (검색용)
   sms_consent     Boolean   @default(false)                 // SMS 수신동의
   offering_total  Int       @default(0)                     // 누적 공양 금액

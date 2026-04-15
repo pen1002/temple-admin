@@ -131,7 +131,7 @@ function MembersTab({ slug, role, tName }: { slug: string; role: Role; tName: st
   const [selected, setSelected] = useState<string | null>(null)
   const [view, setView] = useState<'list' | 'form'>('list')
   const [page, setPage] = useState<'front' | 'back'>('front')
-  const [form, setForm] = useState({ full_name: '', phone: '', phone_land: '', address1: '', sms_consent: false, vow_text: '' })
+  const [form, setForm] = useState({ full_name: '', phone: '', phone_land: '', address1: '', sms_consent: false, vow_text: '', extra_memo: '' })
   const [familyRows, setFamilyRows] = useState<any[]>([{ relation_type: '건명', is_lunar: true, birth_date: '', name: '' }, { relation_type: '곤명', is_lunar: true, birth_date: '', name: '' }])
   const [haengRows, setHaengRows] = useState<any[]>([])
   const [younggaRows, setYounggaRows] = useState<any[]>([])
@@ -201,12 +201,23 @@ function MembersTab({ slug, role, tName }: { slug: string; role: Role; tName: st
         </div>
         <F label="주소"><input value={form.address1} onChange={e => u('address1', e.target.value)} style={inp} /></F>
         <F label="발원문"><textarea value={form.vow_text} onChange={e => u('vow_text', e.target.value)} rows={3} placeholder="나무아미타불..." style={{ ...inp, resize: 'vertical', fontFamily: "'Noto Serif KR',serif" }} /></F>
+        <div style={{ marginTop: 12, marginBottom: 8 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: A, fontWeight: 700, marginBottom: 4, borderBottom: `1px solid ${A}22`, paddingBottom: 3 }}><span>기타사항</span><span style={{ fontWeight: 400, opacity: 0.5, fontSize: 10 }}>{form.extra_memo.length}/1000</span></div>
+          <textarea value={form.extra_memo} maxLength={1000} onChange={e => u('extra_memo', e.target.value)} placeholder={'신도 관련 특이사항, 상담 내용,\n스님 메모 등 (최대 1,000자)'} rows={4} style={{ ...inp, minHeight: 96, resize: 'vertical', fontFamily: "'Noto Serif KR',serif", lineHeight: 1.6 }} />
+        </div>
         <label style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, cursor: 'pointer', marginBottom: 10 }}><input type="checkbox" checked={form.sms_consent} onChange={e => u('sms_consent', e.target.checked)} />{tName} 법회·기도·행사 SMS/카카오 수신동의</label>
         <button onClick={() => setPage('back')} style={{ width: '100%', padding: 10, background: `${A}22`, border: `1px solid ${A}`, borderRadius: 8, color: A, fontWeight: 700, cursor: 'pointer', fontSize: 13 }}>뒷면으로 →</button>
       </>) : (<>
         {/* 뒷면: 행효 */}
         <Sec title="行孝 (최대 3)" />
-        {haengRows.map((r: any, i: number) => <div key={i} style={{ display: 'flex', gap: 4, marginBottom: 5, alignItems: 'center' }}><span style={{ fontSize: 11, color: `${A}88`, minWidth: 24 }}>行孝</span><input value={r.name} onChange={e => { const n = [...haengRows]; n[i].name = e.target.value; setHaengRows(n) }} placeholder="성명" style={{ flex: 1, ...inp, padding: '5px 8px' }} /><input value={r.birth_year} onChange={e => { const n = [...haengRows]; n[i].birth_year = e.target.value; setHaengRows(n) }} placeholder="년" style={{ width: 55, ...inp, padding: '5px 6px' }} /><select value={r.relation_type} onChange={e => { const n = [...haengRows]; n[i].relation_type = e.target.value; setHaengRows(n) }} style={{ width: 45, ...inp, padding: '5px 2px' }}><option>자</option><option>녀</option></select><span style={{ fontSize: 10, color: `${A}55` }}>伏爲</span><button onClick={() => setHaengRows(haengRows.filter((_, j) => j !== i))} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', fontSize: 14, padding: 0 }}>×</button></div>)}
+        {haengRows.map((r: any, i: number) => (
+          <div key={i} style={{ display: 'grid', gridTemplateColumns: '36px 80px 1fr 36px', gap: 6, alignItems: 'center', padding: '8px 0', borderBottom: `1px solid ${A}11` }}>
+            <div style={{ color: A, fontWeight: 700, fontSize: 13, textAlign: 'center', lineHeight: 1.3 }}>行<br/>孝</div>
+            <div style={{ display: 'flex', gap: 3 }}>{['자', '녀'].map(t => <button key={t} onClick={() => { const n = [...haengRows]; n[i].relation_type = t; setHaengRows(n) }} style={{ flex: 1, padding: '5px 4px', background: r.relation_type === t ? `${A}33` : 'transparent', border: `1px solid ${A}33`, borderRadius: 4, color: r.relation_type === t ? A : '#F5E6C8', cursor: 'pointer', fontSize: 13, fontWeight: r.relation_type === t ? 700 : 400 }}>{t}</button>)}</div>
+            <input value={r.name} onChange={e => { const n = [...haengRows]; n[i].name = e.target.value; setHaengRows(n) }} placeholder="성명" style={{ background: 'rgba(255,255,255,0.06)', border: `1px solid ${A}33`, borderRadius: 4, color: '#F5E6C8', padding: '5px 8px', fontSize: 13 }} />
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}><span style={{ color: `${A}66`, fontSize: 10, lineHeight: 1.2 }}>伏<br/>爲</span><button onClick={() => setHaengRows(haengRows.filter((_, j) => j !== i))} style={{ background: 'transparent', border: 'none', color: `${A}44`, cursor: 'pointer', fontSize: 12, padding: 0 }}>✕</button></div>
+          </div>
+        ))}
         {haengRows.length < 3 && <button onClick={() => setHaengRows([...haengRows, { name: '', birth_year: '', relation_type: '자' }])} style={{ width: '100%', padding: 6, background: `${A}11`, border: `1px dashed ${A}44`, borderRadius: 6, color: A, cursor: 'pointer', fontSize: 11, marginBottom: 14 }}>+ 행효 추가</button>}
 
         {/* 뒷면: 영가 */}
@@ -258,7 +269,7 @@ function MembersTab({ slug, role, tName }: { slug: string; role: Role; tName: st
               {b.memo && <div style={{ fontSize: 11, opacity: 0.5, padding: 4, marginBottom: 6, whiteSpace: 'pre-wrap' }}>{b.memo}</div>}
               <div style={{ display: 'flex', gap: 4 }}>
                 {b.phone && <><a href={`tel:${b.phone}`} style={{ flex: 1, textAlign: 'center', padding: 5, background: A, borderRadius: 6, color: '#0a0205', fontWeight: 700, fontSize: 11, textDecoration: 'none' }}>📞</a><a href={`sms:${b.phone}`} style={{ flex: 1, textAlign: 'center', padding: 5, background: `${A}33`, border: `1px solid ${A}`, borderRadius: 6, color: A, fontWeight: 700, fontSize: 11, textDecoration: 'none' }}>💬</a></>}
-                <button onClick={async (e) => { e.stopPropagation(); if (!confirm(`${b.full_name} 탈퇴?`)) return; await fetch('/api/cyber/members', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: b.id, temple_slug: slug }) }); fetchList() }} style={{ flex: 1, padding: 5, background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.25)', borderRadius: 6, color: '#ef4444', fontSize: 11, fontWeight: 700, cursor: 'pointer' }}>탈퇴</button>
+                <button onClick={async (e) => { e.stopPropagation(); if (!confirm(`${b.full_name}님을 ${role === 'super' ? '완전 삭제' : '탈퇴 처리'}하시겠습니까?`)) return; await fetch('/api/cyber/members', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: b.id, temple_slug: slug, role }) }); fetchList() }} style={{ flex: 1, padding: 5, background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.25)', borderRadius: 6, color: '#ef4444', fontSize: 11, fontWeight: 700, cursor: 'pointer' }}>{role === 'super' ? '🗑️ 삭제' : '탈퇴'}</button>
               </div>
             </div>
           )}
@@ -272,12 +283,13 @@ function MembersTab({ slug, role, tName }: { slug: string; role: Role; tName: st
 function OfferingsTab({ slug, config, tName }: { slug: string; config: any; tName: string }) {
   const [list, setList] = useState<any[]>([])
   const [view, setView] = useState<'list' | 'form'>('list')
-  const [selType, setSelType] = useState('')
-  const [name, setName] = useState('')
-  const [vow, setVow] = useState('')
+  const [selectedTypes, setSelectedTypes] = useState<string[]>([])
+  const [offeringInputs, setOfferingInputs] = useState<Record<string, { name: string; vow: string }>>({})
   const [submitting, setSubmitting] = useState(false)
   const [msg, setMsg] = useState('')
   const inp: React.CSSProperties = { width: '100%', padding: '7px 9px', background: 'rgba(255,255,255,0.06)', border: `1px solid ${A}44`, borderRadius: 6, color: '#F5E6C8', fontSize: 13, boxSizing: 'border-box' }
+  const toggleType = (t: string) => { setSelectedTypes(p => p.includes(t) ? p.filter(x => x !== t) : [...p, t]); if (!selectedTypes.includes(t)) setOfferingInputs(p => ({ ...p, [t]: { name: '', vow: '' } })) }
+  const updateOI = (t: string, f: 'name' | 'vow', v: string) => setOfferingInputs(p => ({ ...p, [t]: { ...p[t], [f]: v } }))
 
   const fetchList = useCallback(async () => {
     const r = await fetch(`/api/cyber/members?temple_slug=${slug}&limit=200`)
@@ -290,12 +302,19 @@ function OfferingsTab({ slug, config, tName }: { slug: string; config: any; tNam
   const stats = config.offerings.map((o: any) => { const items = list.filter((l: any) => l.offering_type === o.type && l.status === 'active'); return { ...o, count: items.length, total: items.length * o.price } })
 
   const handleSubmit = async () => {
-    if (!selType || !name.trim()) { setMsg('유형과 성함'); return }
-    setSubmitting(true)
-    const res = await fetch('/api/cyber/members/offerings', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ temple_slug: slug, offering_type: selType, participant_name: name.trim(), vow_text: vow.trim() || null }) })
+    if (selectedTypes.length === 0) { setMsg('기도 유형을 선택하세요'); return }
+    const errors: string[] = []
+    selectedTypes.forEach(t => { if (!offeringInputs[t]?.name?.trim()) { const l = config.offerings.find((o: any) => o.type === t)?.label || t; errors.push(`${l} 성함 필수`) } })
+    if (errors.length > 0) { setMsg(errors.join(', ')); return }
+    setSubmitting(true); let ok = 0
+    for (const t of selectedTypes) {
+      const info = offeringInputs[t]
+      const res = await fetch('/api/cyber/members/offerings', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ temple_slug: slug, offering_type: t, participant_name: info.name.trim(), vow_text: info.vow?.trim() || null }) })
+      if (res.ok) ok++
+    }
     setSubmitting(false)
-    if (res.ok) { setMsg('나무아미타불 🙏'); setTimeout(() => { setView('list'); fetchList(); setMsg('') }, 1000) }
-    else { const d = await res.json(); setMsg(d.error || '실패') }
+    if (ok === selectedTypes.length) { setMsg(`🙏 ${ok}건 접수 완료`); setTimeout(() => { setView('list'); fetchList(); setMsg(''); setSelectedTypes([]); setOfferingInputs({}) }, 1200) }
+    else setMsg(`${ok}건 완료, 일부 실패`)
   }
 
   return (
@@ -310,10 +329,19 @@ function OfferingsTab({ slug, config, tName }: { slug: string; config: any; tNam
           </div>
         ))}
       </>) : (<>
-        <Sec title="기도 유형" />
-        {config.offerings.map((o: any) => <button key={o.type} onClick={() => setSelType(o.type)} style={{ width: '100%', display: 'flex', justifyContent: 'space-between', padding: '9px 10px', marginBottom: 5, background: selType === o.type ? `${A}22` : 'rgba(255,255,255,0.03)', border: `1px solid ${selType === o.type ? A : `${A}22`}`, borderRadius: 8, color: '#F5E6C8', cursor: 'pointer', fontSize: 13 }}><span>{o.icon} {o.label}</span><span style={{ color: A, fontSize: 12 }}>{o.period} {o.price.toLocaleString()}원</span></button>)}
-        <F label="성함"><input value={name} onChange={e => setName(e.target.value)} style={inp} /></F>
-        <F label="발원"><textarea value={vow} onChange={e => setVow(e.target.value)} rows={2} style={{ ...inp, resize: 'vertical', fontFamily: "'Noto Serif KR',serif" }} /></F>
+        <Sec title="기도 유형 (복수 선택 가능)" />
+        {config.offerings.map((o: any) => (<div key={o.type}>
+          <button onClick={() => toggleType(o.type)} style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', background: selectedTypes.includes(o.type) ? `${A}15` : 'transparent', border: `1px solid ${selectedTypes.includes(o.type) ? A : `${A}25`}`, borderRadius: selectedTypes.includes(o.type) ? '10px 10px 0 0' : 10, color: selectedTypes.includes(o.type) ? A : '#F5E6C8', cursor: 'pointer', marginBottom: selectedTypes.includes(o.type) ? 0 : 6, fontSize: 13 }}>
+            <span style={{ fontWeight: 700 }}><span style={{ display: 'inline-block', width: 16, height: 16, borderRadius: 3, background: selectedTypes.includes(o.type) ? A : 'transparent', border: `1px solid ${selectedTypes.includes(o.type) ? A : `${A}44`}`, marginRight: 8, verticalAlign: 'middle', fontSize: 10, color: '#0a0205', textAlign: 'center', lineHeight: '16px' }}>{selectedTypes.includes(o.type) ? '✓' : ''}</span>{o.icon} {o.label}</span>
+            <span style={{ fontSize: 12, opacity: 0.7 }}>{o.period} · {o.price.toLocaleString()}원</span>
+          </button>
+          {selectedTypes.includes(o.type) && (
+            <div style={{ background: `${A}08`, border: `1px solid ${A}`, borderTop: 'none', borderRadius: '0 0 10px 10px', padding: '10px 12px', marginBottom: 6 }}>
+              <div style={{ marginBottom: 6 }}><div style={{ fontSize: 11, opacity: 0.6, marginBottom: 3 }}>동참 성함 *</div><input value={offeringInputs[o.type]?.name || ''} onChange={e => updateOI(o.type, 'name', e.target.value)} placeholder="홍길동" style={inp} /></div>
+              <div><div style={{ fontSize: 11, opacity: 0.6, marginBottom: 3 }}>발원내용</div><input value={offeringInputs[o.type]?.vow || ''} onChange={e => updateOI(o.type, 'vow', e.target.value)} placeholder="나무아미타불..." style={inp} /></div>
+            </div>
+          )}
+        </div>))}
         <div style={{ padding: 8, background: `${A}08`, border: `1px solid ${A}33`, borderRadius: 8, marginBottom: 10 }}>
           <div style={{ fontSize: 11, color: A, fontWeight: 700, marginBottom: 3 }}>입금 계좌</div>
           <div style={{ fontSize: 12 }}>{config.bank.name} {config.bank.account}</div>
@@ -332,28 +360,43 @@ function OfferingsTab({ slug, config, tName }: { slug: string; config: any; tNam
 
 /* ━━ 공덕카드 탭 ━━ */
 function MycardTab({ slug, config, tName }: { slug: string; config: any; tName: string }) {
-  const [code, setCode] = useState('')
+  const [nameInput, setNameInput] = useState('')
+  const [phoneLast4, setPhoneLast4] = useState('')
+  const [multiple, setMultiple] = useState(false)
   const [data, setData] = useState<any>(null)
   const [error, setError] = useState('')
-  const fetchCard = async (c: string) => {
-    const r = await fetch(`/api/cyber/mycard?code=${encodeURIComponent(c)}&temple=${slug}`)
-    if (r.ok) { setData(await r.json()); setError('') } else { setData(null); setError('조회 결과 없음') }
+  const handleSearch = async () => {
+    if (!nameInput.trim()) return
+    const params = new URLSearchParams({ name: nameInput.trim(), temple: slug })
+    if (phoneLast4) params.set('phone_last4', phoneLast4)
+    const r = await fetch(`/api/cyber/mycard?${params}`)
+    const d = await r.json()
+    if (d.multiple) { setMultiple(true); setError(''); setData(null) }
+    else if (r.ok) { setData(d); setError(''); setMultiple(false) }
+    else { setData(null); setError(d.error || '조회 결과 없음') }
   }
-  useEffect(() => { if (data?.chukwon_no) { const iv = setInterval(() => fetchCard(data.chukwon_no), 30000); return () => clearInterval(iv) } }, [data?.chukwon_no])
+  useEffect(() => { if (data?.full_name) { const iv = setInterval(() => handleSearch(), 30000); return () => clearInterval(iv) } }, [data?.full_name])
 
   return (
     <div style={{ padding: '1.5rem 1rem', maxWidth: 400, margin: '0 auto', textAlign: 'center' }}>
       {!data ? (<>
-        <div style={{ fontSize: 32, marginBottom: 8 }}>🪷</div>
-        <div style={{ fontSize: 15, fontWeight: 700, color: A, marginBottom: 4 }}>공덕카드 조회</div>
-        <div style={{ fontSize: 11, opacity: 0.4, marginBottom: 16 }}>축원번호를 입력하세요</div>
-        <div style={{ display: 'flex', gap: 6 }}><input value={code} onChange={e => setCode(e.target.value.toUpperCase())} onKeyDown={e => e.key === 'Enter' && fetchCard(code)} placeholder="MIR-2026-0001" style={{ flex: 1, padding: 10, background: 'rgba(255,255,255,0.06)', border: `1px solid ${A}44`, borderRadius: 8, color: '#F5E6C8', fontSize: 14 }} /><button onClick={() => fetchCard(code)} style={{ padding: '10px 16px', background: A, color: '#0a0205', border: 'none', borderRadius: 8, fontWeight: 700, cursor: 'pointer' }}>확인</button></div>
+        <div style={{ fontSize: 32, marginBottom: 8 }}>🏅</div>
+        <div style={{ fontSize: 15, fontWeight: 700, color: A, marginBottom: 4 }}>나의 공덕카드</div>
+        <div style={{ fontSize: 12, opacity: 0.5, marginBottom: 16 }}>성함을 입력하시면<br/>기도 접수 현황을 확인하실 수 있습니다.</div>
+        <input value={nameInput} onChange={e => setNameInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSearch()} placeholder="성함을 입력하세요" style={{ width: 240, padding: '10px 14px', background: 'rgba(255,255,255,0.06)', border: `1px solid ${A}44`, borderRadius: 8, color: '#F5E6C8', fontSize: 15, textAlign: 'center', marginBottom: 8 }} />
+        {multiple && (
+          <div style={{ marginTop: 8 }}>
+            <div style={{ fontSize: 12, color: A, marginBottom: 6 }}>동명이인이 있습니다.<br/>연락처 뒷 4자리를 입력해주세요.</div>
+            <input value={phoneLast4} onChange={e => setPhoneLast4(e.target.value.replace(/\D/g, '').slice(0, 4))} placeholder="뒷 4자리" maxLength={4} style={{ width: 160, padding: '8px 12px', background: 'rgba(255,255,255,0.06)', border: `1px solid ${A}44`, borderRadius: 8, color: '#F5E6C8', fontSize: 16, textAlign: 'center', letterSpacing: 4 }} />
+          </div>
+        )}
+        <button onClick={handleSearch} style={{ display: 'block', width: 240, margin: '10px auto 0', padding: 10, background: A, color: '#0a0205', border: 'none', borderRadius: 8, fontWeight: 700, cursor: 'pointer', fontSize: 14 }}>🔍 확인하기</button>
         {error && <div style={{ marginTop: 8, color: '#ef4444', fontSize: 12 }}>{error}</div>}
       </>) : (<>
         <div style={{ background: `${A}08`, border: `1px solid ${A}33`, borderRadius: 12, padding: '1rem', textAlign: 'center' }}>
           <div style={{ fontSize: 11, color: A }}>🏯 {tName}</div>
-          <div style={{ fontSize: 18, fontWeight: 700, marginTop: 3 }}>{data.head_name} {data.buddhist_name ? `(${data.buddhist_name})` : ''}</div>
-          <div style={{ fontSize: 11, color: `${A}88`, marginTop: 2 }}>{data.chukwon_no} · 가족 {data.family_count}인</div>
+          <div style={{ fontSize: 18, fontWeight: 700, marginTop: 3 }}>{data.full_name} {data.buddhist_name ? `(${data.buddhist_name})` : ''}</div>
+          <div style={{ fontSize: 11, color: `${A}88`, marginTop: 2 }}>{data.chukwon_no && `${data.chukwon_no} · `}가족 {data.family_count}인</div>
           <div style={{ marginTop: 12, textAlign: 'left' }}>
             {config.offerings.map((o: any) => {
               const active = data.offerings.find((of: any) => of.type === o.type && of.status === 'active')
@@ -361,7 +404,7 @@ function MycardTab({ slug, config, tName }: { slug: string; config: any; tName: 
             })}
           </div>
         </div>
-        <button onClick={() => setData(null)} style={{ marginTop: 12, padding: '6px 16px', background: `${A}22`, border: `1px solid ${A}`, borderRadius: 6, color: A, cursor: 'pointer', fontSize: 11 }}>다른 번호 조회</button>
+        <button onClick={() => { setData(null); setNameInput(''); setPhoneLast4(''); setMultiple(false) }} style={{ marginTop: 12, padding: '6px 16px', background: `${A}22`, border: `1px solid ${A}`, borderRadius: 6, color: A, cursor: 'pointer', fontSize: 11 }}>다른 분 조회</button>
       </>)}
     </div>
   )

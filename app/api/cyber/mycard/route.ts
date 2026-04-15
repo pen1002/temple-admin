@@ -5,35 +5,52 @@ const globalForPrisma = global as unknown as { prismaMycard?: PrismaClient }
 const prisma = globalForPrisma.prismaMycard ?? new PrismaClient()
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prismaMycard = prisma
 
-// GET /api/cyber/mycard?code=MIR-2026-0001&temple=miraesa
+// GET /api/cyber/mycard?name=홍길동&temple=miraesa(&phone_last4=1234)
 export async function GET(req: NextRequest) {
   try {
-    const code = req.nextUrl.searchParams.get('code')?.trim()
+    const name = req.nextUrl.searchParams.get('name')?.trim()
     const slug = req.nextUrl.searchParams.get('temple')
-    if (!code || !slug) return NextResponse.json({ error: 'code, temple 필수' }, { status: 400 })
+    const phoneLast4 = req.nextUrl.searchParams.get('phone_last4')
+    // 레거시: code 파라미터도 지원
+    const code = req.nextUrl.searchParams.get('code')?.trim()
+
+    if (!slug) return NextResponse.json({ error: 'temple 필수' }, { status: 400 })
+    if (!name && !code) return NextResponse.json({ error: 'name 또는 code 필수' }, { status: 400 })
 
     const temple = await prisma.temple.findUnique({ where: { code: slug }, select: { id: true } })
     if (!temple) return NextResponse.json({ error: '사찰 없음' }, { status: 404 })
 
-    // 축원번호로 신도 조회
-    const believer = await prisma.believer.findFirst({
-      where: { chukwon_no: code, temple_id: temple.id },
+    let where: Record<string, unknown> = { temple_id: temple.id, status: '활동' }
+    if (code) {
+      where.chukwon_no = code
+    } else if (name) {
+      where.full_name = name
+      if (phoneLast4) where.phone = { endsWith: phoneLast4 }
+    }
+
+    const believers = await prisma.believer.findMany({
+      where,
       select: {
-        id: true, full_name: true, buddhist_name: true, gender: true, chukwon_no: true,
+        id: true, full_name: true, buddhist_name: true, chukwon_no: true, phone: true,
         familyMembers: { select: { name: true, relation_type: true }, orderBy: { sort_order: 'asc' } },
-        believerOfferings: { where: { status: 'active' }, select: { offering_type: true, participant_name: true, status: true, created_at: true } },
+        believerOfferings: { where: { status: 'active' }, select: { offering_type: true, participant_name: true, status: true } },
       },
     })
 
-    if (!believer) return NextResponse.json({ error: '조회 결과 없음' }, { status: 404 })
+    if (believers.length === 0) return NextResponse.json({ error: '등록된 신도를 찾을 수 없습니다.' }, { status: 404 })
 
-    // 보안 필터: 비고/영가/행효/주소 제외
+    // 동명이인
+    if (believers.length > 1 && !phoneLast4 && !code) {
+      return NextResponse.json({ multiple: true, count: believers.length })
+    }
+
+    const b = believers[0]
     return NextResponse.json({
-      chukwon_no: believer.chukwon_no,
-      head_name: believer.full_name,
-      buddhist_name: believer.buddhist_name,
-      family_count: believer.familyMembers.length + 1,
-      offerings: believer.believerOfferings.map(o => ({
+      full_name: b.full_name,
+      buddhist_name: b.buddhist_name,
+      chukwon_no: b.chukwon_no,
+      family_count: b.familyMembers.length + 1,
+      offerings: b.believerOfferings.map(o => ({
         type: o.offering_type,
         participant_name: o.participant_name,
         status: o.status,
