@@ -24,6 +24,7 @@ export default function JungmusoPage() {
   const [newPin, setNewPin] = useState('')
   const [activeTab, setActiveTab] = useState<Tab | null>((searchParams.get('tab') as Tab) || null)
   const [pendingTab, setPendingTab] = useState<Tab | null>(null)
+  const [activePanel, setActivePanel] = useState<string | null>(null)
 
   useEffect(() => {
     const saved = sessionStorage.getItem(`${slug}_members_role`)
@@ -131,13 +132,13 @@ export default function JungmusoPage() {
         <div className="shelf-row">
           <div className="shelf-slot" onClick={() => openProtectedTab('members')}><div className="slot-icon">📋</div><div className="slot-label">신도카드</div><div className="slot-sub">등록/검색 🔐</div></div>
           <div className="shelf-slot" onClick={() => openProtectedTab('offerings')}><div className="slot-icon">🙏</div><div className="slot-label">기도접수</div><div className="slot-sub">기도/공양 🔐</div></div>
-          <div className="shelf-slot"><div className="slot-icon">📊</div><div className="slot-label">접수현황</div><div className="slot-sub">기도/공양 현황</div></div>
+          <div className="shelf-slot" onClick={() => setActivePanel('status')}><div className="slot-icon">📊</div><div className="slot-label">접수현황</div><div className="slot-sub">기도/공양 현황</div></div>
         </div>
         <div className="shelf-plank" />
         <div className="shelf-row">
-          <div className="shelf-slot"><div className="slot-icon">📺</div><div className="slot-label">사찰 홍보</div><div className="slot-sub">유튜브/블로그</div></div>
-          <div className="shelf-slot"><div className="slot-icon">🏛️</div><div className="slot-label">사찰 안내</div><div className="slot-sub">소개/오시는길</div></div>
-          <div className="shelf-slot"><div className="slot-icon">📅</div><div className="slot-label">법회일정</div><div className="slot-sub">음력 기준</div></div>
+          <div className="shelf-slot" onClick={() => setActivePanel('media')}><div className="slot-icon">📺</div><div className="slot-label">사찰 홍보</div><div className="slot-sub">유튜브/블로그</div></div>
+          <div className="shelf-slot" onClick={() => setActivePanel('info')}><div className="slot-icon">🏛️</div><div className="slot-label">사찰 안내</div><div className="slot-sub">소개/오시는길</div></div>
+          <div className="shelf-slot" onClick={() => setActivePanel('cal')}><div className="slot-icon">📅</div><div className="slot-label">법회일정</div><div className="slot-sub">음력 기준</div></div>
         </div>
         <div className="shelf-plank" />
         <div className="shelf-row">
@@ -146,6 +147,40 @@ export default function JungmusoPage() {
         </div>
         <div className="shelf-plank" />
       </div>
+
+      {/* 패널 영역 */}
+      {activePanel && (
+        <div style={{ width: '100%', maxWidth: 520, margin: '12px auto 0', background: '#2a1a0a', border: '1px solid rgba(200,150,30,0.2)', borderRadius: 8, padding: 20, position: 'relative' }}>
+          <button onClick={() => setActivePanel(null)} style={{ position: 'absolute', top: 12, right: 16, fontSize: 20, color: 'rgba(245,230,184,0.5)', cursor: 'pointer', background: 'none', border: 'none' }}>&times;</button>
+
+          {activePanel === 'status' && (<>
+            <div style={{ fontSize: 16, fontWeight: 700, color: '#F5D060', marginBottom: 12, letterSpacing: 2 }}>기도/공양 접수현황</div>
+            <StatusPanel slug={slug} />
+          </>)}
+
+          {activePanel === 'media' && (<>
+            <div style={{ fontSize: 16, fontWeight: 700, color: '#F5D060', marginBottom: 12, letterSpacing: 2 }}>사찰 홍보</div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+              <a href="https://www.youtube.com/@108-forU" target="_blank" rel="noopener noreferrer" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, padding: '14px 8px', background: 'rgba(255,0,0,0.08)', borderRadius: 10, border: '1px solid rgba(255,0,0,0.2)', textDecoration: 'none' }}><div style={{ fontSize: 24 }}>▶️</div><span style={{ fontSize: 12, color: '#F5E6B8', fontWeight: 700 }}>유튜브</span></a>
+              <a href="https://blog.naver.com" target="_blank" rel="noopener noreferrer" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, padding: '14px 8px', background: 'rgba(3,199,90,0.08)', borderRadius: 10, border: '1px solid rgba(3,199,90,0.2)', textDecoration: 'none' }}><div style={{ fontSize: 24 }}>📝</div><span style={{ fontSize: 12, color: '#F5E6B8', fontWeight: 700 }}>네이버 블로그</span></a>
+              <a href="https://pf.kakao.com/_placeholder" target="_blank" rel="noopener noreferrer" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, padding: '14px 8px', background: 'rgba(254,229,0,0.08)', borderRadius: 10, border: '1px solid rgba(254,229,0,0.2)', textDecoration: 'none' }}><div style={{ fontSize: 24 }}>💬</div><span style={{ fontSize: 12, color: '#F5E6B8', fontWeight: 700 }}>카카오톡</span></a>
+              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, padding: '14px 8px', background: 'rgba(225,48,108,0.08)', borderRadius: 10, border: '1px solid rgba(225,48,108,0.2)', textDecoration: 'none' }}><div style={{ fontSize: 24 }}>📷</div><span style={{ fontSize: 12, color: '#F5E6B8', fontWeight: 700 }}>인스타그램</span></a>
+            </div>
+          </>)}
+
+          {activePanel === 'info' && (<>
+            <div style={{ fontSize: 16, fontWeight: 700, color: '#F5D060', marginBottom: 12, letterSpacing: 2 }}>사찰 안내</div>
+            {[['사찰명', tName], ['종단', temple?.denomination || '-'], ['주지스님', temple?.abbotName || '-'], ['연락처', temple?.phone || temple?.kakao_notify_tel || '-'], ['주소', temple?.address || '-']].map(([k, v], i) => <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid rgba(200,150,30,0.1)', fontSize: 13 }}><span style={{ color: 'rgba(245,230,184,0.5)' }}>{k}</span><span style={{ color: '#F5E6B8', fontWeight: 500 }}>{v}</span></div>)}
+          </>)}
+
+          {activePanel === 'cal' && (<>
+            <div style={{ fontSize: 16, fontWeight: 700, color: '#F5D060', marginBottom: 12, letterSpacing: 2 }}>법회/행사 일정</div>
+            <div style={{ fontSize: 12, color: 'rgba(245,230,184,0.5)' }}>
+              {[{ d: '매월 음력 1일', l: '초하루법회 새벽 5:30' }, { d: '매월 음력 15일', l: '보름법회 새벽 5:30' }, { d: '매월 음력 18일', l: '관음재일' }, { d: '매월 음력 24일', l: '지장재일' }, { d: '매주 일요일', l: '일요법회 10:30' }].map((e, i) => <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid rgba(200,150,30,0.1)' }}><span style={{ color: 'rgba(245,230,184,0.5)' }}>{e.d}</span><span style={{ color: '#F5E6B8', fontWeight: 500 }}>{e.l}</span></div>)}
+            </div>
+          </>)}
+        </div>
+      )}
 
       <div style={{ textAlign: 'center', marginTop: 16, paddingBottom: 40 }}>
         <a href={`/${slug}/dharma-wheel?grid=1`} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: `${A}12`, border: `1px solid ${A}33`, color: A, borderRadius: 8, padding: '10px 24px', fontSize: 13, textDecoration: 'none' }}>☸ 도량으로 돌아가기</a>
@@ -360,7 +395,7 @@ function OfferingsTab({ slug, config, tName }: { slug: string; config: any; tNam
 
   return (
     <div style={{ padding: '1rem', maxWidth: 520, margin: '0 auto' }}>
-      <div style={{ display: 'flex', gap: 6, marginBottom: 12 }}>{stats.map((s: any) => <div key={s.type} style={{ flex: 1, padding: 8, background: `${A}08`, border: `1px solid ${A}22`, borderRadius: 8, textAlign: 'center' }}><div style={{ fontSize: 18 }}>{s.icon}</div><div style={{ fontSize: 14, fontWeight: 700, color: A }}>{s.count}건</div><div style={{ fontSize: 9, opacity: 0.4 }}>{s.total.toLocaleString()}원</div></div>)}</div>
+      {/* 통계는 접수현황 카드에서 표시 */}
       {view === 'list' ? (<>
         <button onClick={() => setView('form')} style={{ width: '100%', padding: 10, background: A, color: '#0a0205', border: 'none', borderRadius: 8, fontWeight: 700, cursor: 'pointer', fontSize: 13, marginBottom: 10 }}>+ 기도 접수하기</button>
         {list.filter((l: any) => l.status === 'active').map((o: any) => (
@@ -453,3 +488,10 @@ function MycardTab({ slug, config, tName }: { slug: string; config: any; tName: 
 
 function Sec({ title }: { title: string }) { return <div style={{ fontSize: 12, color: A, fontWeight: 700, margin: '12px 0 6px', borderBottom: `1px solid ${A}22`, paddingBottom: 2 }}>{title}</div> }
 function F({ label, children }: { label: string; children: React.ReactNode }) { return <div style={{ marginBottom: 7 }}><div style={{ fontSize: 10, color: `${A}aa`, marginBottom: 2 }}>{label}</div>{children}</div> }
+
+function StatusPanel({ slug }: { slug: string }) {
+  const [data, setData] = useState<any[]>([])
+  useEffect(() => { fetch(`/api/cyber/status?temple_slug=${slug}`).then(r => r.json()).then(d => { if (Array.isArray(d)) setData(d) }).catch(() => {}) }, [slug])
+  if (data.length === 0) return <div style={{ color: 'rgba(245,230,184,0.3)', textAlign: 'center', padding: 12, fontSize: 12 }}>데이터 없음</div>
+  return <>{data.map((item, i) => <div key={i}><div style={{ display: 'flex', justifyContent: 'space-between', padding: '5px 0', borderBottom: '1px solid rgba(200,150,30,0.1)', fontSize: 13 }}><span style={{ color: 'rgba(245,230,184,0.5)' }}>{item.name}</span><span style={{ color: '#F5E6B8', fontWeight: 500 }}>{item.current}/{item.total}{item.unit}</span></div><div style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '4px 0 8px' }}><div style={{ flex: 1, height: 8, borderRadius: 4, background: 'rgba(200,150,30,0.15)' }}><div style={{ height: 8, borderRadius: 4, background: '#C8961E', width: `${item.total > 0 ? Math.round(item.current / item.total * 100) : 0}%` }} /></div><span style={{ fontSize: 10, color: 'rgba(245,230,184,0.5)', minWidth: 36, textAlign: 'right' }}>{item.total > 0 ? Math.round(item.current / item.total * 100) : 0}%</span></div></div>)}</>
+}
