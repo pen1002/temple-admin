@@ -304,8 +304,8 @@ model BelieverYoungga {
 // 기도접수 연동
 model BelieverOffering {
   id                String    @id @default(uuid())
-  believer_id       String
-  believer          Believer  @relation(fields: [believer_id], references: [id], onDelete: Cascade)
+  believer_id       String?
+  believer          Believer?  @relation(fields: [believer_id], references: [id], onDelete: SetNull)
   temple_id         String
   offering_type     String                                  // lantern/wonbul/indung
   participant_name  String

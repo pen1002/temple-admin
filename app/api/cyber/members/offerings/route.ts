@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
     // 1. believers_offerings INSERT
     const bo = await prisma.believerOffering.create({
       data: {
-        believer_id: believer_id || undefined, temple_id: temple.id, offering_type,
+        believer_id: believer_id || null, temple_id: temple.id, offering_type,
         participant_name: participant_name.trim(),
         vow_text: vow_text?.trim() || null,
         price, period, expires_at: expiresAt, status: 'active',
