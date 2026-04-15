@@ -6,9 +6,7 @@ import { getDailyWisdom } from '@/lib/getDailyWisdom'
 import BlockRenderer from './_blocks/BlockRenderer'
 import FooterBlock from './_blocks/FooterBlock'
 import type { TempleData, TemplateContent } from './_blocks/types'
-import dynamic from 'next/dynamic'
-
-const DharmaWheelPage = dynamic(() => import('./dharma-wheel/page'), { ssr: false })
+import CyberTempleRedirect from './CyberTempleRedirect'
 
 // ISR: 1분마다 재생성 (on-demand revalidation 병행)
 export const revalidate = 60
@@ -82,7 +80,7 @@ export default async function TemplePage(
 
   // 사이버사찰: 법륜바퀴를 직접 렌더링 (URL 유지)
   if (temple.temple_type === 'cyber') {
-    return <DharmaWheelPage />
+    return <CyberTempleRedirect />
   }
 
   // Redis: 동적 콘텐츠 (병렬 fetch)
