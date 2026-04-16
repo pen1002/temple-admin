@@ -38,6 +38,10 @@ model Temple {
   status         String   @default("active")
   isActive       Boolean  @default(true)
   temple_type    String   @default("offline")
+  temple_rank    String   @default("malsa")           // bonsa(본사) | malsa(말사)
+  parent_temple_id String?
+  contact_monk   String?
+  registered_at  DateTime @default(now())
   kakao_notify_tel String?
   bank_name      String?
   bank_account   String?
