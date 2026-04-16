@@ -319,8 +319,9 @@ function MembersTab({ slug, role, tName }: { slug: string; role: Role; tName: st
         {/* 뒷면: 영가 */}
         <Sec title="亡 영가 (최대 10위)" />
         {younggaRows.map((y: any, i: number) => (
-          <div key={i} style={{ display: 'grid', gridTemplateColumns: '28px 1fr 130px 36px', gap: 6, alignItems: 'center', padding: '8px 0', borderBottom: `1px solid ${A}11` }}>
+          <div key={i} style={{ display: 'grid', gridTemplateColumns: '28px 60px 1fr 130px 36px', gap: 6, alignItems: 'center', padding: '8px 0', borderBottom: `1px solid ${A}11` }}>
             <div style={{ color: A, fontWeight: 700, fontSize: 14, textAlign: 'center' }}>亡</div>
+            <select value={y.relation_type || ''} onChange={e => updateYg(i, 'relation_type', e.target.value)} style={{ background: 'rgba(255,255,255,0.06)', border: `1px solid ${A}33`, borderRadius: 4, color: '#F5E6C8', padding: '4px 2px', fontSize: 11 }}><option value="" style={{ background: '#1a0408' }}>관계</option>{['엄부','자모','조부','조모','형','제','자','매','친척','기타'].map(r => <option key={r} value={r} style={{ background: '#1a0408' }}>{r}</option>)}</select>
             <input value={y.name} onChange={e => updateYg(i, 'name', e.target.value)} placeholder="성명" style={{ background: 'rgba(255,255,255,0.06)', border: `1px solid ${A}33`, borderRadius: 4, color: '#F5E6C8', padding: '5px 8px', fontSize: 13 }} />
             <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
               <div style={{ display: 'flex', gap: 3 }}>{['음', '양'].map(t => <button key={t} onClick={() => updateYg(i, 'jesa_lunar', t === '음')} style={{ flex: 1, padding: '2px 4px', background: (t === '음') === (y.jesa_lunar ?? true) ? `${A}33` : 'transparent', border: `1px solid ${A}33`, borderRadius: 3, color: (t === '음') === (y.jesa_lunar ?? true) ? A : '#F5E6C8', cursor: 'pointer', fontSize: 10 }}>{t}력</button>)}</div>
