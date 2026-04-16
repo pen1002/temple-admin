@@ -1,7 +1,11 @@
 'use client'
+import dynamic from 'next/dynamic'
 
-import DharmaWheelView from './DharmaWheelView'
+const DharmaWheelPage = dynamic(() => import('./dharma-wheel/page'), {
+  ssr: false,
+  loading: () => <div style={{ minHeight: '100vh', background: '#FFFEF5' }} />,
+})
 
 export default function CyberTempleRedirect() {
-  return <DharmaWheelView />
+  return <DharmaWheelPage />
 }
