@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation'
+import { Suspense } from 'react'
 import type { Metadata } from 'next'
 import { db } from '@/lib/db'
 import { getNotices, getEventList, getRitualTimes, getDharma, getGallery } from '@/lib/kv'
@@ -79,8 +80,13 @@ export default async function TemplePage(
   if (!temple) notFound()
 
   // 사이버사찰: 법륜바퀴 직접 렌더링 (URL 유지)
+  // Suspense — DharmaWheelView 내부 useSearchParams() Next.js 14 요구사항
   if (temple.temple_type === 'cyber') {
-    return <CyberTempleRedirect />
+    return (
+      <Suspense fallback={<div style={{ minHeight: '100vh', background: '#FFFEF5' }} />}>
+        <CyberTempleRedirect />
+      </Suspense>
+    )
   }
 
   // Redis: 동적 콘텐츠 (병렬 fetch)
