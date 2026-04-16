@@ -16,7 +16,6 @@ export async function GET(req: NextRequest) {
       abbotName: true, phone: true, address: true,
       bank_name: true, bank_account: true, bank_holder: true,
       kakao_notify_tel: true, pin: true,
-      temple_rank: true,
     },
   })
   if (!temple) return NextResponse.json({ error: '사찰 없음' }, { status: 404 })

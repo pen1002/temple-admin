@@ -3,7 +3,6 @@ import { useState, useEffect, useCallback } from 'react'
 import { useParams, useSearchParams } from 'next/navigation'
 import { useCyberTemple } from '@/lib/useCyberTemple'
 import { TEMPLE_OFFERINGS } from '@/lib/constants/templeOfferings'
-import SuperManagementPanel from '../../_components/SuperManagementPanel'
 
 const A = '#C9A84C'
 
@@ -21,7 +20,7 @@ function getGapja(dateStr: string): string {
   const t = TTI[idx % 12]
   return `${c}${j}년 ${t}`
 }
-type Tab = 'members' | 'offerings' | 'mycard' | 'super'
+type Tab = 'members' | 'offerings' | 'mycard'
 type Role = 'super' | 'admin' | null
 const RELS = ['부', '모', '건명', '곤명', '자', '녀', '손자', '손녀', '형', '제', '기타']
 
@@ -52,9 +51,7 @@ export default function JungmusoPage() {
     // sessionStorage에 role이 있어도 5분 경과 시 재인증
     const authTime = sessionStorage.getItem(`${slug}_members_auth_time`)
     const isExpired = !authTime || (Date.now() - parseInt(authTime)) > 5 * 60 * 1000
-    // 말사관리는 super 권한 필수 — admin 세션이어도 super PIN 재입력
-    const needsSuper = tab === 'super'
-    if (role && !isExpired && (!needsSuper || role === 'super')) { setActiveTab(tab); return }
+    if (role && !isExpired) { setActiveTab(tab); return }
     // 만료 시 role 초기화
     if (isExpired) { setRole(null); sessionStorage.removeItem(`${slug}_members_role`); sessionStorage.removeItem(`${slug}_members_auth_time`) }
     setPendingTab(tab)
@@ -65,12 +62,6 @@ export default function JungmusoPage() {
     const res = await fetch('/api/cyber/members/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pin: input, temple_slug: slug }) })
     if (res.ok) {
       const { role: r, pin_changed } = await res.json()
-      // 말사관리는 super PIN 필수 — admin PIN으로는 진입 불가
-      if (pendingTab === 'super' && r !== 'super') {
-        const next = pinError + 1; setPinError(next); setPin('')
-        if (next >= 3) { setPinLocked(true); setTimeout(() => { setPinLocked(false); setPinError(0) }, 30000) }
-        return
-      }
       setRole(r); sessionStorage.setItem(`${slug}_members_role`, r); sessionStorage.setItem(`${slug}_members_auth_time`, String(Date.now())); setPinError(0)
       if (pendingTab) { setActiveTab(pendingTab); setPendingTab(null) }
       if (!pin_changed && r === 'admin') setShowChangePin(true)
@@ -140,19 +131,13 @@ export default function JungmusoPage() {
         </div>
       </div>
       <div style={{ display: 'flex', borderBottom: `1px solid ${A}22`, background: 'rgba(0,0,0,0.3)' }}>
-        {([
-          { key: 'members' as Tab, icon: '👥', label: '신도카드' },
-          { key: 'offerings' as Tab, icon: '🙏', label: '기도접수' },
-          { key: 'mycard' as Tab, icon: '🏅', label: '나의기도동참' },
-          ...(role === 'super' && temple?.temple_rank === 'bonsa' ? [{ key: 'super' as Tab, icon: '🏯', label: '말사관리' }] : []),
-        ]).map(t => (
+        {([{ key: 'members' as Tab, icon: '👥', label: '신도카드' }, { key: 'offerings' as Tab, icon: '🙏', label: '기도접수' }, { key: 'mycard' as Tab, icon: '🏅', label: '나의기도동참' }]).map(t => (
           <button key={t.key} onClick={() => setActiveTab(t.key)} style={{ flex: 1, padding: '0.8rem 0.4rem', background: activeTab === t.key ? `${A}11` : 'transparent', border: 'none', borderBottom: activeTab === t.key ? `2px solid ${A}` : '2px solid transparent', color: activeTab === t.key ? A : `${A}55`, cursor: 'pointer', fontSize: 13, fontWeight: activeTab === t.key ? 700 : 400, fontFamily: "'Noto Serif KR',serif" }}>{t.icon} {t.label}</button>
         ))}
       </div>
       {activeTab === 'members' && <MembersTab slug={slug} role={role} tName={tName} />}
       {activeTab === 'offerings' && <OfferingsTab slug={slug} config={config} tName={tName} />}
       {activeTab === 'mycard' && <MycardTab slug={slug} config={config} tName={tName} />}
-      {activeTab === 'super' && role === 'super' && <SuperManagementPanel />}
     </div>
   )
 
@@ -179,9 +164,6 @@ export default function JungmusoPage() {
         <div className="shelf-row">
           <div className="shelf-slot" onClick={() => window.location.href = `/${slug}/cyber/mycard`}><div className="slot-icon">🏅</div><div className="slot-label">나의기도동참</div><div className="slot-sub">기도 현황 확인</div></div>
           <div className="shelf-slot" onClick={() => window.location.href = `/${slug}/cyber/notice`}><div className="slot-icon">🔔</div><div className="slot-label">공지사항</div><div className="slot-sub">{tName} 소식</div></div>
-          {temple?.temple_rank === 'bonsa' && (
-            <div className="shelf-slot" onClick={() => openProtectedTab('super')}><div className="slot-icon">🏯</div><div className="slot-label">말사관리</div><div className="slot-sub">본사 전용 🔴</div></div>
-          )}
         </div>
         <div className="shelf-plank" />
       </div>

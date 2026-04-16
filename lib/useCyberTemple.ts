@@ -13,7 +13,6 @@ export interface CyberTempleInfo {
   bank_holder: string | null
   kakao_notify_tel: string | null
   pin: string | null
-  temple_rank: string | null
 }
 
 const cache: Record<string, CyberTempleInfo> = {}
