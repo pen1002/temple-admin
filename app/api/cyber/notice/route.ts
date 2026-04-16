@@ -1,9 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@/lib/prisma'
 
-const globalForPrisma = global as unknown as { prismaCyberNotice?: PrismaClient }
-const prisma = globalForPrisma.prismaCyberNotice ?? new PrismaClient()
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prismaCyberNotice = prisma
 
 // 사이버법당 공지사항 — cyber_offerings type='notice'로 저장
 export async function POST(req: NextRequest) {

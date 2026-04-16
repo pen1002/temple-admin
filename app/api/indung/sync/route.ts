@@ -1,10 +1,7 @@
 import { NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@/lib/prisma'
 import { readSheetRows } from '@/lib/google-sheets'
 
-const globalForPrisma = global as unknown as { prismaSync?: PrismaClient }
-const prisma = globalForPrisma.prismaSync ?? new PrismaClient()
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prismaSync = prisma
 
 // GET /api/indung/sync?temple_slug=cheongwansa
 // 시트의 입금확인 상태(H열)를 DB bank_confirmed에 동기화

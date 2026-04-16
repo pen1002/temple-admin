@@ -1,11 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@/lib/prisma'
 import { TEMPLE_OFFERINGS } from '@/lib/constants/templeOfferings'
 import { checkTempleAuth } from '@/lib/auth/templeAuth'
 
-const globalForPrisma = global as unknown as { prismaMO?: PrismaClient }
-const prisma = globalForPrisma.prismaMO ?? new PrismaClient()
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prismaMO = prisma
 
 // POST — 기도접수 + cyber_offerings 연동
 export async function POST(req: NextRequest) {

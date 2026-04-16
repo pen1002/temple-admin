@@ -1,9 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@/lib/prisma'
 
-const globalForPrisma = global as unknown as { prismaSuperTemple?: PrismaClient }
-const prisma = globalForPrisma.prismaSuperTemple ?? new PrismaClient()
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prismaSuperTemple = prisma
 
 import { verifyTempleToken } from '@/lib/auth/templeAuth'
 

@@ -1,11 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@/lib/prisma'
 import { MEMBER_AUTH } from '@/lib/constants/memberAuth'
 import { issueTempleToken } from '@/lib/auth/templeAuth'
 
-const globalForPrisma = global as unknown as { prismaAuth?: PrismaClient }
-const prisma = globalForPrisma.prismaAuth ?? new PrismaClient()
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prismaAuth = prisma
 
 // POST — PIN 인증
 export async function POST(req: NextRequest) {

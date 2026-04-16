@@ -1,11 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@/lib/prisma'
 
 export const revalidate = 300 // 5분 캐시
 
-const globalForPrisma = global as unknown as { prismaTempleInfo?: PrismaClient }
-const prisma = globalForPrisma.prismaTempleInfo ?? new PrismaClient()
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prismaTempleInfo = prisma
 
 // GET /api/cyber/temple-info?slug=miraesa
 export async function GET(req: NextRequest) {

@@ -1,10 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@/lib/prisma'
 import { checkTempleAuth } from '@/lib/auth/templeAuth'
 
-const globalForPrisma = global as unknown as { prismaMembers?: PrismaClient }
-const prisma = globalForPrisma.prismaMembers ?? new PrismaClient()
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prismaMembers = prisma
 
 function generateChukwonNo(templeCode: string, count: number): string {
   const prefix = templeCode.replace(/[^a-zA-Z]/g, '').slice(0, 3).toUpperCase()

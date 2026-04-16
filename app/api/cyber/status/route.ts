@@ -1,9 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@/lib/prisma'
 
-const globalForPrisma = global as unknown as { prismaStatus?: PrismaClient }
-const prisma = globalForPrisma.prismaStatus ?? new PrismaClient()
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prismaStatus = prisma
 
 const TYPE_CONFIG = [
   { type: 'yeondeung', name: '초파일봉축연등', unit: '등', round: 30 },

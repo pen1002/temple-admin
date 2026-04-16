@@ -1,10 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@/lib/prisma'
 import { notifyTemple, KAKAO_TEMPLATES } from '@/lib/notify'
 
-const globalForPrisma = global as unknown as { prismaSido?: PrismaClient }
-const prisma = globalForPrisma.prismaSido ?? new PrismaClient()
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prismaSido = prisma
 
 const SHEETS_URL = process.env.GOOGLE_SHEET_SCRIPT_URL || ''
 

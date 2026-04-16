@@ -1,9 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@/lib/prisma'
 
-const globalForPrisma = global as unknown as { prismaMycard?: PrismaClient }
-const prisma = globalForPrisma.prismaMycard ?? new PrismaClient()
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prismaMycard = prisma
 
 // GET /api/cyber/mycard?name=홍길동&temple=miraesa(&phone_last4=1234)
 export async function GET(req: NextRequest) {
