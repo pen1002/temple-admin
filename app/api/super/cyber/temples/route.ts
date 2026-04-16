@@ -5,12 +5,18 @@ const globalForPrisma = global as unknown as { prismaSuperTemples?: PrismaClient
 const prisma = globalForPrisma.prismaSuperTemples ?? new PrismaClient()
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prismaSuperTemples = prisma
 
-const SUPER_PIN = process.env.SUPER_PIN ?? '108108'
-function checkSuper(req: NextRequest) { return req.headers.get('x-role') === 'super' }
+import { verifyTempleToken } from '@/lib/auth/templeAuth'
+
+async function checkSuper(req: NextRequest): Promise<boolean> {
+  const token = req.cookies.get('temple_auth')?.value || req.headers.get('x-temple-auth') || ''
+  if (!token) return false
+  const payload = await verifyTempleToken(token)
+  return payload?.role === 'super'
+}
 
 // GET — 전체 사이버사찰 + 통계
 export async function GET(req: NextRequest) {
-  if (!checkSuper(req)) return NextResponse.json({ error: '권한 없음' }, { status: 403 })
+  if (!(await checkSuper(req))) return NextResponse.json({ error: '권한 없음' }, { status: 403 })
   try {
     const temples = await prisma.temple.findMany({
       where: { temple_type: 'cyber' },
@@ -52,7 +58,7 @@ export async function GET(req: NextRequest) {
 
 // POST — 말사 신규 등록
 export async function POST(req: NextRequest) {
-  if (!checkSuper(req)) return NextResponse.json({ error: '권한 없음' }, { status: 403 })
+  if (!(await checkSuper(req))) return NextResponse.json({ error: '권한 없음' }, { status: 403 })
   try {
     const { code, name, contact_monk, phone, address } = await req.json()
     if (!code || !name) return NextResponse.json({ error: 'code, name 필수' }, { status: 400 })

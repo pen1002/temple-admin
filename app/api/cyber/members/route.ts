@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
+import { checkTempleAuth } from '@/lib/auth/templeAuth'
 
 const globalForPrisma = global as unknown as { prismaMembers?: PrismaClient }
 const prisma = globalForPrisma.prismaMembers ?? new PrismaClient()
@@ -20,6 +21,11 @@ export async function GET(req: NextRequest) {
   try {
     const slug = req.nextUrl.searchParams.get('temple_slug')
     if (!slug) return NextResponse.json({ error: 'temple_slug 필수' }, { status: 400 })
+
+    // 인증 + 격리 검증
+    const auth = await checkTempleAuth(req, slug)
+    if (auth instanceof NextResponse) return auth
+
     const temple = await getTemple(slug)
     if (!temple) return NextResponse.json({ error: '사찰 없음' }, { status: 404 })
 
@@ -65,6 +71,11 @@ export async function POST(req: NextRequest) {
     } = body
 
     if (!temple_slug || !full_name?.trim()) return NextResponse.json({ error: 'temple_slug, full_name 필수' }, { status: 400 })
+
+    // 인증 + 격리 검증
+    const auth = await checkTempleAuth(req, temple_slug)
+    if (auth instanceof NextResponse) return auth
+
     const temple = await getTemple(temple_slug)
     if (!temple) return NextResponse.json({ error: '사찰 없음' }, { status: 404 })
 
@@ -148,6 +159,8 @@ export async function PATCH(req: NextRequest) {
     const { id, temple_slug, ...updates } = await req.json()
     if (!id) return NextResponse.json({ error: 'id 필수' }, { status: 400 })
     if (temple_slug) {
+      const auth = await checkTempleAuth(req, temple_slug)
+      if (auth instanceof NextResponse) return auth
       const temple = await getTemple(temple_slug)
       if (!temple) return NextResponse.json({ error: '사찰 없음' }, { status: 404 })
       const t = await prisma.believer.findUnique({ where: { id }, select: { temple_id: true } })
@@ -168,6 +181,8 @@ export async function DELETE(req: NextRequest) {
     const { id, temple_slug, role } = await req.json()
     if (!id) return NextResponse.json({ error: 'id 필수' }, { status: 400 })
     if (temple_slug) {
+      const auth = await checkTempleAuth(req, temple_slug)
+      if (auth instanceof NextResponse) return auth
       const temple = await getTemple(temple_slug)
       if (!temple) return NextResponse.json({ error: '사찰 없음' }, { status: 404 })
       const t = await prisma.believer.findUnique({ where: { id }, select: { temple_id: true } })

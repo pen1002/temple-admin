@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
 import { MEMBER_AUTH } from '@/lib/constants/memberAuth'
+import { issueTempleToken } from '@/lib/auth/templeAuth'
 
 const globalForPrisma = global as unknown as { prismaAuth?: PrismaClient }
 const prisma = globalForPrisma.prismaAuth ?? new PrismaClient()
@@ -12,20 +13,27 @@ export async function POST(req: NextRequest) {
     const { pin, temple_slug } = await req.json()
     if (!pin || !temple_slug) return NextResponse.json({ error: 'pin, temple_slug 필수' }, { status: 400 })
 
-    // 슈퍼 PIN
-    if (pin === MEMBER_AUTH.superPin) {
-      return NextResponse.json({ role: 'super', pin_changed: true })
-    }
-
-    // 사찰 관리자 PIN
+    // 사찰 정보 먼저 조회
     const temple = await prisma.temple.findUnique({
       where: { code: temple_slug },
-      select: { admin_pin: true, pin_changed: true },
+      select: { id: true, admin_pin: true, pin_changed: true },
     })
     if (!temple) return NextResponse.json({ error: '사찰 없음' }, { status: 404 })
 
+    // 슈퍼 PIN
+    if (pin === MEMBER_AUTH.superPin) {
+      const token = await issueTempleToken({ role: 'super', temple_slug, temple_id: temple.id })
+      const res = NextResponse.json({ role: 'super', pin_changed: true, token })
+      res.cookies.set('temple_auth', token, { httpOnly: false, sameSite: 'lax', maxAge: 7200, path: '/' })
+      return res
+    }
+
+    // 사찰 관리자 PIN
     if (pin === temple.admin_pin) {
-      return NextResponse.json({ role: 'admin', pin_changed: temple.pin_changed })
+      const token = await issueTempleToken({ role: 'admin', temple_slug, temple_id: temple.id })
+      const res = NextResponse.json({ role: 'admin', pin_changed: temple.pin_changed, token })
+      res.cookies.set('temple_auth', token, { httpOnly: false, sameSite: 'lax', maxAge: 7200, path: '/' })
+      return res
     }
 
     return NextResponse.json({ error: 'PIN 불일치' }, { status: 401 })

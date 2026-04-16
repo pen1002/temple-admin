@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
 import { TEMPLE_OFFERINGS } from '@/lib/constants/templeOfferings'
+import { checkTempleAuth } from '@/lib/auth/templeAuth'
 
 const globalForPrisma = global as unknown as { prismaMO?: PrismaClient }
 const prisma = globalForPrisma.prismaMO ?? new PrismaClient()
@@ -13,6 +14,10 @@ export async function POST(req: NextRequest) {
     if (!temple_slug || !offering_type || !participant_name?.trim()) {
       return NextResponse.json({ error: '필수 필드 누락' }, { status: 400 })
     }
+
+    // 인증 + 격리 검증
+    const auth = await checkTempleAuth(req, temple_slug)
+    if (auth instanceof NextResponse) return auth
 
     const temple = await prisma.temple.findUnique({ where: { code: temple_slug }, select: { id: true } })
     if (!temple) return NextResponse.json({ error: '사찰 없음' }, { status: 404 })
@@ -63,8 +68,15 @@ export async function DELETE(req: NextRequest) {
     const { id } = await req.json()
     if (!id) return NextResponse.json({ error: 'id 필수' }, { status: 400 })
 
-    const bo = await prisma.believerOffering.findUnique({ where: { id } })
+    const bo = await prisma.believerOffering.findUnique({ where: { id }, include: { believer: { select: { temple: { select: { code: true } } } } } })
     if (!bo) return NextResponse.json({ error: '접수 없음' }, { status: 404 })
+
+    // 소속 사찰 검증
+    const slug = bo.believer?.temple?.code
+    if (slug) {
+      const auth = await checkTempleAuth(req, slug)
+      if (auth instanceof NextResponse) return auth
+    }
 
     // 비활성화
     await prisma.believerOffering.update({ where: { id }, data: { status: 'inactive' } })

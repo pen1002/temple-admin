@@ -5,11 +5,18 @@ const globalForPrisma = global as unknown as { prismaSuperTemple?: PrismaClient 
 const prisma = globalForPrisma.prismaSuperTemple ?? new PrismaClient()
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prismaSuperTemple = prisma
 
-function checkSuper(req: NextRequest) { return req.headers.get('x-role') === 'super' }
+import { verifyTempleToken } from '@/lib/auth/templeAuth'
+
+async function checkSuper(req: NextRequest): Promise<boolean> {
+  const token = req.cookies.get('temple_auth')?.value || req.headers.get('x-temple-auth') || ''
+  if (!token) return false
+  const payload = await verifyTempleToken(token)
+  return payload?.role === 'super'
+}
 
 // PATCH — 활성화/비활성화/PIN초기화
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  if (!checkSuper(req)) return NextResponse.json({ error: '권한 없음' }, { status: 403 })
+  if (!(await checkSuper(req))) return NextResponse.json({ error: '권한 없음' }, { status: 403 })
   try {
     const { id } = await params
     const body = await req.json()
