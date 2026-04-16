@@ -1,7 +1,3 @@
 {
-  "regions": ["icn1"],
-  "functions": {
-    "app/**/*.ts": { "maxDuration": 10 },
-    "app/**/*.tsx": { "maxDuration": 10 }
-  }
+  "regions": ["icn1"]
 }
