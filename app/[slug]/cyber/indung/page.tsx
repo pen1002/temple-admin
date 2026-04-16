@@ -73,7 +73,7 @@ export default function IndungPage() {
       </div>
 
       {/* 인등 격자 — 원형 */}
-      <div onTouchStart={e => setTouchStartX(e.touches[0].clientX)} onTouchEnd={e => { const d = touchStartX - e.changedTouches[0].clientX; if (d > 50) setViewRound(viewRound + 1); else if (d < -50) setViewRound(Math.max(1, viewRound - 1)); }} style={{ display: 'grid', gridTemplateColumns: `repeat(${COLS}, 1fr)`, gap: 6, marginBottom: 20, position: 'relative' }}>
+      <div onTouchStart={e => setTouchStartX(e.touches[0].clientX)} onTouchEnd={e => { const d = touchStartX - e.changedTouches[0].clientX; if (d > 50) setViewRound(viewRound + 1); else if (d < -50) setViewRound(Math.max(1, viewRound - 1)); }} style={{ display: 'grid', gridTemplateColumns: `repeat(${COLS}, 1fr)`, gap: 10, marginBottom: 20, position: 'relative' }}>
         {Array.from({ length: PER_ROUND }).map((_, i) => {
           const gi = roundStart + i, lit = gi < items.length, c = lit ? items[gi] : null
           return (
@@ -84,7 +84,7 @@ export default function IndungPage() {
                 <div style={{ width: 8, height: 14, background: 'radial-gradient(ellipse at 50% 80%, rgba(255,220,80,1), rgba(255,160,30,0.9) 60%, transparent)', borderRadius: '50% 50% 40% 40%', marginBottom: -2, filter: 'blur(0.5px)', boxShadow: '0 0 12px rgba(255,200,50,0.8), 0 0 24px rgba(255,180,40,0.4)', animation: 'id-flame 0.8s ease-in-out infinite alternate' }} />
               )}
               {/* 인등 SVG — 도자기 모형 */}
-              <svg viewBox="0 0 44 50" style={{ width: '100%', maxWidth: 54, filter: lit ? 'drop-shadow(0 0 15px rgba(255,200,50,0.9)) drop-shadow(0 0 30px rgba(255,180,40,0.5))' : 'grayscale(1) opacity(0.12)' }}>
+              <svg viewBox="0 0 44 50" style={{ width: '100%', maxWidth: 44, filter: lit ? 'drop-shadow(0 0 15px rgba(255,200,50,0.9)) drop-shadow(0 0 30px rgba(255,180,40,0.5))' : 'grayscale(1) opacity(0.12)' }}>
                 {/* 심지 목 */}
                 <rect x="19" y="2" width="6" height="6" rx="1.5" fill={lit ? '#d4c8a0' : '#888'} />
                 {/* 어깨 (좁은 목에서 넓어지는 곡선) */}
