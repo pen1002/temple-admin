@@ -1,9 +1,5 @@
 import { notFound } from 'next/navigation'
-import { PrismaClient } from '@prisma/client'
-
-const globalForPrisma = global as unknown as { prismaCyberLayout?: PrismaClient }
-const db = globalForPrisma.prismaCyberLayout ?? new PrismaClient()
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prismaCyberLayout = db
+import { prisma as db } from '@/lib/prisma'
 
 export default async function CyberLayout({ children, params }: { children: React.ReactNode; params: Promise<{ slug: string }> }) {
   const { slug } = await params
