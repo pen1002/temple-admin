@@ -236,9 +236,12 @@ export default function DharmaWheelPage() {
   const temple = useCyberTemple(slug);
   const templeName = temple?.name || slug;
   const rootRef = useRef<HTMLDivElement>(null);
-  const [phase, setPhase] = useState<'idle' | 'spinning' | 'done'>(
-    searchParams.get('grid') === '1' ? 'done' : 'idle'
-  );
+  const [phase, setPhase] = useState<'idle' | 'spinning' | 'done'>(() => {
+    if (searchParams.get('grid') === '1') return 'done';
+    // sessionStorage: 이 세션에서 이미 법륜 돌린 적 있으면 그리드로 바로
+    if (typeof window !== 'undefined' && sessionStorage.getItem(`dw_${slug}_done`) === '1') return 'done';
+    return 'idle';
+  });
   const [wheelAngle, setWheelAngle] = useState(0);
   const [cw, setCw] = useState(0);
 
@@ -248,10 +251,12 @@ export default function DharmaWheelPage() {
     return () => window.removeEventListener('resize', u);
   }, []);
 
-  // 그리드 표시 시 URL에 ?grid=1 추가 + prefetch
+  // 그리드 표시 시 URL + sessionStorage 저장 + prefetch
   useEffect(() => {
     if (phase === 'done') {
       if (searchParams.get('grid') !== '1') window.history.replaceState(null, '', `?grid=1`);
+      // 세션 내 F5 시 그리드 유지
+      sessionStorage.setItem(`dw_${slug}_done`, '1');
       // 모든 카드 경로 미리 불러오기
       items.forEach(item => { if (item.href !== '_kakao' && item.href !== '#') router.prefetch(`/${slug}/cyber/${item.href}`) });
     }
