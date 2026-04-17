@@ -1,0 +1,4 @@
+-- 모델명: BlockCatalog
+-- 분류: TYPE-4 (GLOBAL)
+-- RLS 미적용 — 블록 카탈로그는 시스템 공용
+-- siteId는 temple 연결이 아닌 독립 식별자

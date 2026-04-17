@@ -1,0 +1,4 @@
+-- 모델명: DharmaQuote
+-- 분류: TYPE-4 (GLOBAL)
+-- RLS 미적용 — 전체 사찰 공유 일별 법문
+-- Phase 3에서 super_admin 수정 정책 검토 예정

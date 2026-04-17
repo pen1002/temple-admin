@@ -1,0 +1,3 @@
+-- 모델명: DailyWisdom
+-- 분류: TYPE-4 (GLOBAL)
+-- RLS 미적용 — 전체 사찰 공유 오늘의 부처님말씀
