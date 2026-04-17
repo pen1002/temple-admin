@@ -22,6 +22,11 @@ export async function middleware(request: NextRequest) {
       return NextResponse.next()
     }
 
+    // 법적 페이지는 slug rewrite 없이 직접 서빙
+    if (['/privacy', '/terms'].includes(pathname)) {
+      return NextResponse.next()
+    }
+
     // 서브도메인 → /{slug}{pathname} 으로 rewrite
     // 이미 pathname이 /slug로 시작하면 이중 추가 방지
     const url = request.nextUrl.clone()
