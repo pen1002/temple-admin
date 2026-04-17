@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { notifyTemple, KAKAO_TEMPLATES } from '@/lib/notify'
+import { requireTempleAuth } from '@/lib/api/require-temple-auth'
 
 
 const VALID_TYPES = ['bow', 'memorial', 'prayer', 'avalokiteshvara', 'indung', 'yeondeung'] as const
@@ -25,6 +26,10 @@ function getPrayerLabel(type: string): string {
 
 export async function POST(req: NextRequest) {
   try {
+    // 인증: 사찰 존재 검증 + Origin 체크 + Rate Limit (분당 10건)
+    const auth = await requireTempleAuth(req, { allowPublic: true, rateLimit: 10 })
+    if (auth instanceof NextResponse) return auth
+
     const body = await req.json()
     const { temple_slug, type, name, contact, deceased, relationship, prayer_kind, wish, amount } = body
 
@@ -109,16 +114,20 @@ export async function POST(req: NextRequest) {
 
 export async function GET(req: NextRequest) {
   try {
-    const slug = req.nextUrl.searchParams.get('temple_slug')
+    // 인증: 사찰 존재 검증 + Origin 체크
+    const auth = await requireTempleAuth(req, { allowPublic: true })
+    if (auth instanceof NextResponse) return auth
+    const { templeSlug } = auth
+
     const type = req.nextUrl.searchParams.get('type')
     const limit = Math.min(10000, parseInt(req.nextUrl.searchParams.get('limit') || '50'))
 
-    if (!slug || !type) {
-      return NextResponse.json({ error: 'temple_slug, type 필수' }, { status: 400 })
+    if (!type) {
+      return NextResponse.json({ error: 'type 필수' }, { status: 400 })
     }
 
     const rows = await prisma.cyberOffering.findMany({
-      where: { temple_slug: slug, type },
+      where: { temple_slug: templeSlug, type },
       orderBy: { created_at: 'desc' },
       take: limit,
     })
