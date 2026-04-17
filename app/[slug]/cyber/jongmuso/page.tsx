@@ -29,7 +29,7 @@ export default function JungmusoPage() {
   const searchParams = useSearchParams()
   const temple = useCyberTemple(slug)
   const tName = temple?.name || slug
-  const config = TEMPLE_OFFERINGS[slug] || TEMPLE_OFFERINGS.miraesa
+  const config = TEMPLE_OFFERINGS[slug] || Object.values(TEMPLE_OFFERINGS)[0]
 
   const [role, setRole] = useState<Role>(null)
   const [pin, setPin] = useState('')

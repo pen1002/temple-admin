@@ -9,7 +9,7 @@ const SHEETS_URL = process.env.GOOGLE_SHEET_SCRIPT_URL || ''
 export async function GET(req: NextRequest) {
   try {
     const q = req.nextUrl.searchParams.get('q')?.trim()
-    const slug = req.nextUrl.searchParams.get('temple_slug') || 'miraesa'
+    const slug = req.nextUrl.searchParams.get('temple_slug') || process.env.CYBER_DEFAULT_SLUG || ''
     if (!q) return NextResponse.json([])
 
     // 신도 등록 검색
@@ -86,7 +86,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
-    const { temple_slug = 'miraesa', names, beopMyeong, address, contact } = body
+    const { temple_slug = process.env.CYBER_DEFAULT_SLUG || '', names, beopMyeong, address, contact } = body
 
     if (!names?.trim() || !contact?.trim()) {
       return NextResponse.json({ error: '성함, 전화번호 필수' }, { status: 400 })

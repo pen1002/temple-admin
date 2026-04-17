@@ -8,7 +8,7 @@ const prisma = new PrismaClient()
 
 async function main() {
   const result = await prisma.temple.update({
-    where: { code: 'miraesa' },
+    where: { code: process.env.CYBER_DEFAULT_SLUG || '' },
     data: { temple_type: 'cyber' },
     select: { code: true, name: true, temple_type: true },
   })

@@ -10,7 +10,7 @@ export default function MyCardPage() {
   const { slug } = useParams<{ slug: string }>()
   const temple = useCyberTemple(slug)
   const tName = temple?.name || slug
-  const config = TEMPLE_OFFERINGS[slug] || TEMPLE_OFFERINGS.miraesa
+  const config = TEMPLE_OFFERINGS[slug] || Object.values(TEMPLE_OFFERINGS)[0]
   const [nameInput, setNameInput] = useState('')
   const [phoneLast4, setPhoneLast4] = useState('')
   const [multiple, setMultiple] = useState(false)

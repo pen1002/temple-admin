@@ -8,6 +8,7 @@ import BlockRenderer from './_blocks/BlockRenderer'
 import FooterBlock from './_blocks/FooterBlock'
 import type { TempleData, TemplateContent } from './_blocks/types'
 import CyberTempleRedirect from './CyberTempleRedirect'
+import { shouldHideFooter } from '@/lib/temple-specific/miraesa'
 
 // ISR: 1분마다 재생성 (on-demand revalidation 병행)
 export const revalidate = 60
@@ -143,7 +144,7 @@ export default async function TemplePage(
           dailyWisdom={dailyWisdom}
         />
       ))}
-      {temple.code !== 'miraesa' && <FooterBlock temple={templeData} />}
+      {!shouldHideFooter(temple.code) && <FooterBlock temple={templeData} />}
     </div>
   )
 }
