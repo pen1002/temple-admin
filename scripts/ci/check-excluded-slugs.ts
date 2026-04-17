@@ -1,7 +1,8 @@
 import { EXCLUDED_SLUGS } from '../../lib/constants/excluded-slugs'
 
-const REQUIRED = ['munsusa', 'borimsa']
-const missing = REQUIRED.filter(s => !EXCLUDED_SLUGS.includes(s))
+const REQUIRED: readonly string[] = ['munsusa', 'borimsa']
+const slugs: readonly string[] = EXCLUDED_SLUGS
+const missing = REQUIRED.filter(s => !slugs.includes(s))
 
 if (missing.length > 0) {
   console.error('❌ EXCLUDED_SLUGS에서 누락:', missing)

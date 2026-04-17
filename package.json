@@ -12,6 +12,7 @@
   "dependencies": {
     "@prisma/client": "^6.19.2",
     "@sentry/browser": "^10.48.0",
+    "@sentry/nextjs": "^10.49.0",
     "@supabase/supabase-js": "^2.103.0",
     "@vercel/blob": "^0.23.0",
     "clsx": "^2.1.1",
