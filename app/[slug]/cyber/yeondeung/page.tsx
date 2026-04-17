@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useState, useCallback } from 'react'
 import { useParams } from 'next/navigation'
+import ConsentCheckbox from '@/components/common/ConsentCheckbox'
 
 const PER_ROUND = 30, COLS = 5
 
@@ -23,6 +24,8 @@ export default function YeondeungPage() {
   const [name, setName] = useState(''); const [wish, setWish] = useState(''); const [contact, setContact] = useState('')
   const [amount, setAmount] = useState(100000); const [loading, setLoading] = useState(false); const [submitted, setSubmitted] = useState(false); const [kakaoText, setKakaoText] = useState("")
   const [viewRound, setViewRound] = useState(1)
+  const [agreedPrivacy, setAgreedPrivacy] = useState(false)
+  const [agreedTerms, setAgreedTerms] = useState(false)
   const [touchStartX2, setTouchStartX2] = useState(0)
   const [tooltip, setTooltip] = useState<{ x: number; y: number; name: string; wish: string; date?: string } | null>(null)
 
@@ -39,6 +42,7 @@ export default function YeondeungPage() {
   
 
   const handleSubmit = async () => {
+    if (!agreedPrivacy || !agreedTerms) { alert('개인정보 처리방침 및 이용약관에 동의해 주세요.'); return }
     if (!name.trim()) return; setLoading(true)
     await fetch('/api/cyber/offering', { method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ temple_slug: slug, type: 'yeondeung', name: name.trim(), wish: wish.trim(), contact: contact.trim(), amount }) })
@@ -108,6 +112,10 @@ export default function YeondeungPage() {
             {AMOUNTS.map(a => (
               <button key={a.value} onClick={() => setAmount(a.value)} style={{ flex: 1, padding: '10px 0', borderRadius: 8, fontSize: 13, cursor: 'pointer', border: amount === a.value ? `2px solid rgba(${accentRgb},0.8)` : `1px solid rgba(${accentRgb},0.2)`, background: amount === a.value ? `rgba(${accentRgb},0.2)` : 'rgba(255,255,255,0.04)', color: amount === a.value ? accent : `rgba(${accentRgb},0.5)`, fontWeight: amount === a.value ? 700 : 400 }}>{a.label}</button>
             ))}
+          </div>
+          <div style={{ marginTop: 12, marginBottom: 8 }}>
+            <ConsentCheckbox id="privacy-consent" required checked={agreedPrivacy} onChange={setAgreedPrivacy} label="개인정보 수집·이용에 동의합니다 (필수)" linkHref="/privacy" linkLabel="[전문 보기]" />
+            <ConsentCheckbox id="terms-consent" required checked={agreedTerms} onChange={setAgreedTerms} label="이용약관에 동의합니다 (필수)" linkHref="/terms" linkLabel="[전문 보기]" />
           </div>
           <button onClick={handleSubmit} disabled={loading || !name.trim()} style={{ background: loading ? `rgba(${accentRgb},0.15)` : `rgba(${accentRgb},0.22)`, border: `1px solid rgba(${accentRgb},0.55)`, color: 'rgba(255,220,120,0.95)', borderRadius: 8, padding: 14, fontSize: 15, cursor: 'pointer', fontWeight: 500 }}>
             {loading ? '접수 중...' : `초파일연등접수 — ${amount.toLocaleString()}원`}

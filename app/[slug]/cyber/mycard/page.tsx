@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import { useCyberTemple } from '@/lib/useCyberTemple'
 import { TEMPLE_OFFERINGS } from '@/lib/constants/templeOfferings'
+import ConsentCheckbox from '@/components/common/ConsentCheckbox'
 
 const A = '#C9A84C'
 
@@ -15,9 +16,12 @@ export default function MyCardPage() {
   const [phoneLast4, setPhoneLast4] = useState('')
   const [multiple, setMultiple] = useState(false)
   const [data, setData] = useState<any>(null)
+  const [agreedPrivacy, setAgreedPrivacy] = useState(false)
+  const [agreedTerms, setAgreedTerms] = useState(false)
   const [error, setError] = useState('')
 
   const handleSearch = async () => {
+    if (!agreedPrivacy || !agreedTerms) { alert('개인정보 처리방침 및 이용약관에 동의해 주세요.'); return }
     if (!nameInput.trim()) return
     const params = new URLSearchParams({ name: nameInput.trim(), temple: slug })
     if (phoneLast4) params.set('phone_last4', phoneLast4)
@@ -45,6 +49,10 @@ export default function MyCardPage() {
             <input value={phoneLast4} onChange={e => setPhoneLast4(e.target.value.replace(/\D/g, '').slice(0, 4))} placeholder="뒷 4자리" maxLength={4} style={{ width: '100%', maxWidth: 200, padding: '10px 12px', background: 'rgba(255,255,255,0.06)', border: `1px solid ${A}44`, borderRadius: 8, color: '#F5E6C8', fontSize: 16, textAlign: 'center', letterSpacing: 4 }} />
           </div>
         )}
+        <div style={{ marginTop: 12, marginBottom: 8, maxWidth: 280, width: '100%' }}>
+          <ConsentCheckbox id="privacy-consent" required checked={agreedPrivacy} onChange={setAgreedPrivacy} label="개인정보 수집·이용에 동의합니다 (필수)" linkHref="/privacy" linkLabel="[전문 보기]" />
+          <ConsentCheckbox id="terms-consent" required checked={agreedTerms} onChange={setAgreedTerms} label="이용약관에 동의합니다 (필수)" linkHref="/terms" linkLabel="[전문 보기]" />
+        </div>
         <button onClick={handleSearch} style={{ display: 'block', width: '100%', maxWidth: 280, margin: '10px auto 0', padding: 10, background: A, color: '#0a0205', border: 'none', borderRadius: 8, fontWeight: 700, cursor: 'pointer', fontSize: 14 }}>🔍 확인하기</button>
         {error && <div style={{ marginTop: 8, color: '#ef4444', fontSize: 13 }}>{error}</div>}
       </>) : (<>

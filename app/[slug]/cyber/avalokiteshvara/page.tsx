@@ -2,6 +2,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useParams } from 'next/navigation'
 import { useCyberTemple } from '@/lib/useCyberTemple'
+import ConsentCheckbox from '@/components/common/ConsentCheckbox'
 
 const AMOUNTS = [{ label: '10만원', value: 100000 }]
 const PER_ROUND = 30
@@ -23,6 +24,8 @@ export default function CandlePage() {
   const [loading, setLoading] = useState(false); const [kakaoText, setKakaoText] = useState("")
   const [viewRound, setViewRound] = useState(1)
   const [touchStartX2, setTouchStartX2] = useState(0)
+  const [agreedPrivacy, setAgreedPrivacy] = useState(false)
+  const [agreedTerms, setAgreedTerms] = useState(false)
   const [tooltip, setTooltip] = useState<{ x: number; y: number; name: string; wish: string; date?: string } | null>(null)
 
   const totalRounds = Math.max(1, Math.ceil(candles.length / PER_ROUND) + 1)
@@ -42,6 +45,7 @@ export default function CandlePage() {
   useEffect(() => { fetchData() }, [fetchData])
 
   const handleSubmit = async () => {
+    if (!agreedPrivacy || !agreedTerms) { alert('개인정보 처리방침 및 이용약관에 동의해 주세요.'); return }
     if (!name.trim()) return
     setLoading(true)
     await fetch('/api/cyber/offering', {
@@ -165,6 +169,10 @@ export default function CandlePage() {
             border: '1px solid rgba(240,192,96,0.4)', background: 'rgba(240,192,96,0.1)',
             color: '#f0c060', fontWeight: 600, textAlign: 'center',
           }}>{bankLabel.trim()} <span style={{ fontSize: 11, opacity: 0.6 }}>(복사)</span></button>}
+          <div style={{ marginTop: 12, marginBottom: 8 }}>
+            <ConsentCheckbox id="privacy-consent" required checked={agreedPrivacy} onChange={setAgreedPrivacy} label="개인정보 수집·이용에 동의합니다 (필수)" linkHref="/privacy" linkLabel="[전문 보기]" />
+            <ConsentCheckbox id="terms-consent" required checked={agreedTerms} onChange={setAgreedTerms} label="이용약관에 동의합니다 (필수)" linkHref="/terms" linkLabel="[전문 보기]" />
+          </div>
           <button onClick={handleSubmit} disabled={loading || !name.trim()} style={{ background: loading ? 'rgba(180,140,40,0.3)' : 'rgba(240,192,96,0.22)', border: '1px solid rgba(240,192,96,0.55)', color: 'rgba(255,220,120,0.95)', borderRadius: 8, padding: 14, fontSize: 15, cursor: 'pointer', fontWeight: 500 }}>
             {loading ? '접수 중...' : `원불모시기 — ${amount.toLocaleString()}원`}
           </button>

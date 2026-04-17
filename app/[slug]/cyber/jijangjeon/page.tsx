@@ -2,6 +2,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { useParams } from 'next/navigation';
 import { useCyberTemple } from '@/lib/useCyberTemple';
+import ConsentCheckbox from '@/components/common/ConsentCheckbox';
 
 const RELATIONS = ['부', '모', '조부', '조모', '배우자', '자녀', '형제자매', '기타']
 const PER_ROUND = 30, COLS = 5
@@ -19,6 +20,8 @@ export default function JijangjeonPage() {
   const [loading, setLoading] = useState(false); const [kakaoText, setKakaoText] = useState('');
   const [viewRound, setViewRound] = useState(1);
   const [tooltip, setTooltip] = useState<{ x: number; y: number; deceased: string; name: string; rel: string; wish?: string; date?: string } | null>(null);
+  const [agreedPrivacy, setAgreedPrivacy] = useState(false);
+  const [agreedTerms, setAgreedTerms] = useState(false);
   const [candlesLit, setCandlesLit] = useState(0);
   const [incenseBurning, setIncenseBurning] = useState(false);
   const [spiritLanterns, setSpiritLanterns] = useState(0);
@@ -47,6 +50,7 @@ export default function JijangjeonPage() {
   const roundCount = Math.min(Math.max(0, memorials.length - roundStart), PER_ROUND);
 
   const handleSubmit = async () => {
+    if (!agreedPrivacy || !agreedTerms) { alert('개인정보 처리방침 및 이용약관에 동의해 주세요.'); return }
     if (!name.trim() || !deceased.trim()) return; setLoading(true);
     const res = await fetch('/api/cyber/offering', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ temple_slug: slug, type: 'memorial', name: name.trim(), deceased: deceased.trim(), relationship, wish: wish.trim(), contact: contact.trim(), amount: 5000 }) });
     const result = await res.json(); if (result.kakaoText) setKakaoText(result.kakaoText);
@@ -168,6 +172,10 @@ export default function JijangjeonPage() {
             <textarea value={wish} onChange={e => setWish(e.target.value)} placeholder="발원문 (선택)" rows={3} style={{ ...inp, resize: 'none' }} />
             <input value={contact} onChange={e => setContact(e.target.value)} type="tel" placeholder="연락처 (010-0000-0000)" style={inp} />
             <div style={{ textAlign: 'center', padding: '4px 0' }}><span style={{ color: 'rgba(220,200,255,0.95)', fontSize: 15, fontWeight: 600 }}>위패 1위 봉안 1년 5,000원</span></div>
+            <div style={{ marginTop: 12, marginBottom: 8 }}>
+              <ConsentCheckbox id="privacy-consent" required checked={agreedPrivacy} onChange={setAgreedPrivacy} label="개인정보 수집·이용에 동의합니다 (필수)" linkHref="/privacy" linkLabel="[전문 보기]" />
+              <ConsentCheckbox id="terms-consent" required checked={agreedTerms} onChange={setAgreedTerms} label="이용약관에 동의합니다 (필수)" linkHref="/terms" linkLabel="[전문 보기]" />
+            </div>
             <button onClick={handleSubmit} disabled={loading || !name.trim() || !deceased.trim()} style={{ background: loading ? `rgba(${accentRgb},0.15)` : `rgba(${accentRgb},0.25)`, border: `1px solid rgba(${accentRgb},0.5)`, color: 'rgba(220,200,255,0.95)', borderRadius: 8, padding: 14, fontSize: 15, cursor: 'pointer', fontWeight: 500 }}>{loading ? '접수 중...' : '위패 봉안 신청'}</button>
           </div>
         ) : (

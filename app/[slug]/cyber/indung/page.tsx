@@ -2,6 +2,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useParams } from 'next/navigation'
 import { useCyberTemple } from '@/lib/useCyberTemple'
+import ConsentCheckbox from '@/components/common/ConsentCheckbox'
 
 const PER_ROUND = 30, COLS = 5
 const AMOUNT = 10000
@@ -15,6 +16,8 @@ export default function IndungPage() {
   const [items, setItems] = useState<Donor[]>([])
   const [name, setName] = useState(''); const [wish, setWish] = useState(''); const [contact, setContact] = useState('')
   const [loading, setLoading] = useState(false); const [submitted, setSubmitted] = useState(false); const [kakaoText, setKakaoText] = useState("")
+  const [agreedPrivacy, setAgreedPrivacy] = useState(false)
+  const [agreedTerms, setAgreedTerms] = useState(false)
   const [tooltip, setTooltip] = useState<{ x: number; y: number; name: string; wish: string; date?: string } | null>(null)
 
   const fetchData = useCallback(async () => {
@@ -31,6 +34,7 @@ export default function IndungPage() {
   const roundCount = Math.min(Math.max(0, items.length - roundStart), PER_ROUND)
 
   const handleSubmit = async () => {
+    if (!agreedPrivacy || !agreedTerms) { alert('개인정보 처리방침 및 이용약관에 동의해 주세요.'); return }
     if (!name.trim()) return; setLoading(true)
     const res = await fetch("/api/cyber/offering", { method: "POST", headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ temple_slug: slug, type: "indung", name: name.trim(), wish: wish.trim(), contact: contact.trim(), amount: AMOUNT }) }); const result = await res.json(); if (result.kakaoText) setKakaoText(result.kakaoText)
@@ -129,6 +133,10 @@ export default function IndungPage() {
           <input value={contact} onChange={e => setContact(e.target.value)} type="tel" placeholder="연락처 (010-0000-0000)" style={inp} />
           <div style={{ textAlign: 'center', padding: '6px 0' }}>
             <span style={{ color: `rgba(${accentRgb},0.95)`, fontSize: 15, fontWeight: 600 }}>인등 1년 10,000원</span>
+          </div>
+          <div style={{ marginTop: 12, marginBottom: 8 }}>
+            <ConsentCheckbox id="privacy-consent" required checked={agreedPrivacy} onChange={setAgreedPrivacy} label="개인정보 수집·이용에 동의합니다 (필수)" linkHref="/privacy" linkLabel="[전문 보기]" />
+            <ConsentCheckbox id="terms-consent" required checked={agreedTerms} onChange={setAgreedTerms} label="이용약관에 동의합니다 (필수)" linkHref="/terms" linkLabel="[전문 보기]" />
           </div>
           <button onClick={handleSubmit} disabled={loading || !name.trim()} style={{ background: loading ? `rgba(${accentRgb},0.15)` : `rgba(${accentRgb},0.22)`, border: `1px solid rgba(${accentRgb},0.55)`, color: 'rgba(255,220,120,0.95)', borderRadius: 8, padding: 14, fontSize: 15, cursor: 'pointer', fontWeight: 500 }}>
             {loading ? '접수 중...' : '인등 신청하기'}

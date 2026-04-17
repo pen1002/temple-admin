@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useParams, useSearchParams } from 'next/navigation'
 import { useCyberTemple } from '@/lib/useCyberTemple'
 import { TEMPLE_OFFERINGS } from '@/lib/constants/templeOfferings'
+import ConsentCheckbox from '@/components/common/ConsentCheckbox'
 
 const A = '#C9A84C'
 
@@ -231,6 +232,10 @@ function MembersTab({ slug, role, tName }: { slug: string; role: Role; tName: st
   const [familyRows, setFamilyRows] = useState<any[]>([{ relation_type: '건명', is_lunar: true, birth_date: '', name: '' }, { relation_type: '곤명', is_lunar: true, birth_date: '', name: '' }])
   const [haengRows, setHaengRows] = useState<any[]>([])
   const [younggaRows, setYounggaRows] = useState<any[]>([])
+  const [agreedPrivacy, setAgreedPrivacy] = useState(false)
+  const [agreedTerms, setAgreedTerms] = useState(false)
+  const [agreedSms, setAgreedSms] = useState(false)
+  const [agreedEmail, setAgreedEmail] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [msg, setMsg] = useState('')
   const u = (k: string, v: unknown) => setForm(f => ({ ...f, [k]: v }))
@@ -246,10 +251,12 @@ function MembersTab({ slug, role, tName }: { slug: string; role: Role; tName: st
   useEffect(() => { fetchList() }, [fetchList])
 
   const handleSubmit = async () => {
+    if (!agreedPrivacy || !agreedTerms) { setMsg('개인정보 처리방침 및 이용약관에 동의해 주세요.'); return }
     const firstName = familyRows.find((r: any) => r.name?.trim())?.name || form.full_name
     if (!firstName?.trim()) { setMsg('가족 축원에 성명을 입력하세요'); return }
     setSubmitting(true)
-    const res = await fetch('/api/cyber/members', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ temple_slug: slug, ...form, full_name: firstName.trim(), family: familyRows.filter((r: any) => r.name?.trim()), haenghyo: haengRows, youngga: younggaRows }) })
+    const consent = { privacy: agreedPrivacy, terms: agreedTerms, sms: agreedSms, email: agreedEmail, consentedAt: new Date().toISOString() }
+    const res = await fetch('/api/cyber/members', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ temple_slug: slug, ...form, full_name: firstName.trim(), family: familyRows.filter((r: any) => r.name?.trim()), haenghyo: haengRows, youngga: younggaRows, consent }) })
     const result = await res.json(); setSubmitting(false)
     if (res.ok) { setMsg(`나무아미타불 🙏 축원번호 ${result.chukwon_no}`); setTimeout(() => { setView('list'); fetchList(); setMsg('') }, 1200) }
     else setMsg(result.error || '등록 실패')
@@ -301,8 +308,13 @@ function MembersTab({ slug, role, tName }: { slug: string; role: Role; tName: st
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: A, fontWeight: 700, marginBottom: 4, borderBottom: `1px solid ${A}22`, paddingBottom: 3 }}><span>기타사항</span><span style={{ fontWeight: 400, opacity: 0.5, fontSize: 10 }}>{form.extra_memo.length}/1000</span></div>
           <textarea value={form.extra_memo} maxLength={1000} onChange={e => u('extra_memo', e.target.value)} placeholder={'신도 관련 특이사항, 상담 내용,\n스님 메모 등 (최대 1,000자)'} rows={4} style={{ ...inp, minHeight: 96, resize: 'vertical', fontFamily: "'Noto Serif KR',serif", lineHeight: 1.6 }} />
         </div>
-        <label style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, cursor: 'pointer', marginBottom: 10 }}><input type="checkbox" checked={form.sms_consent} onChange={e => u('sms_consent', e.target.checked)} />{tName} 법회·기도·행사 SMS/카카오 수신동의</label>
-        <button onClick={() => setPage('back')} style={{ width: '100%', padding: 10, background: `${A}22`, border: `1px solid ${A}`, borderRadius: 8, color: A, fontWeight: 700, cursor: 'pointer', fontSize: 13 }}>뒷면으로 →</button>
+        <div style={{ marginTop: 12, padding: '10px 8px', background: 'rgba(255,255,255,0.03)', border: `1px solid ${A}22`, borderRadius: 8 }}>
+          <ConsentCheckbox id="privacy-consent" required checked={agreedPrivacy} onChange={setAgreedPrivacy} label="개인정보 수집·이용에 동의합니다 (필수)" linkHref="/privacy" linkLabel="[전문 보기]" />
+          <ConsentCheckbox id="terms-consent" required checked={agreedTerms} onChange={setAgreedTerms} label="이용약관에 동의합니다 (필수)" linkHref="/terms" linkLabel="[전문 보기]" />
+          <ConsentCheckbox id="sms-consent" required={false} checked={agreedSms} onChange={v => { setAgreedSms(v); u('sms_consent', v) }} label={`${tName} 법회·기도·행사 SMS/카카오 수신에 동의합니다 (선택)`} note="※ 본 동의는 선택사항이며, 동의하지 않아도 신도 등록이 가능합니다. 동의 후에도 수신 거부를 원하시면 010-5145-5589로 연락 주십시오. 광고성 정보 전송 시 발신 번호가 표시됩니다. (정보통신망법 제50조 준수)" />
+          <ConsentCheckbox id="email-consent" required={false} checked={agreedEmail} onChange={setAgreedEmail} label="종단·교구 소식 이메일 수신에 동의합니다 (선택)" />
+        </div>
+        <button onClick={() => setPage('back')} style={{ width: '100%', marginTop: 8, padding: 10, background: `${A}22`, border: `1px solid ${A}`, borderRadius: 8, color: A, fontWeight: 700, cursor: 'pointer', fontSize: 13 }}>뒷면으로 →</button>
       </>) : (<>
         {/* 뒷면: 행효 */}
         <Sec title="行孝 (최대 3)" />
