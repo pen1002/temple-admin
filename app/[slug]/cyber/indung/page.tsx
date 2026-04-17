@@ -134,6 +134,18 @@ export default function IndungPage() {
           <div style={{ textAlign: 'center', padding: '6px 0' }}>
             <span style={{ color: `rgba(${accentRgb},0.95)`, fontSize: 15, fontWeight: 600 }}>인등 1년 10,000원</span>
           </div>
+          <div style={{ border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, padding: 12, marginTop: 12, fontSize: 11, color: 'rgba(255,235,150,0.6)', lineHeight: 1.6 }}>
+            <div style={{ fontWeight: 700, marginBottom: 4, color: 'rgba(255,235,150,0.85)' }}>사업자 정보</div>
+            <div style={{ display: 'grid', gridTemplateColumns: '80px 1fr', gap: '2px 8px' }}>
+              <span>상호</span><span>미래사</span>
+              <span>대표</span><span>미래사 주지스님</span>
+              <span>사업자번호</span><span>667-47-01068 (간이과세자)</span>
+              <span>연락처</span><span>010-5145-5589</span>
+              <span>이메일</span><span>miraesa108@gmail.com</span>
+              <span>통신판매업</span><span>신고 면제 <span style={{ fontSize: 10, opacity: 0.7 }}>(공정위 고시 「통신판매업 신고 면제 기준」 · 간이과세자)</span></span>
+            </div>
+            <div style={{ marginTop: 6, fontSize: 10 }}>• 결제 전 <a href="/terms#refund" target="_blank" rel="noopener noreferrer" style={{ color: 'rgba(255,235,150,0.8)', textDecoration: 'underline' }}>환불 규정</a>을 확인해 주십시오.</div>
+          </div>
           <div style={{ marginTop: 12, marginBottom: 8 }}>
             <ConsentCheckbox id="privacy-consent" required checked={agreedPrivacy} onChange={setAgreedPrivacy} label="개인정보 수집·이용에 동의합니다 (필수)" linkHref="/privacy" linkLabel="[전문 보기]" />
             <ConsentCheckbox id="terms-consent" required checked={agreedTerms} onChange={setAgreedTerms} label="이용약관에 동의합니다 (필수)" linkHref="/terms" linkLabel="[전문 보기]" />

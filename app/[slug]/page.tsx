@@ -9,6 +9,7 @@ import FooterBlock from './_blocks/FooterBlock'
 import type { TempleData, TemplateContent } from './_blocks/types'
 import CyberTempleRedirect from './CyberTempleRedirect'
 import { shouldHideFooter } from '@/lib/temple-specific/miraesa'
+import LegalFooterMinimal from '@/components/LegalFooterMinimal'
 
 // ISR: 1분마다 재생성 (on-demand revalidation 병행)
 export const revalidate = 60
@@ -145,6 +146,7 @@ export default async function TemplePage(
         />
       ))}
       {!shouldHideFooter(temple.code) && <FooterBlock temple={templeData} />}
+      {shouldHideFooter(temple.code) && <LegalFooterMinimal />}
     </div>
   )
 }
