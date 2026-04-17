@@ -19,8 +19,8 @@ function checkRateLimit(key: string, max: number): boolean {
     hits.set(key, { count: 1, resetAt: now + 60_000 })
     return true
   }
-  if (entry.count >= max) return false
   entry.count++
+  if (entry.count > max) return false
   return true
 }
 
