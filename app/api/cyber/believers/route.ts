@@ -1,15 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireTempleAuth } from '@/lib/api/require-temple-auth'
+import { checkTempleAuth } from '@/lib/auth/templeAuth'
 
 
 // GET /api/cyber/believers?temple_slug=miraesa&q=홍길동&family_id=xxx
 export async function GET(req: NextRequest) {
   try {
-    // 인증: 사찰 존재 검증 + Origin 체크
-    const auth = await requireTempleAuth(req, { allowPublic: false })
+    // 인증: JWT 필수 (관리자 전용 — 개인정보 보호)
+    const slug = req.nextUrl.searchParams.get('temple_slug') || ''
+    if (!slug) return NextResponse.json({ error: 'temple_slug 필수' }, { status: 400 })
+    const auth = await checkTempleAuth(req, slug)
     if (auth instanceof NextResponse) return auth
-    const slug = auth.templeSlug
     const q = req.nextUrl.searchParams.get('q')?.trim()
     const familyId = req.nextUrl.searchParams.get('family_id')
     const status = req.nextUrl.searchParams.get('status')
@@ -88,11 +90,11 @@ export async function POST(req: NextRequest) {
 // PATCH /api/cyber/believers — 신도 수정
 export async function PATCH(req: NextRequest) {
   try {
-    const auth = await requireTempleAuth(req, { allowPublic: false })
-    if (auth instanceof NextResponse) return auth
-
+    // 인증: JWT 필수 (관리자 전용)
     const body = await req.json()
-    const { id, ...updates } = body
+    const { id, temple_slug, ...updates } = body
+    const auth = await checkTempleAuth(req, temple_slug || '')
+    if (auth instanceof NextResponse) return auth
     if (!id) return NextResponse.json({ error: 'id 필수' }, { status: 400 })
 
     // 날짜 필드 변환
@@ -109,10 +111,11 @@ export async function PATCH(req: NextRequest) {
 // DELETE /api/cyber/believers — 신도 삭제
 export async function DELETE(req: NextRequest) {
   try {
-    const auth = await requireTempleAuth(req, { allowPublic: false })
+    // 인증: JWT 필수 (관리자 전용)
+    const body = await req.json()
+    const { id, temple_slug } = body
+    const auth = await checkTempleAuth(req, temple_slug || '')
     if (auth instanceof NextResponse) return auth
-
-    const { id } = await req.json()
     if (!id) return NextResponse.json({ error: 'id 필수' }, { status: 400 })
     await prisma.believer.delete({ where: { id } })
     return NextResponse.json({ ok: true })
