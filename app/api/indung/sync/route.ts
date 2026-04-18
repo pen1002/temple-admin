@@ -1,12 +1,17 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { readSheetRows } from '@/lib/google-sheets'
+import { checkTempleAuth } from '@/lib/auth/templeAuth'
 
 
 // GET /api/indung/sync?temple_slug=cheongwansa
 // 시트의 입금확인 상태(H열)를 DB bank_confirmed에 동기화
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
+    // 인증: admin 또는 super만 동기화 가능
+    const slug = req.nextUrl.searchParams.get('temple_slug') || 'cheongwansa'
+    const auth = await checkTempleAuth(req, slug)
+    if (auth instanceof NextResponse) return auth
     const sheetRows = await readSheetRows()
     let synced = 0
 
